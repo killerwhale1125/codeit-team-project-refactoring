@@ -1,0 +1,31 @@
+version: '3'
+services:
+  app:
+    image: docker_spring
+    container_name: docker_spring
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - public
+
+  nginx:
+    image:  nginx:latest
+    container_name: docker_nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - app
+    networks:
+      - public
+
+networks:
+  public:
+    driver: bridge
