@@ -38,7 +38,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       # Dockerfile 기반으로 이미지 생성
-      - name: Create Docker image
+      - name: Create SpringBoot Docker image
         run: docker build -t dev-codeit-server .
 
       - name: Add Docker image Tag
@@ -46,6 +46,16 @@ jobs:
 
       - name: Push Docker image to ECR
         run: docker push ${{ steps.login-ecr.outputs.registry }}/dev-codeit-server:latest
+
+      # Nginx Docker 이미지 빌드
+      - name: Create Nginx Docker image
+        run: docker build -t dev-codeit-nginx ./nginx
+
+      - name: Add Nginx Docker image Tag
+        run: docker tag dev-codeit-nginx ${{ steps.login-ecr.outputs.registry }}/dev-codeit-nginx:latest
+
+      - name: Push Nginx Docker image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/dev-codeit-nginx:latest
 
       - name: Compression
         run: tar -czvf $GITHUB_SHA.tar.gz appspec.yml scripts
