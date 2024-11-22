@@ -2,7 +2,7 @@
 
 echo "--------------- start deploy -----------------"
 
-docker network create --driver bridge dev_codeit_network || true
+docker network create --ipv6=false --driver bridge dev_codeit_network || true
 
 docker stop dev-codeit-server || true
 docker rm dev-codeit-server || true
