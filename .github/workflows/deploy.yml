@@ -22,7 +22,9 @@ jobs:
         run: echo "${{ secrets.APPLICATION_PROPERTIES_DEV }}" > ./src/main/resources/application.yml
 
       - name: Test & Build
-        run: ./gradlew clean build
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build
 
       - name: AWS Credentials Configuration for Resource Access
         uses: aws-actions/configure-aws-credentials@v4
