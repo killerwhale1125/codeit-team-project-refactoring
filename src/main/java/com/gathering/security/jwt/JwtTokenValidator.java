@@ -1,16 +1,21 @@
 package com.gathering.security.jwt;
 
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 
+import java.security.PublicKey;
 import java.util.Date;
+import java.util.Set;
 
 @Component
 public class JwtTokenValidator {
+    public static final String claimInfo = "preferred_username";
 
-    private String secretKey;
-
+    @Autowired
+    private JwtKeyProvider jwtKeyProvider;
 
     public boolean validateToken(String token) {
         try {
@@ -28,16 +33,17 @@ public class JwtTokenValidator {
         }
     }
 
-    public String getUserEmail(String token) {
+    public String getUserId(String token) {
         Claims claims = getClaims(token);
-        return claims.getSubject(); // jwt 구성중 sub 클레임
+        return claims.get(claimInfo, String.class);
     }
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(jwtKeyProvider.getPublicKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 }
