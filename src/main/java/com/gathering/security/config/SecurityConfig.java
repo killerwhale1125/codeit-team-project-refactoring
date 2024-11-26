@@ -1,6 +1,7 @@
 package com.gathering.security.config;
 
 import com.gathering.security.jwt.JwtAuthorizationFilter;
+import com.gathering.security.jwt.JwtTokenValidator;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
+    private final JwtTokenValidator jwtTokenValidator;
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -39,7 +41,7 @@ public class SecurityConfig {
                 .addFilter(corsFilter) // @CrossOrigin(인증 x), 시큐리티 필터에 등록 인증 (O)
                 .formLogin(AbstractHttpConfigurer::disable) // 시큐리티 로그인 화면 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .addFilter(new JwtAuthorizationFilter(manager, userRepository)) // AuthenticationManger
+                .addFilter(new JwtAuthorizationFilter(manager, userRepository, jwtTokenValidator)) // AuthenticationManger
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/api/v1/user/**").hasAnyRole("USER")
