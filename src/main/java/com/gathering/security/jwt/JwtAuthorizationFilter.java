@@ -16,23 +16,24 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
-// 시큐리티filter중 BasicAuthicationFilter
-// 권한이나 인증이 필요한 특정 주소를 요청했을 때 위 필터를 무조건 타게되어있음.
-// 만약에 권한, 인증이 필요한 주소가 아니라면 해당 필터 x
+/*
+* JWT 검증 필터
+* */
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    @Value("${security.header}")
-    private String header;
-
-    @Value("${security.token.prefix}")
-    private String tokenPrefix;
+    public static final String header = "Authorization";
+    public static final String tokenPrefix = "Bearer ";
     private UserRepository userRepository;
     private JwtTokenValidator jwtTokenValidator;
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTokenValidator jwtTokenValidator) {
+    private List<String> excludePaths;
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTokenValidator jwtTokenValidator, List<String> excludePaths) {
         super(authenticationManager);
         this.userRepository = userRepository;
         this.jwtTokenValidator = jwtTokenValidator;
+        this.excludePaths = excludePaths;
     }
 
     // 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게 됨.
@@ -40,7 +41,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         String jwtHeader = request.getHeader(header);
-        System.out.println("jwtHeader :" + jwtHeader);
+
+        // 요청 경로가 제외된 경로 리스트에 포함되면 필터를 거치지 않음
+        String requestUri = request.getRequestURI();
+        if(excludePaths.contains(requestUri)) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         // header가 있는지 확인
         if(jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
@@ -50,10 +57,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
         String jwtToken = request.getHeader(header).replace(tokenPrefix, "");
 
-        String email = jwtTokenValidator.getUserEmail(jwtToken);
+        String userId = jwtTokenValidator.getUserId(jwtToken);
         // 서명이 정상적으로 됨
-        if(email != null && jwtTokenValidator.validateToken(jwtToken)) {
-            User userEntity = userRepository.findByEmail(email);
+        if(userId != null && jwtTokenValidator.validateToken(jwtToken)) {
+            User userEntity = userRepository.findByUserId(userId);
 
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 

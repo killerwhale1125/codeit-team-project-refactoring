@@ -4,6 +4,7 @@ import com.gathering.security.jwt.JwtAuthorizationFilter;
 import com.gathering.security.jwt.JwtTokenValidator;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,16 +18,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.List;
+import java.util.Set;
+
 @Configuration // IoC 빈(bean)을 등록
 @EnableWebSecurity // 필터 체인 관리 시작 어노테이션
 @RequiredArgsConstructor
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true) //secured()어노테이션 활성화
 public class SecurityConfig {
 
     private final CorsFilter corsFilter;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
     private final JwtTokenValidator jwtTokenValidator;
+    @Value("${security.exclude.paths}")
+    private List<String> excludePaths;
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -41,10 +46,11 @@ public class SecurityConfig {
                 .addFilter(corsFilter) // @CrossOrigin(인증 x), 시큐리티 필터에 등록 인증 (O)
                 .formLogin(AbstractHttpConfigurer::disable) // 시큐리티 로그인 화면 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .addFilter(new JwtAuthorizationFilter(manager, userRepository, jwtTokenValidator)) // AuthenticationManger
+                .addFilter(new JwtAuthorizationFilter(manager, userRepository, jwtTokenValidator, excludePaths)) // AuthenticationManger
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/api/v1/user/**").hasAnyRole("USER")
+                                .requestMatchers("/api/register/**").permitAll()
+                                .requestMatchers("/api/**").hasAnyRole("USER")
 //                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                                 .anyRequest().permitAll()
                 ).build();
