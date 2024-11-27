@@ -1,9 +1,7 @@
 package com.gathering.user.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.gathering.common.base.jpa.BaseTimeEntity;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -13,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +20,9 @@ public class User {
     private String email;
     private String company;
     private String profile;
-    private Date createDate;
-    private Date updateDate;
+
+    @Embedded
+    private Address address;
     private String roles; // USER, ADMIN
 
     public List<String> getRoleList() {
