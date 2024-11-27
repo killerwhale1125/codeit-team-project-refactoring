@@ -1,4 +1,4 @@
-package com.gathering.user.model;
+package com.gathering.user.model.entitiy;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;

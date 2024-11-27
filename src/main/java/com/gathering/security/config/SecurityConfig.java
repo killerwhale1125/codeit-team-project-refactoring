@@ -49,8 +49,9 @@ public class SecurityConfig {
                 .addFilter(new JwtAuthorizationFilter(manager, userRepository, jwtTokenValidator, excludePaths)) // AuthenticationManger
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/api/register/**").permitAll()
-                                .requestMatchers("/api/**").hasAnyRole("USER")
+                                // 관리자 기능 구현 후 권한 관련 기능 활성화 필요
+//                                .requestMatchers("/api/register/**").permitAll()
+//                                .requestMatchers("/api/**").hasAnyRole("USER")
 //                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                                 .anyRequest().permitAll()
                 ).build();

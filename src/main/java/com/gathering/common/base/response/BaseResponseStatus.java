@@ -31,7 +31,10 @@ public enum BaseResponseStatus {
 
     // Other
     UNKNOWN_ERROR(false, "UNKNOWN_ERROR", "Unknown error"),
-    UNSUPPORTED_FILETYPE(false, "UNSUPPORTED_FILETYPE", "Unsupported File Type!");
+    UNSUPPORTED_FILETYPE(false, "UNSUPPORTED_FILETYPE", "Unsupported File Type!"),
+
+    // Oauth
+    SC_UNAUTHORIZED(false, "SC_UNAUTHORIZED", "Unauthorized: Missing or invalid JWT");
 
     private final boolean isSuccess;
     private final String code;

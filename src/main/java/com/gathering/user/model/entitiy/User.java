@@ -1,4 +1,4 @@
-package com.gathering.user.model;
+package com.gathering.user.model.entitiy;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Entity
