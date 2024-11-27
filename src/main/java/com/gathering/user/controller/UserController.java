@@ -1,16 +1,19 @@
 package com.gathering.user.controller;
 
-import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.common.base.response.BaseResponse;
+import com.gathering.user.model.dto.GetAccessTokenDto;
 import com.gathering.user.model.dto.UserDto;
-import com.gathering.user.model.entitiy.User;
+import com.gathering.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import static java.util.Objects.toString;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
@@ -21,23 +24,26 @@ import static java.util.Objects.toString;
 public class UserController {
 
 
+    @Resource(name = "userService")
+    private final UserService userService;
+
+    @RequestMapping(value = "/getAccessToken", method = RequestMethod.POST)
+    @Operation(summary = "토큰 발급(임시)", description = "개발을 위한 토큰 발급 api 실제 프론트 구현시 프론트에서 직접 발급 필요")
+    public ResponseEntity<BaseResponse<String>> getAccessToken(
+            @RequestBody GetAccessTokenDto getAccessTokenDto
+            ){
+        String accessToken = userService.getAccessToken(getAccessTokenDto);
+        BaseResponse<String> response = new BaseResponse<>(accessToken);
+        return  ResponseEntity.ok(response);
+    }
+
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    @Operation(summary = "회원가입", description = "signup", security = {})
+    @Operation(summary = "회원가입", description = "signup")
     public String test(
         @RequestBody UserDto userDto
     ) {
 
 
-        return "test";
-    }
-
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    @Operation(summary = "테스트", description = "user test")
-    public String test2(
-            @RequestBody User user
-    ) {
-
-
-        return "test";
+        return "signup";
     }
 }
