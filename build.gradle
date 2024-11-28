@@ -40,6 +40,7 @@ dependencies {
 
 	// ======================== json =======================================
 	implementation 'org.json:json:20230227'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

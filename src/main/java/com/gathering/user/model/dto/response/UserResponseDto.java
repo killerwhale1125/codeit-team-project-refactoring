@@ -1,15 +1,17 @@
-package com.gathering.user.model.dto;
+package com.gathering.user.model.dto.response;
 
-import com.gathering.user.model.dto.response.UserResponseDto;
+import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.entitiy.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Builder
-public class UserDto {
-
+public class UserResponseDto {
 
     private long usersId;
     private String userName;
@@ -18,8 +20,8 @@ public class UserDto {
     private String roles; // USER, ADMIN
 
     // Entity -> DTO 변환 메서드
-    public static UserDto fromEntity(User user) {
-        return UserDto.builder()
+    public static UserResponseDto fromEntity(User user) {
+        return UserResponseDto.builder()
                 .usersId(user.getId())
                 .userName(user.getUserName())
                 .email(user.getEmail())

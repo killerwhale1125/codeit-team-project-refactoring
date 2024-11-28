@@ -4,8 +4,11 @@ import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -19,5 +22,11 @@ public class BaseExceptionControllerAdvice {
         }
         log.error("BaseException Error : " + "Error status : " + e.getStatus().toString() + ", Path = " + logMessage);
         return new BaseResponse<>(e.getStatus());
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public BaseResponse<BaseResponseStatus>  handleValidationExceptions(MethodArgumentNotValidException e) {
+
+
+        return new BaseResponse<>(BaseResponseStatus.INVALID_REQUEST);
     }
 }

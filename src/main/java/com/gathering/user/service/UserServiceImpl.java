@@ -2,7 +2,11 @@ package com.gathering.user.service;
 
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.user.model.dto.GetAccessTokenDto;
+import com.gathering.user.model.dto.UserDto;
+import com.gathering.user.model.dto.request.GetAccessTokenDto;
+import com.gathering.user.model.dto.request.SignInRequestDto;
+import com.gathering.user.repository.UserRepository;
+import jakarta.annotation.Resource;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
+    @Resource(name = "userRepository")
+    private UserRepository userRepository;
+
     @Value("${keycloak.accessToken}")
     private String tokenEndPoint;
     @Value("${keycloak.client.secret}")
@@ -30,11 +37,13 @@ public class UserServiceImpl implements UserService {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setDoOutput(true);
-            String formData = "client_id=admin-cli" +
+            String formData = "client_id=codeit4team" +
                     "&client_secret=" + clientSecret +
                     "&grant_type=password" +
                     "&username=" + getAccessTokenDto.getUserId() +
-                    "&password=" + getAccessTokenDto.getPassword();
+                    "&password=" + getAccessTokenDto.getPassword() +
+                    "&scope=" + "openid profile email";
+
 
             // 데이터 전송
             OutputStream os = connection.getOutputStream();
@@ -65,5 +74,16 @@ public class UserServiceImpl implements UserService {
         }
 
         return null;
+    }
+
+    @Override
+    public UserDto sginIn(SignInRequestDto requestDto) {
+
+        UserDto userDto = userRepository.selectUser(requestDto);
+
+        if (userDto != null ) {
+            userRepository.insertAttendance(userDto.getUsersId());
+        }
+        return userDto;
     }
 }

@@ -1,12 +1,13 @@
 package com.gathering.user.repository;
 
-import com.gathering.user.model.entitiy.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.gathering.user.model.dto.UserDto;
+import com.gathering.user.model.dto.request.SignInRequestDto;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository {
+    
+    // 사용자 정보 조회
+    UserDto selectUser(SignInRequestDto requestDto);
 
-    public User findByEmail(String email);
-
-    public User findByUserId(String userId);
-
+    // 출석 체크
+    int insertAttendance(long usersId);
 }
