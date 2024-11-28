@@ -1,7 +1,7 @@
 package com.gathering.security.auth;
 
 import com.gathering.user.model.entitiy.User;
-import com.gathering.user.repository.UserRepository;
+import com.gathering.user.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PrincipalDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        User user = userRepository.findByUserId(userId);
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        User user = userJpaRepository.findByUserName(userName);
         return new PrincipalDetails(user);
     }
 }

@@ -2,14 +2,13 @@ package com.gathering.security.config;
 
 import com.gathering.security.jwt.JwtAuthorizationFilter;
 import com.gathering.security.jwt.JwtTokenValidator;
-import com.gathering.user.repository.UserRepository;
+import com.gathering.user.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
-import java.util.Set;
 
 @Configuration // IoC 빈(bean)을 등록
 @EnableWebSecurity // 필터 체인 관리 시작 어노테이션
@@ -28,7 +26,7 @@ public class SecurityConfig {
 
     private final CorsFilter corsFilter;
     private final UserDetailsService userDetailsService;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final JwtTokenValidator jwtTokenValidator;
     @Value("${security.exclude.paths}")
     private List<String> excludePaths;
@@ -46,7 +44,7 @@ public class SecurityConfig {
                 .addFilter(corsFilter) // @CrossOrigin(인증 x), 시큐리티 필터에 등록 인증 (O)
                 .formLogin(AbstractHttpConfigurer::disable) // 시큐리티 로그인 화면 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .addFilter(new JwtAuthorizationFilter(manager, userRepository, jwtTokenValidator, excludePaths)) // AuthenticationManger
+                .addFilter(new JwtAuthorizationFilter(manager, userJpaRepository, jwtTokenValidator, excludePaths)) // AuthenticationManger
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 // 관리자 기능 구현 후 권한 관련 기능 활성화 필요

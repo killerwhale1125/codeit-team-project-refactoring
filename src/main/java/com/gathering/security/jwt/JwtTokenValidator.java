@@ -33,7 +33,7 @@ public class JwtTokenValidator {
         }
     }
 
-    public String getUserId(String token) {
+    public String getUserName(String token) {
         Claims claims = getClaims(token);
         return claims.get(claimInfo, String.class);
     }
