@@ -1,10 +1,9 @@
 package com.gathering.user.controller;
 
 import com.gathering.common.base.response.BaseResponse;
-import com.gathering.user.model.dto.request.GetAccessTokenDto;
 import com.gathering.user.model.dto.UserDto;
+import com.gathering.user.model.dto.request.GetAccessTokenDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
-import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

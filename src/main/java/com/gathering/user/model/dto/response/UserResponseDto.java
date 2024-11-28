@@ -1,6 +1,5 @@
 package com.gathering.user.model.dto.response;
 
-import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.entitiy.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,10 +1,8 @@
 package com.gathering.user.model.entitiy;
 
-import com.gathering.common.base.jpa.BaseTimeEntity;
 import jakarta.persistence.*;
 
 import java.sql.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "USER_ATTENDANCE",

@@ -1,6 +1,5 @@
 package com.gathering.user.repository;
 
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.model.entitiy.UserAttendance;
 import jakarta.transaction.Transactional;
 import org.apache.ibatis.annotations.Param;

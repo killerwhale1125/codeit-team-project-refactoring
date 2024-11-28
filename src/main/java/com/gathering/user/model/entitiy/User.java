@@ -1,7 +1,6 @@
 package com.gathering.user.model.entitiy;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.user.model.dto.request.SignInRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;

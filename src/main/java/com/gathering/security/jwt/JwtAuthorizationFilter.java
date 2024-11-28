@@ -1,6 +1,7 @@
 package com.gathering.security.jwt;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.security.auth.PrincipalDetails;
@@ -16,7 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;

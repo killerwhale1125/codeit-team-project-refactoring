@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static com.gathering.common.base.response.BaseResponseStatus.*;
+import static com.gathering.common.base.response.BaseResponseStatus.SUCCESS;
 
 
 @Getter
