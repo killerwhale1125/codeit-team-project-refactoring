@@ -3,7 +3,6 @@ package com.gathering.challenge.model.entity;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.Gathering;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,12 +33,21 @@ public class Challenge extends BaseTimeEntity {
     private double completeRate;
     private LocalDateTime endDateTime;
 
-    public static Challenge create(ChallengeUser challengeUser, LocalDateTime endDate) {
+    public static Challenge createChallenge(LocalDateTime endDate, ChallengeUser challengeUsers) {
         Challenge challenge = new Challenge();
-        challenge.getChallengeUsers().add(challengeUser);
         challenge.challengeStatus = ChallengeStatus.INACTIVE;
         challenge.completeRate = 0.0;
         challenge.endDateTime = endDate;
+        challenge.addChallengeUser(challengeUsers);
         return challenge;
+    }
+
+    private void addChallengeUser(ChallengeUser challengeUser) {
+        challengeUsers.add(challengeUser);
+        challengeUser.addChallenge(this);
+    }
+
+    public void addGathering(Gathering gathering) {
+        this.gathering = gathering;
     }
 }

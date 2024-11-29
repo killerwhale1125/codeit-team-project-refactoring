@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ChallengeRepositoryImpl {
-
+public class ChallengeRepositoryImpl implements ChallengeRepository {
 }

@@ -23,4 +23,9 @@ public class UserRepositoryImpl implements UserRepository{
 
     @Override
     public int insertAttendance(long usersId) { return userAttendanceJpaRepository.insertAttendance(usersId); }
+
+    @Override
+    public User findByUsername(String username) {
+        return userJpaRepository.findByUserName(username);
+    }
 }

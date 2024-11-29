@@ -28,6 +28,7 @@ public enum BaseResponseStatus {
     ALREADY_JOINED(false, "ALREADY_JOINED", "You are already a member of this gathering"),
     GATHERING_ALREADY_STARTED(false, "ALREADY_JOINED", "The gathering has already started and no new participants can join"),
     GATHERING_ALREADY_ENDED(false, "ALREADY_JOINED", "The gathering has already ended and no new participants can join"),
+    INVALID_GOAL_PERIOD(false, "INVALID_GOAL_PERIOD", "The goal period must be at least 1 day."),
 
     // Other
     UNKNOWN_ERROR(false, "UNKNOWN_ERROR", "Unknown error"),

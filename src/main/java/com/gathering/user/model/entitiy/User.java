@@ -50,15 +50,4 @@ public class User extends BaseTimeEntity {
 
         return new ArrayList<>();
     }
-
-    public void addGatheringUser(GatheringUser gatheringUser) {
-        gatheringUsers.add(gatheringUser);
-        gatheringUser.addUser(this); // 관계 설정
-    }
-
-    public void addChallengeUser(ChallengeUser challengeUser) {
-        challengeUsers.add(challengeUser);
-        challengeUser.addUser(this); // 관계 설정
-    }
-
 }

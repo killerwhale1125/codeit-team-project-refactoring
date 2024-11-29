@@ -3,6 +3,7 @@ package com.gathering.gathering.model.entity;
 import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.util.holder.DurationHolder;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,34 +41,35 @@ public class Gathering extends BaseTimeEntity {
     private GatheringStatus gatheringStatus;
 
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL)
-    private List<GatheringUser> gatheringUser = new ArrayList<>();
+    private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
-    /**
-     * 모임이 챌린지를 주체(소유)한다
-     * 주체자 -> Gathering (주인)
-     * 종속자 -> Challenge
-     * 즉 Challenge 의 상태를 변경하려면 Gathering의 challenge 필드로 변경이 가능하다
-     * ex )
-     * gathering.setChallenge() -> O
-     * challenge.setGathering() -> X
-     */
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
 
-    public static Gathering create(GatheringCreate gatheringCreate,Challenge challenge, GatheringUser gatheringUser, long goalDays) {
+    public static Gathering createGathering(GatheringCreate gatheringCreate, Challenge challenge, GatheringUser gatheringUser, DurationHolder durationHolder) {
         Gathering gathering = new Gathering();
         gathering.name = gatheringCreate.getName();
         gathering.gatheringType = gatheringCreate.getGatheringType();
         gathering.gatheringAddress = gatheringCreate.toAddress();
         gathering.content = gatheringCreate.getContent();
         gathering.endDateTime = gatheringCreate.getEndDate();
-        gathering.goalDays = goalDays;
+        gathering.goalDays = durationHolder.calculateGoalDays(gatheringCreate.getGatheringDate(), gatheringCreate.getEndDate());
         gathering.maxCapacity = gathering.getMaxCapacity();
         gathering.minCapacity = gathering.getMinCapacity();
         gathering.gatheringStatus = GatheringStatus.RECRUITING;
-        gathering.challenge = challenge;
-        gathering.getGatheringUser().add(gatheringUser);
+        gathering.addChallenge(challenge);
+        gathering.addGatheringUser(gatheringUser);
         return gathering;
+    }
+
+    private void addGatheringUser(GatheringUser gatheringUser) {
+        gatheringUsers.add(gatheringUser);
+        gatheringUser.addGathering(this);
+    }
+
+    public void addChallenge(Challenge challenge) {
+        this.challenge = challenge;
+        challenge.addGathering(this);
     }
 }

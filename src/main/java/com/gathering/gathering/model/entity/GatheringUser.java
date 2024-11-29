@@ -28,13 +28,19 @@ public class GatheringUser extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private GatheringUserStatus gatheringUserStatus;
 
-    public static GatheringUser create() {
+    public static GatheringUser createGatheringUser(User user) {
         GatheringUser gatheringUser = new GatheringUser();
         gatheringUser.gatheringUserStatus = GatheringUserStatus.NOT_PARTICIPATING;
+        gatheringUser.addUser(user);
         return gatheringUser;
     }
 
     public void addUser(User user) {
         this.user = user;
+        user.getGatheringUsers().add(this);
+    }
+
+    public void addGathering(Gathering gathering) {
+        this.gathering = gathering;
     }
 }

@@ -30,14 +30,21 @@ public class ChallengeUser extends BaseTimeEntity {
     private LocalDateTime attendanceDate;
     private double attendanceRate;
 
-    public static ChallengeUser create() {
+    public static ChallengeUser createChallengeUser(User user) {
         ChallengeUser challengeUser = new ChallengeUser();
         challengeUser.attendanceDate = null;
         challengeUser.attendanceRate = 0.0;
+        challengeUser.addUser(user);
         return challengeUser;
+    }
+
+    public void addChallenge(Challenge challenge) {
+        this.challenge = challenge;
+        challenge.getChallengeUsers().add(this);
     }
 
     public void addUser(User user) {
         this.user = user;
+        user.getChallengeUsers().add(this);
     }
 }
