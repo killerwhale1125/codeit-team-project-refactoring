@@ -5,11 +5,17 @@ import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.GetAccessTokenDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
+import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.repository.UserRepository;
+import com.gathering.user.util.AdminToken;
+import com.gathering.util.file.FileUtil;
 import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,16 +24,25 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+@RequiredArgsConstructor
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
     @Resource(name = "userRepository")
     private UserRepository userRepository;
+    @Resource
+    private AdminToken adminToken;
 
+    @Resource
+    private final RestTemplate restTemplate;
     @Value("${keycloak.accessToken}")
     private String tokenEndPoint;
     @Value("${keycloak.client.secret}")
     private String clientSecret;
+
+    @Value("${path.user.profile}")
+    private String serverPath;
+
     @Override
     public String getAccessToken(GetAccessTokenDto getAccessTokenDto){
 
@@ -85,5 +100,29 @@ public class UserServiceImpl implements UserService {
             userRepository.insertAttendance(userDto.getUsersId());
         }
         return userDto;
+    }
+
+    @Override
+    public int signUp(SignUpRequestDto signUpRequestDto, MultipartFile file) {
+
+        int result = 0;
+
+//        // 관리자 토큰 발행
+//        String token = adminToken.getAdminAccessToken();
+//
+//        // keycloak 사용자 추가
+//        boolean addKeycloak = adminToken.addUserKeyCloak(signUpRequestDto, token);
+
+        if(file != null) {
+            FileUtil fileUtil = new FileUtil();
+            fileUtil.FileUpload(serverPath, file);
+
+        }
+
+//        if(addKeycloak) {
+//            result = userRepository.signUp(signUpRequestDto, file);
+//        }
+
+        return result;
     }
 }

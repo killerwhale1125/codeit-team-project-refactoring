@@ -24,7 +24,6 @@ public class BaseExceptionControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public BaseResponse<BaseResponseStatus>  handleValidationExceptions(MethodArgumentNotValidException e) {
 
-
         return new BaseResponse<>(BaseResponseStatus.INVALID_REQUEST);
     }
 }

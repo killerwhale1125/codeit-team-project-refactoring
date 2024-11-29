@@ -19,7 +19,7 @@ public class UserAttendance {
     @Column(name = "ATNDC_ID")
     private long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "users_id")
     private User user;
 
     private Date createDate;
