@@ -2,6 +2,7 @@ package com.gathering.security.jwt;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.security.auth.PrincipalDetails;
@@ -21,6 +22,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
 
 /*
 * JWT 검증 필터
@@ -75,7 +78,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 String userName = jwtTokenValidator.getUserName(jwtToken);
                 // 서명이 정상적으로 됨
                 if(userName != null && jwtTokenValidator.validateToken(jwtToken)) {
-                    User userEntity = userJpaRepository.findByUserName(userName);
+                    User userEntity = userJpaRepository.findByUserName(userName).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
                     PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 
                     // 정상적인 유저이기에 뒤에 비밀번호 대신 null을 넣어서 강제적으로 객체를 만듬
