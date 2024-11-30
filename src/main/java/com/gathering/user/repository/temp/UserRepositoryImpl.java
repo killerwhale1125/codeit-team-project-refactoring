@@ -1,5 +1,6 @@
 package com.gathering.user.repository.temp;
 
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
@@ -9,6 +10,8 @@ import com.gathering.user.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.gathering.common.base.response.BaseResponseStatus.*;
 
 @Repository("userRepository")
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public UserDto selectUser(SignInRequestDto requestDto) {
 
-        User user = userJpaRepository.findByUserName(requestDto.userName());
+        User user = userJpaRepository.findByUserName(requestDto.userName()).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
 
         return UserDto.fromEntity(user);
     }
