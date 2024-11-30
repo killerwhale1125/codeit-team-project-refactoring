@@ -27,7 +27,7 @@ public class ChallengeUser extends BaseTimeEntity {
     @JoinColumn(name = "users_id")
     private User user;
 
-    private LocalDateTime attendanceDate;
+    private LocalDateTime attendanceDate;   // 출석 날짜
     private double attendanceRate;
 
     public static ChallengeUser createChallengeUser(User user) {

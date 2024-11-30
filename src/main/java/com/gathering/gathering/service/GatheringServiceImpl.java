@@ -8,7 +8,7 @@ import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
-import com.gathering.util.holder.DurationHolder;
+import com.gathering.util.holder.DateCalculateHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class GatheringServiceImpl implements GatheringService {
 
     private final GatheringRepository gatheringRepository;
     private final UserRepository userRepository;
-    private final DurationHolder durationHolder;
+    private final DateCalculateHolder dateCalculateHolder;
 
     /**
      * 모임 생성
@@ -28,7 +28,7 @@ public class GatheringServiceImpl implements GatheringService {
     @Override
     @Transactional
     public void create(GatheringCreate gatheringCreate, UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername());
+        User user = userRepository.findByUsername("test");
 
         // Challenge 생성 ( 양방향 관계 설정 )
         ChallengeUser challengeUser = ChallengeUser.createChallengeUser(user);
@@ -36,7 +36,7 @@ public class GatheringServiceImpl implements GatheringService {
 
         // Gathering 생성 ( 양방향 관계 설정 )
         GatheringUser gatheringUser = GatheringUser.createGatheringUser(user);
-        Gathering gathering = Gathering.createGathering(gatheringCreate, challenge, gatheringUser, durationHolder);
+        Gathering gathering = Gathering.createGathering(gatheringCreate, challenge, gatheringUser, dateCalculateHolder);
 
         gatheringRepository.save(gathering);
     }

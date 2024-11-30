@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +28,13 @@ public class Challenge extends BaseTimeEntity {
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL)
     private List<ChallengeUser> challengeUsers = new ArrayList<>();
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private ChallengeStatus challengeStatus;
 
-    private double completeRate;
-    private LocalDateTime endDateTime;
+    private double completeRate;    // 챌린지 달성률
+    private LocalDate endDateTime;  // 챌린지 종료일
 
-    public static Challenge createChallenge(LocalDateTime endDate, ChallengeUser challengeUsers) {
+    public static Challenge createChallenge(LocalDate endDate, ChallengeUser challengeUsers) {
         Challenge challenge = new Challenge();
         challenge.challengeStatus = ChallengeStatus.INACTIVE;
         challenge.completeRate = 0.0;
