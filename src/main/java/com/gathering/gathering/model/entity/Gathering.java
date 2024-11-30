@@ -31,13 +31,10 @@ public class Gathering extends BaseTimeEntity {
     private int maxCapacity;
     private int minCapacity;
 
-    @Enumerated(EnumType.STRING)
-    private GatheringType gatheringType;
-
     @Embedded
     private GatheringAddress gatheringAddress;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private GatheringStatus gatheringStatus;
 
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL)
@@ -50,7 +47,6 @@ public class Gathering extends BaseTimeEntity {
     public static Gathering createGathering(GatheringCreate gatheringCreate, Challenge challenge, GatheringUser gatheringUser, DurationHolder durationHolder) {
         Gathering gathering = new Gathering();
         gathering.name = gatheringCreate.getName();
-        gathering.gatheringType = gatheringCreate.getGatheringType();
         gathering.gatheringAddress = gatheringCreate.toAddress();
         gathering.content = gatheringCreate.getContent();
         gathering.endDateTime = gatheringCreate.getEndDate();

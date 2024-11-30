@@ -1,7 +1,6 @@
 package com.gathering.gathering.model.dto;
 
 import com.gathering.gathering.model.entity.GatheringAddress;
-import com.gathering.gathering.model.entity.GatheringType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GatheringCreate {
     private String name;    // 제목
-    private GatheringType gatheringType;
     private String state;
     private String city;
     private String town;
