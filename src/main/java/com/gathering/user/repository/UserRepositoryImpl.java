@@ -3,9 +3,11 @@ package com.gathering.user.repository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
+import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
 
@@ -31,4 +33,10 @@ public class UserRepositoryImpl implements UserRepository{
     public User findByUsername(String username) {
         return userJpaRepository.findByUserName(username).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
     }
+
+    @Override
+    public int signUp(SignUpRequestDto signUpRequestDto, MultipartFile file) {
+        return 0;
+    }
+
 }
