@@ -3,10 +3,9 @@ package com.gathering.user.model.entitiy;
 import com.gathering.challenge.model.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.GatheringUser;
+import com.gathering.user.model.dto.request.SignUpRequestDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
@@ -17,6 +16,8 @@ import java.util.List;
 @Getter
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class User extends BaseTimeEntity {
 
     @Id
@@ -32,7 +33,7 @@ public class User extends BaseTimeEntity {
     private Address address;
 
     @ColumnDefault("'USER'")
-    private String roles; // USER, ADMIN
+    private String roles = "USER"; // USER, ADMIN
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAttendance> userAttendances;
@@ -49,5 +50,16 @@ public class User extends BaseTimeEntity {
         }
 
         return new ArrayList<>();
+    }
+
+
+    public static User createUser(SignUpRequestDto dto) {
+        Address address = new Address(dto.getState(), dto.getCity(), dto.getTown());
+
+        return User.builder()
+                .userName(dto.getUserName())
+                .email(dto.getEmail())
+                .address(address)
+                .build();
     }
 }

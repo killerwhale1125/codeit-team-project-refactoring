@@ -19,6 +19,7 @@ public enum BaseResponseStatus {
     // User
     DUPLICATE_EMAIL(false, "DUPLICATE_EMAIL", "Duplicate email"),
     DUPLICATE_NICKNAME(false, "DUPLICATE_NICKNAME", "Duplicate nickname"),
+    DUPLICATE_USERNAME(false, "DUPLICATE_USERNAME", "Duplicate username"),
     NOT_EXISTED_USER(false, "NON_EXISTED_USER", "This user does not exist"),
     DATABASE_ERROR(false, "DATABASE_ERROR", "Database error"),
 

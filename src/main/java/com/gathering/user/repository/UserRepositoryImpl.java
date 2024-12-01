@@ -7,7 +7,8 @@ import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
 
@@ -35,8 +36,18 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public int signUp(SignUpRequestDto signUpRequestDto, MultipartFile file) {
-        return 0;
+    public void signUp(SignUpRequestDto signUpRequestDto) {
+        User user = User.createUser(signUpRequestDto);
+        userJpaRepository.save(user);
+    }
+
+    @Override
+    public boolean checkType(String param, boolean typeBol) {
+        Optional<User> user = typeBol ? userJpaRepository.findByEmail(param) : userJpaRepository.findByUserName(param);
+        if (user.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
 }

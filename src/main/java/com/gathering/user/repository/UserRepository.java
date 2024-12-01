@@ -4,7 +4,6 @@ import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.User;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface UserRepository {
     
@@ -17,6 +16,7 @@ public interface UserRepository {
     User findByUsername(String username);
 
     // 회원 가입
-    int signUp(SignUpRequestDto signUpRequestDto, MultipartFile file);
-
+    void signUp(SignUpRequestDto signUpRequestDto);
+    // 이메일/아이디 체크
+    boolean checkType(String param, boolean typeBol);
 }

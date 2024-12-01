@@ -59,10 +59,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         String jwtHeader = request.getHeader(header);
-
         // 요청 경로가 제외된 경로 리스트에 포함되면 필터를 거치지 않음
         String requestUri = request.getRequestURI();
-        if(excludePaths.contains(requestUri) || !requestUri.startsWith("/api")) {
+        // 경로가 제외 목록에 있는지 확인 (startWith 사용)
+        boolean isExcluded = excludePaths.stream()
+                .anyMatch(excludePath -> requestUri.startsWith(excludePath));
+
+        if(isExcluded || !requestUri.startsWith("/api")) {
             chain.doFilter(request, response);
             return;
         } else {

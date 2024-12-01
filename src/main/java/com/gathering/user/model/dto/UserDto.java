@@ -18,6 +18,7 @@ public class UserDto {
     private String email;
     private String profile;
     private String roles; // USER, ADMIN
+    private String token;
 
     // Entity -> DTO 변환 메서드
     public static UserDto fromEntity(User user) {
@@ -28,5 +29,13 @@ public class UserDto {
                 .profile(user.getProfile())
                 .roles(user.getRoles())
                 .build();
+    }
+
+    public UserDto(long usersId, String userName, String email, String profile, String roles) {
+        this.usersId = usersId;
+        this.userName = userName;
+        this.email = email;
+        this.profile = profile;
+        this.roles = roles;
     }
 }

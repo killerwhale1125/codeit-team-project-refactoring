@@ -6,5 +6,10 @@ import jakarta.validation.constraints.NotNull;
 public record SignInRequestDto(
         @NotNull
         @NotEmpty
-        String userName) {
+        String userName,
+
+        @NotNull
+        @NotEmpty
+        String password
+) {
 }
