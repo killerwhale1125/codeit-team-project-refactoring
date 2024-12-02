@@ -1,9 +1,11 @@
 package com.gathering.gathering.validator;
 
 import com.gathering.common.base.exception.BaseException;
+import org.springframework.stereotype.Component;
 
 import static com.gathering.common.base.response.BaseResponseStatus.*;
 
+@Component
 public class GatheringValidatorImpl implements GatheringValidator {
     @Override
     public void validateCapacity(int minCapacity, int maxCapacity) {
