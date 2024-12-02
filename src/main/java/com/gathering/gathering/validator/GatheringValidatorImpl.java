@@ -7,12 +7,6 @@ import static com.gathering.common.base.response.BaseResponseStatus.*;
 
 @Component
 public class GatheringValidatorImpl implements GatheringValidator {
-    @Override
-    public void validateCapacity(int minCapacity, int maxCapacity) {
-        if (minCapacity <= 0) throw new BaseException(INVALID_MIN_CAPACITY);
-        if (maxCapacity <= 0) throw new BaseException(INVALID_MAX_CAPACITY);
-        if (maxCapacity < minCapacity) throw new BaseException(INVALID_CAPACITY_RANGE);
-    }
 
     @Override
     public void validateCapacityLimit(int currentCapacity, int maxCapacity) {
@@ -24,5 +18,20 @@ public class GatheringValidatorImpl implements GatheringValidator {
     @Override
     public void validateOwner(Long ownerId, Long userId) {
         if(ownerId != userId) throw new BaseException(ACCESS_DENIED);
+    }
+
+    @Override
+    public boolean validateMinCapacity(int minCapacity) {
+        return minCapacity <= 0 ? false : true;
+    }
+
+    @Override
+    public boolean validateMaxCapacity(int maxCapacity) {
+        return maxCapacity <= 0 ? false : true;
+    }
+
+    @Override
+    public boolean validateCapacityRange(int minCapacity, int maxCapacity) {
+        return maxCapacity < minCapacity ? false : true;
     }
 }

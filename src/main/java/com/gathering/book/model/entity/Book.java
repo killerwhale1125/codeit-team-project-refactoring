@@ -22,4 +22,10 @@ public class Book extends BaseTimeEntity {
     private String image;
     private String publisher;
     private LocalDate publishDate;
+    private long selectedCount;
+
+    // 모임에 책이 선택될 때마다 카운트를 증가 ( Best 독서 모임 조회용 )
+    public void incrementSelectedCount() {
+        this.selectedCount++;
+    }
 }

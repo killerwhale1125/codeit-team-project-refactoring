@@ -84,7 +84,8 @@ public class GatheringController {
      */
     @GetMapping("/{gatheringId}/users")
     @Operation(summary = "모임 참여 상태에 따른 유저 조회", description = "모임 참여 상태에 따른 유저 조회 API (와이어 프레임 확인 후 데이터 추가 필요) 참여 상태 -> PARTICIPATING(참여 O), NOT_PARTICIPATING(참여 X)")
-    public BaseResponse<List<UserResponseDto>> findGatheringWithUsersByIdAndStatus(@PathVariable Long gatheringId, @RequestParam GatheringUserStatus gatheringUserStatus) {
+    public BaseResponse<List<UserResponseDto>> findGatheringWithUsersByIdAndStatus(@PathVariable Long gatheringId,
+                                                                                   @RequestParam GatheringUserStatus gatheringUserStatus) {
         return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus));
     }
 }

@@ -1,6 +1,7 @@
 package com.gathering.gathering.model.dto;
 
 import com.gathering.gathering.model.entity.GatheringAddress;
+import com.gathering.gathering.model.entity.GatheringStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +36,8 @@ public class GatheringCreate {
     private Long bookId;
     @NotNull
     private Long categoryId;
+    @NotNull
+    private GatheringStatus gatheringStatus;
 
     public GatheringAddress toAddress() {
         return new GatheringAddress(state, city, town);

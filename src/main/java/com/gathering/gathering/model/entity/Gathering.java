@@ -68,10 +68,11 @@ public class Gathering extends BaseTimeEntity {
         gathering.content = gatheringCreate.getContent();
         gathering.endDateTime = gatheringCreate.getEndDate();
         gathering.goalDays = dateCalculateHolder.calculateGoalDays(gatheringCreate.getGatheringDate(), gatheringCreate.getEndDate());
-        gatheringValidator.validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity());
+        // 최소 최대 인원수 검증
+        validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity(), gatheringValidator);
         gathering.maxCapacity = gatheringCreate.getMaxCapacity();
         gathering.minCapacity = gatheringCreate.getMinCapacity();
-        gathering.gatheringStatus = RECRUITING;
+        gathering.gatheringStatus = gatheringCreate.getGatheringStatus();
         gathering.book = book;
         gathering.currentCapacity = 1;
         gathering.ownerId = gatheringUser.getUser().getId();
@@ -80,6 +81,7 @@ public class Gathering extends BaseTimeEntity {
         return gathering;
     }
 
+    // 모임 참여
     public void join(long userId, GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
         // 이미 참여한 유저인지 검증
         isUserAlreadyJoined(userId);
@@ -91,6 +93,7 @@ public class Gathering extends BaseTimeEntity {
         checkIsFullAndUpdateStatus();
     }
 
+    // 모임 떠나기
     public void leave(User user) {
         GatheringUser gatheringUser = gatheringUsers.stream()
                 .filter(gu -> gu.getUser().getId() == user.getId())
@@ -126,6 +129,18 @@ public class Gathering extends BaseTimeEntity {
         if(gatheringUsers.stream()
                 .anyMatch(gatheringUser -> gatheringUser.getUser().getId() == userId)) {
             throw new BaseException(ALREADY_JOINED);
+        }
+    }
+
+    private static void validateCapacity(int minCapacity, int maxCapacity, GatheringValidator gatheringValidator) {
+        if (gatheringValidator.validateMinCapacity(minCapacity)) {
+            throw new BaseException(INVALID_MIN_CAPACITY);
+        }
+        if (gatheringValidator.validateMaxCapacity(maxCapacity)) {
+            throw new BaseException(INVALID_MAX_CAPACITY);
+        }
+        if (gatheringValidator.validateCapacityRange(minCapacity, maxCapacity)) {
+            throw new BaseException(INVALID_CAPACITY_RANGE);
         }
     }
     

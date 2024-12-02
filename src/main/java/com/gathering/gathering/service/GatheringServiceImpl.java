@@ -39,7 +39,7 @@ public class GatheringServiceImpl implements GatheringService {
     @Override
     @Transactional
     public void create(GatheringCreate gatheringCreate, UserDetails userDetails) {
-        User user = userRepository.findByUsername("test");
+        User user = userRepository.findByUsername(userDetails.getUsername());
 
         // Challenge 생성 ( 양방향 관계 설정 )
         ChallengeUser challengeUser = ChallengeUser.createChallengeUser(user);
@@ -55,6 +55,9 @@ public class GatheringServiceImpl implements GatheringService {
                 gatheringUser,
                 dateCalculateHolder,
                 gatheringValidator);
+        
+        // 책 선택 횟수 증가
+        book.incrementSelectedCount();
 
         gatheringRepository.save(gathering);
     }
