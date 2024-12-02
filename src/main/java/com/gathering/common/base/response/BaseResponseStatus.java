@@ -15,6 +15,7 @@ public enum BaseResponseStatus {
     TOKEN_ISEMPTY(false, "TOKEN_ISEMPTY", "JWT claims string is empty"),
     TOKEN_PARSE_ERROR(false, "TOKEN_PARSE_ERROR", "Unexpected JWT parsing error"),
     SIGN_IN_FAIL(false, "SIGN_IN_FAIL", "Login information mismatch"),
+    ACCESS_DENIED(false, "ACCESS_DENIED", "You do not have permission to access this resource"),
 
     // User
     DUPLICATE_EMAIL(false, "DUPLICATE_EMAIL", "Duplicate email"),
@@ -33,6 +34,7 @@ public enum BaseResponseStatus {
     INVALID_MIN_CAPACITY(false, "INVALID_MIN_CAPACITY", "The minimum capacity must be at least 1"),
     INVALID_MAX_CAPACITY(false, "INVALID_MAX_CAPACITY", "The maximum capacity must be at least 1"),
     INVALID_CAPACITY_RANGE(false, "INVALID_CAPACITY_RANGE", "The maximum capacity must be greater than or equal to the minimum capacity"),
+    BOOK_OR_CATEGORY_NOT_FOUND(false, "BOOK_OR_CATEGORY_NOT_FOUND", "The specified book or category could not be found"),
 
     // Other
     UNKNOWN_ERROR(false, "UNKNOWN_ERROR", "Unknown error"),

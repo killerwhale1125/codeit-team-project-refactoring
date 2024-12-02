@@ -31,6 +31,10 @@ public class GatheringCreate {
     private int minCapacity;
     @Min(1)  // 최소 1명 이상
     private int maxCapacity;
+    @NotNull
+    private Long bookId;
+    @NotNull
+    private Long categoryId;
 
     public GatheringAddress toAddress() {
         return new GatheringAddress(state, city, town);
