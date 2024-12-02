@@ -62,7 +62,7 @@ public class GatheringController {
     /**
      * TODO - 참여 클릭 시 동시성 제어 추후 필요
      */
-    @PostMapping("/join/{gathering_id}")
+    @PostMapping("/leave/{gathering_id}")
     @Operation(summary = "모임 떠나기", description = "모임 떠나기 API (와이어 프레임 확인 후 데이터 추가 필요)")
     public BaseResponse<Void> leave(@PathVariable Long gatheringId,
                                     GatheringUserStatus gatheringUserStatus,
