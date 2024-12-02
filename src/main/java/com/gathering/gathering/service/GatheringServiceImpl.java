@@ -10,6 +10,7 @@ import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
+import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
@@ -30,6 +31,7 @@ public class GatheringServiceImpl implements GatheringService {
     private final UserRepository userRepository;
     private final DateCalculateHolder dateCalculateHolder;
     private final BookRepository bookRepository;
+    private final GatheringValidator gatheringValidator;
 
     /**
      * 모임 생성
@@ -46,7 +48,13 @@ public class GatheringServiceImpl implements GatheringService {
         // Gathering 생성 ( 양방향 관계 설정 )
         Book book = bookRepository.findBookByBookIdAndCategoryId(gatheringCreate.getBookId(), gatheringCreate.getCategoryId());
         GatheringUser gatheringUser = GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING);
-        Gathering gathering = Gathering.createGathering(gatheringCreate, challenge, book, gatheringUser, dateCalculateHolder);
+        Gathering gathering = Gathering.createGathering(
+                gatheringCreate,
+                challenge,
+                book,
+                gatheringUser,
+                dateCalculateHolder,
+                gatheringValidator);
 
         gatheringRepository.save(gathering);
     }
@@ -63,26 +71,42 @@ public class GatheringServiceImpl implements GatheringService {
      * 모임 참여
      */
     @Override
+    @Transactional
     public void join(Long gatheringId, String userName) {
         User user = userRepository.findByUsername(userName);
         GatheringUser gatheringUser = GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING);
-        gatheringRepository.getById(gatheringId).join(user.getId(), gatheringUser);
+        gatheringRepository.getById(gatheringId).join(user.getId(), gatheringUser, gatheringValidator);
     }
 
     /**
      * 모임 삭제
      */
     @Override
+    @Transactional
     public void delete(Long gatheringId, String userName) {
         User user = userRepository.findByUsername(userName);
         Gathering gathering = gatheringRepository.getById(gatheringId);
-        gathering.validateOwner(user.getId());
+        gatheringValidator.validateOwner(gathering.getOwnerId(), user.getId());
         gatheringRepository.delete(gathering);
     }
 
+    /**
+     * 모임 떠나기
+     */
+    @Override
+    @Transactional
+    public void leave(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus) {
+        Gathering gathering = gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus);
+        User user = userRepository.findByUsername(username);
+        gathering.leave(user);
+    }
+
+    /**
+     * 모임 참여 상태에 따른 유저 조회
+     */
     @Override
     public List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringUserStatus) {
-        return gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus).stream()
+        return gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus).getGatheringUsers().stream()
                 .map(gatheringUser -> UserResponseDto.fromEntity(gatheringUser.getUser()))
                 .collect(Collectors.toList());
     }

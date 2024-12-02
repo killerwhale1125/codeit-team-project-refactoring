@@ -5,6 +5,8 @@ import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.gathering.validator.GatheringValidator;
+import com.gathering.user.model.entitiy.User;
 import com.gathering.util.holder.DateCalculateHolder;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.gathering.common.base.response.BaseResponseStatus.*;
+import static com.gathering.gathering.model.entity.GatheringStatus.*;
 
 @Getter
 @Entity
@@ -53,64 +56,98 @@ public class Gathering extends BaseTimeEntity {
     @JoinColumn(name = "book_Id")
     private Book book;
 
-    public static Gathering createGathering(GatheringCreate gatheringCreate, Challenge challenge, Book book, GatheringUser gatheringUser, DateCalculateHolder dateCalculateHolder) {
+    public static Gathering createGathering(GatheringCreate gatheringCreate,
+                                            Challenge challenge,
+                                            Book book,
+                                            GatheringUser gatheringUser,
+                                            DateCalculateHolder dateCalculateHolder,
+                                            GatheringValidator gatheringValidator) {
         Gathering gathering = new Gathering();
         gathering.name = gatheringCreate.getName();
         gathering.gatheringAddress = gatheringCreate.toAddress();
         gathering.content = gatheringCreate.getContent();
         gathering.endDateTime = gatheringCreate.getEndDate();
         gathering.goalDays = dateCalculateHolder.calculateGoalDays(gatheringCreate.getGatheringDate(), gatheringCreate.getEndDate());
-        validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity());
+        gatheringValidator.validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity());
         gathering.maxCapacity = gatheringCreate.getMaxCapacity();
         gathering.minCapacity = gatheringCreate.getMinCapacity();
-        gathering.gatheringStatus = GatheringStatus.RECRUITING;
+        gathering.gatheringStatus = RECRUITING;
         gathering.book = book;
         gathering.currentCapacity = 1;
         gathering.ownerId = gatheringUser.getUser().getId();
         gathering.addChallenge(challenge);
-        gathering.addGatheringUser(gatheringUser);
+        gathering.addGatheringUser(gatheringUser, gatheringValidator);
         return gathering;
     }
 
-    public static void validateCapacity(int minCapacity, int maxCapacity) {
-        if (minCapacity <= 0) throw new BaseException(INVALID_MIN_CAPACITY);
-        if (maxCapacity <= 0) throw new BaseException(INVALID_MAX_CAPACITY);
-        if (maxCapacity < minCapacity) throw new BaseException(INVALID_CAPACITY_RANGE);
+    public void join(long userId, GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
+        // 이미 참여한 유저인지 검증
+        isUserAlreadyJoined(userId);
+        // 모임 상태가 참여할 수 있는 상태인지 검증
+        validateGatheringStatus();
+        addGatheringUser(gatheringUser, gatheringValidator);
+        increaseCurrentCapacity();
+        // 인원 FULL일 경우 모집완료 상태 변경
+        checkIsFullAndUpdateStatus();
     }
 
-    public void addGatheringUser(GatheringUser gatheringUser) {
-        // 인원 수 검사
-        if(validateCapacityLimit()) throw new BaseException(EXCEEDS_CAPACITY);
+    public void leave(User user) {
+        GatheringUser gatheringUser = gatheringUsers.stream()
+                .filter(gu -> gu.getUser().getId() == user.getId())
+                .findFirst()
+                .orElseThrow(() -> new BaseException(USER_NOT_IN_GATHERING));
 
+        gatheringUsers.remove(gatheringUser);  // 모임의 참여자 리스트에서 유저 제거
+
+        // 현재 인원 수 감소
+        decreaseCurrentCapacity();
+
+        // 정원이 채워졌다면 모집 중으로 변경)
+        if (this.currentCapacity < this.maxCapacity && this.gatheringStatus == FULL) {
+            this.gatheringStatus = RECRUITING;
+        }
+    }
+
+    // 모임 유저 추가
+    private void addGatheringUser(GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
+        gatheringValidator.validateCapacityLimit(this.currentCapacity, maxCapacity);
         gatheringUsers.add(gatheringUser);
         gatheringUser.addGathering(this);
     }
 
-    public void addChallenge(Challenge challenge) {
+    // 모임에 챌린지 추가
+    private void addChallenge(Challenge challenge) {
         this.challenge = challenge;
         challenge.addGathering(this);
     }
-    
-    // 모집 인원 제한 검증
-    public boolean validateCapacityLimit() {
-        return this.currentCapacity + 1 > maxCapacity ? false : true;
-    }
 
     // 유저가 모임에 참여중인지 검증
-    public void isUserAlreadyJoined(long userId) {
+    private void isUserAlreadyJoined(long userId) {
         if(gatheringUsers.stream()
                 .anyMatch(gatheringUser -> gatheringUser.getUser().getId() == userId)) {
             throw new BaseException(ALREADY_JOINED);
         }
     }
-
-    public void join(long userId, GatheringUser gatheringUser) {
-        // 이미 참여한 유저인지 검증
-        isUserAlreadyJoined(userId);
-        addGatheringUser(gatheringUser);
+    
+    // 모임의 상태 검증
+    private void validateGatheringStatus() {
+        this.gatheringStatus.validate();
     }
 
-    public void validateOwner(Long userId) {
-        if(this.ownerId != userId) throw new BaseException(ACCESS_DENIED);
+    // 모임 인원 수 증가
+    private void increaseCurrentCapacity() {
+        this.currentCapacity++;
+    }
+
+    // 모임 인원 수 감소
+    private void decreaseCurrentCapacity() {
+        this.currentCapacity--;
+    }
+
+    // 모임 상태 변화
+    private void checkIsFullAndUpdateStatus() {
+        if (this.currentCapacity >= this.maxCapacity) {
+            this.gatheringStatus = FULL;
+        }
     }
 }

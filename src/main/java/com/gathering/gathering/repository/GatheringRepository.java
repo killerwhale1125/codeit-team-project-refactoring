@@ -16,5 +16,5 @@ public interface GatheringRepository {
 
     void delete(Gathering gathering);
 
-    List<GatheringUser> findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringStatus);
+    Gathering findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringStatus);
 }

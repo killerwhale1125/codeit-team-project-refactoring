@@ -3,7 +3,6 @@ package com.gathering.gathering.controller;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringResponse;
-import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.service.GatheringService;
 import com.gathering.user.model.dto.response.UserResponseDto;
@@ -57,6 +56,18 @@ public class GatheringController {
     public BaseResponse<Void> join(@PathVariable Long gatheringId,
                                    @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.join(gatheringId, userDetails.getUsername());
+        return new BaseResponse<>();
+    }
+
+    /**
+     * TODO - 참여 클릭 시 동시성 제어 추후 필요
+     */
+    @PostMapping("/join/{gathering_id}")
+    @Operation(summary = "모임 떠나기", description = "모임 떠나기 API (와이어 프레임 확인 후 데이터 추가 필요)")
+    public BaseResponse<Void> leave(@PathVariable Long gatheringId,
+                                    GatheringUserStatus gatheringUserStatus,
+                                   @AuthenticationPrincipal UserDetails userDetails) {
+        gatheringService.leave(gatheringId, userDetails.getUsername(), gatheringUserStatus);
         return new BaseResponse<>();
     }
 
