@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
+import static com.gathering.security.jwt.JwtTokenUtil.extractUsername;
+import static com.gathering.security.jwt.JwtTokenUtil.validateToken;
 
 /*
 * JWT 검증 필터
@@ -33,14 +35,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     public static final String header = "Authorization";
     public static final String tokenPrefix = "Bearer ";
     private UserJpaRepository userJpaRepository;
-    private JwtTokenValidator jwtTokenValidator;
     private List<String> excludePaths;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository, JwtTokenValidator jwtTokenValidator, List<String> excludePaths) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository, List<String> excludePaths) {
         super(authenticationManager);
         this.userJpaRepository = userJpaRepository;
-        this.jwtTokenValidator = jwtTokenValidator;
         this.excludePaths = excludePaths;
     }
 
@@ -49,7 +49,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON.toString());
         response.setCharacterEncoding(String.valueOf(StandardCharsets.UTF_8));
-        BaseResponse<String> errorResponse = new BaseResponse<>(BaseResponseStatus.AUTHORIZATION_FAIL);
+        BaseResponse<String> errorResponse = new BaseResponse<>(BaseResponseStatus.TOKEN_ISEMPTY);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
 
     }
@@ -61,10 +61,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtHeader = request.getHeader(header);
         // 요청 경로가 제외된 경로 리스트에 포함되면 필터를 거치지 않음
         String requestUri = request.getRequestURI();
-        // 경로가 제외 목록에 있는지 확인 (startWith 사용)
+        // 경로가 제외 목록에 있는지 확인
         boolean isExcluded = excludePaths.stream()
-                .anyMatch(excludePath -> requestUri.startsWith(excludePath));
-
+                .anyMatch(requestUri::equals);
         if(isExcluded || !requestUri.startsWith("/api")) {
             chain.doFilter(request, response);
             return;
@@ -78,9 +77,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
             try {
                 String jwtToken = request.getHeader(header).replace(tokenPrefix, "");
-                String userName = jwtTokenValidator.getUserName(jwtToken);
+                String userName = extractUsername(jwtToken);
                 // 서명이 정상적으로 됨
-                if(userName != null && jwtTokenValidator.validateToken(jwtToken)) {
+                if(userName != null && validateToken(jwtToken)) {
                     User userEntity = userJpaRepository.findByUserName(userName).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
                     PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 
@@ -97,6 +96,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     FailedAuthorization(response);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 FailedAuthorization(response);
             }
 

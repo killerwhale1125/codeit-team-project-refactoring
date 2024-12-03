@@ -23,15 +23,15 @@ public class SwaggerConfig {
                 .bearerFormat(jwt)
         );
         return new OpenAPI()
-                .components(new Components())
                 .info(apiInfo())
-                .addSecurityItem(securityRequirement)
+                .addSecurityItem(securityRequirement)  // 글로벌 보안 설정
                 .components(components);
     }
+
     private Info apiInfo() {
         return new Info()
-                .title("Codeit4") // API의 제목
-                .description("codeit-4-swagger") // API에 대한 설명
-                .version("1.0.0"); // API의 버전
+                .title("Codeit4")
+                .description("codeit-4-swagger")
+                .version("1.0.0");
     }
 }

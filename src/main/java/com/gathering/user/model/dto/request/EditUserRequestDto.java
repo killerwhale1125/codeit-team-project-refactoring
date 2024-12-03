@@ -1,12 +1,11 @@
 package com.gathering.user.model.dto.request;
 
-import com.gathering.common.base.jpa.BaseTimeEntity;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class SignUpRequestDto extends BaseTimeEntity {
+public class EditUserRequestDto {
+
 
     @NotEmpty
     private String userName;

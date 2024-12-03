@@ -7,10 +7,9 @@ import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 
 public interface UserService {
-    String getAccessToken(GetAccessTokenDto getAccessTokenDto) throws BaseException;
-
     UserDto sginIn(SignInRequestDto requestDto);
 
     void signUp(SignUpRequestDto signUpRequestDto);
     boolean checkType(String param, boolean typeBol);
+    UserDto selectUserInfo(String username);
 }

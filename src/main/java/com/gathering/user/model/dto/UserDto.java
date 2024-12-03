@@ -19,12 +19,14 @@ public class UserDto {
     private String profile;
     private String roles; // USER, ADMIN
     private String token;
+    private String password;
 
     // Entity -> DTO 변환 메서드
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
                 .usersId(user.getId())
                 .userName(user.getUserName())
+                .password(user.getPassword())
                 .email(user.getEmail())
                 .profile(user.getProfile())
                 .roles(user.getRoles())

@@ -7,6 +7,7 @@ import com.gathering.user.model.dto.request.SignUpRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,17 +24,26 @@ public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
+    @Comment("사용자 pk")
     private long id;
+
+    @Column(unique = true)
+    @Comment("사용자 아이디")
     private String userName;
+    
+    @Comment("비밀번호")
+    private String password;
+
+    @Column(unique = true)
+    @Comment("이메일")
     private String email;
-    private String company;
+
+    @Comment("프로필")
     private String profile;
 
-    @Embedded
-    private Address address;
-
     @ColumnDefault("'USER'")
-    private String roles = "USER"; // USER, ADMIN
+    @Comment("권한")
+    private String roles; // USER, ADMIN
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAttendance> userAttendances;
@@ -54,12 +64,11 @@ public class User extends BaseTimeEntity {
 
 
     public static User createUser(SignUpRequestDto dto) {
-        Address address = new Address(dto.getState(), dto.getCity(), dto.getTown());
-
         return User.builder()
+                .roles("USER")
                 .userName(dto.getUserName())
+                .password(dto.getPassword())
                 .email(dto.getEmail())
-                .address(address)
                 .build();
     }
 }

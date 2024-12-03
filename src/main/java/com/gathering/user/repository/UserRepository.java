@@ -8,7 +8,7 @@ import com.gathering.user.model.entitiy.User;
 public interface UserRepository {
     
     // 사용자 정보 조회
-    UserDto selectUser(SignInRequestDto requestDto);
+    UserDto selectUser(String userName);
 
     // 출석 체크
     int insertAttendance(long usersId);
@@ -19,4 +19,5 @@ public interface UserRepository {
     void signUp(SignUpRequestDto signUpRequestDto);
     // 이메일/아이디 체크
     boolean checkType(String param, boolean typeBol);
+
 }

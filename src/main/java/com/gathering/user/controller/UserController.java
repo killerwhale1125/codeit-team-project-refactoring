@@ -13,13 +13,23 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+
+import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auths")
 @RequiredArgsConstructor
 @Tag(name = "사용자 API", description = "사용자 응답 관련 api")
 @ApiResponse(responseCode = "200", description = "success")
@@ -27,15 +37,15 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
 
-    @Resource(name = "userService")
     private final UserService userService;
 
     @RequestMapping(value = "/getAccessToken", method = RequestMethod.POST)
-    @Operation(summary = "토큰 발급(임시)", description = "개발을 위한 토큰 발급 api 실제 프론트 구현시 프론트에서 직접 발급 필요")
+    @Operation(summary = "토큰 발급(임시)", description = "개발용 토큰 발급 api")
     public BaseResponse<String> getAccessToken(
             @RequestBody GetAccessTokenDto getAccessTokenDto
             ){
-        String accessToken = userService.getAccessToken(getAccessTokenDto);
+//        String accessToken = userService.getAccessToken(getAccessTokenDto);
+        String accessToken = generateToken(getAccessTokenDto.getUserId());
         return new BaseResponse<>(accessToken);
     }
 
@@ -43,15 +53,20 @@ public class UserController {
     @Operation(summary = "로그인", description = "사용자 로그인")
     public BaseResponse<UserDto> signIn(
             @Valid @RequestBody SignInRequestDto requestDto) {
-        // 토큰 발급
-        GetAccessTokenDto getAccessTokenDto= new GetAccessTokenDto();
-        getAccessTokenDto.setUserId(requestDto.userName());
-        getAccessTokenDto.setPassword(requestDto.password());
-        String accessToken = userService.getAccessToken(getAccessTokenDto);
 
         UserDto userDto = userService.sginIn(requestDto);
-        userDto.setToken(accessToken);
-        return new BaseResponse<>(userDto);
+        // 토큰 발급
+        if(userDto != null) {
+            GetAccessTokenDto getAccessTokenDto= new GetAccessTokenDto();
+            getAccessTokenDto.setUserId(requestDto.userName());
+            getAccessTokenDto.setPassword(requestDto.password());
+            String accessToken = generateToken(getAccessTokenDto.getUserId());
+
+            userDto.setToken(accessToken);
+            return new BaseResponse<>(userDto);
+        }
+
+        return new BaseResponse<>(BaseResponseStatus.AUTHORIZATION_FAIL);
     }
 
     @RequestMapping(value = "/signUp", method = RequestMethod.POST)
@@ -88,5 +103,45 @@ public class UserController {
             return new BaseResponse<>();
         }
         return new BaseResponse<>(typeBol ? BaseResponseStatus.DUPLICATE_EMAIL : BaseResponseStatus.DUPLICATE_USERNAME);
+    }
+
+    @RequestMapping(value = "/signout", method = RequestMethod.POST)
+    @Operation(summary = "사용자 로그아웃", description = "사용자 로그아웃 ")
+    public BaseResponse<Void> signout(
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request, HttpServletResponse response
+    ) {
+
+        // 로그아웃 처리
+        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        logoutHandler.logout(request, response, null);  // 로그아웃 처리
+
+        // 필요 시 세션 무효화
+        request.getSession().invalidate();
+        return new BaseResponse<>();
+    }
+
+    /*
+    * TODO - 참여 모임 , 작성한 리뷰 등 모임 관련 내용 추가 핋요
+    * */
+    @RequestMapping(value = "/myprofile", method = RequestMethod.GET)
+    @Operation(summary = "마이 프로필", description = "사용자 정보 제공")
+    public BaseResponse<Void> myprofile(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        UserDto userDto = userService.selectUserInfo(userDetails.getUsername());
+        
+        return new BaseResponse<>();
+    }
+
+    @RequestMapping(value = "/edit/user", method = RequestMethod.PUT)
+    @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정")
+    public BaseResponse<Void> editUser(
+            @RequestPart("data") @Valid SignUpRequestDto signUpRequestDto,   // JSON 데이터
+            @RequestPart(value = "file" ,required = false) MultipartFile file
+    ) {
+
+        return new BaseResponse<>();
     }
 }
