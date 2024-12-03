@@ -26,7 +26,7 @@ public class Challenge extends BaseTimeEntity {
     @Column(name = "challenge_id")
     private Long id;
 
-    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "challenge")
     private Gathering gathering;
 
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,12 +63,12 @@ public class Challenge extends BaseTimeEntity {
         challenge.addChallengeUser(challengeUser);
     }
 
-    public void addChallengeUser(ChallengeUser challengeUser) {
+    private void addChallengeUser(ChallengeUser challengeUser) {
         challengeUsers.add(challengeUser);
         challengeUser.addChallenge(this);
     }
 
-    public void addGathering(Gathering gathering) {
+    private void addGathering(Gathering gathering) {
         this.gathering = gathering;
     }
 }

@@ -119,7 +119,6 @@ public class Gathering extends BaseTimeEntity {
     // 모임에 챌린지 추가
     private void addChallenge(Challenge challenge) {
         this.challenge = challenge;
-//        challenge.addGathering(this);
     }
 
     // 유저가 모임에 참여중인지 검증

@@ -20,11 +20,6 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     }
 
     @Override
-    public Gathering getGatheringByGatheringId(Long gatheringId) {
-        return gatheringJpaRepository.findById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
-    }
-
-    @Override
     public Gathering getById(Long gatheringId) {
         return gatheringJpaRepository.findById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
@@ -38,5 +33,10 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     public Gathering findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringUserStatus) {
         return gatheringJpaRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+    }
+
+    @Override
+    public Gathering getGatheringAndGatheringUsersById(Long gatheringId) {
+        return gatheringJpaRepository.getGatheringAndGatheringUsersById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
 }

@@ -2,8 +2,10 @@ package com.gathering.gathering.model.dto;
 
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,9 +16,6 @@ public class GatheringResponse {
 
     private Long id;
     private String name;
-    private String state;
-    private String city;
-    private String town;
     private String content;
     private long goalDays;
     private LocalDate endDate;

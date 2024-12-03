@@ -6,7 +6,6 @@ import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challenge.model.entity.ChallengeUser;
 import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.gathering.model.dto.GatheringCreate;
-import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
@@ -62,7 +61,7 @@ public class GatheringServiceImpl implements GatheringService {
     @Transactional
     public void join(Long gatheringId, String userName) {
         User user = userRepository.findByUsername(userName);
-        Gathering gathering = gatheringRepository.getById(gatheringId);
+        Gathering gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
         Gathering.join(gathering, user, GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING), gatheringValidator);
         Challenge.join(gathering.getChallenge(), ChallengeUser.createChallengeUser(user));
     }
@@ -75,8 +74,11 @@ public class GatheringServiceImpl implements GatheringService {
     public void leave(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus) {
         Gathering gathering = gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus);
         User user = userRepository.findByUsername(username);
-        Challenge.leave(gathering.getChallenge(), user);
+
         Gathering.leave(gathering, user);
+
+        Challenge challenge = challengeRepository.getChallengeUsersById(gathering.getChallenge().getId());
+        Challenge.leave(challenge, user);
     }
 
     /**
@@ -89,14 +91,6 @@ public class GatheringServiceImpl implements GatheringService {
         Gathering gathering = gatheringRepository.getById(gatheringId);
         gatheringValidator.validateOwner(gathering.getOwnerId(), user.getId());
         gatheringRepository.delete(gathering);
-    }
-
-    /**
-     * 모임 상세 조회
-     */
-    @Override
-    public GatheringResponse getGatheringByGatheringId(Long gatheringId) {
-        return GatheringResponse.fromEntity(gatheringRepository.getGatheringByGatheringId(gatheringId));
     }
 
     /**

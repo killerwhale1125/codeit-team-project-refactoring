@@ -3,10 +3,8 @@ package com.gathering.gathering.controller;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringRequest;
-import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.service.GatheringService;
-import com.gathering.security.auth.PrincipalDetails;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,15 +36,6 @@ public class GatheringController {
     public BaseResponse<Void> create(@RequestBody @Valid GatheringCreate gatheringCreate, @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.create(gatheringCreate, userDetails.getUsername());
         return new BaseResponse<>();
-    }
-
-    /**
-     * TODO - Challenge 정보 추가 여부 보류
-     */
-    @GetMapping("/details/{gatheringId}")
-    @Operation(summary = "모임 상세 조회", description = "모임 상세 조회 API, Challenge 정보 추가 여부 보류 (와이어 프레임 확인 후 데이터 추가 필요)")
-    public BaseResponse<GatheringResponse> getGatheringByGatheringId(@PathVariable Long gatheringId) {
-        return new BaseResponse<>(gatheringService.getGatheringByGatheringId(gatheringId));
     }
 
     /**

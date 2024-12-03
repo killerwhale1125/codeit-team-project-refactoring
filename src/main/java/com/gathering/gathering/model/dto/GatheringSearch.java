@@ -6,20 +6,16 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Getter
 @Builder
 public class GatheringSearch {
-    private int page;
-    private int size;
-    private long categoryId;
+    private GatheringSortType gatheringSortType;
+    private Long categoryId;
     private String bookTitle;
-    private String state;
-    private String city;
-    private String town;
     private LocalDate startDate;
     private LocalDate endDate;
-    private long goalTime;
-    private GatheringSortType gatheringSortType;
+    private Long goalTime;
     private GatheringStatus gatheringStatus;
 }

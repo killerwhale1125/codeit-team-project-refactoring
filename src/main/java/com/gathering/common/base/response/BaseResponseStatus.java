@@ -26,6 +26,7 @@ public enum BaseResponseStatus {
 
     // Gathering & CHALLENGE
     NON_EXISTED_GATHERING(false, "NON_EXISTED_GATHERING", "This gathering does not exist"),
+    NON_EXISTED_CHALLENGE(false, "NON_EXISTED_CHALLENGE", "This challenge does not exist"),
     EXCEEDS_CAPACITY(false, "EXCEEDS_CAPACITY", "The gathering exceeds the capacity limit"),
     ALREADY_JOINED(false, "ALREADY_JOINED", "You are already a member of this gathering"),
     GATHERING_FULL(false, "GATHERING_FULL", "The gathering has reached its maximum capacity and cannot accept new participants."),
