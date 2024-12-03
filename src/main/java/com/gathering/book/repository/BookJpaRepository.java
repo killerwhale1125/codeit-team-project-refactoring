@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface BookJpaRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b JOIN BookCategory bc ON b.id = bc.book.id WHERE b.id = :bookId AND bc.category.id = :categoryId")
     Optional<Book> findBookByBookIdAndCategoryId(@Param("bookId") Long bookId, @Param("categoryId") Long categoryId);
+
+    boolean existsByTitle(String title);
 }

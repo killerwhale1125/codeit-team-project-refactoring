@@ -1,13 +1,16 @@
 package com.gathering.gathering.controller;
 
 import com.gathering.common.base.response.BaseResponse;
+import com.gathering.gathering.model.dto.GatheringResponse;
+import com.gathering.gathering.model.dto.GatheringSearch;
+import com.gathering.gathering.service.GatheringSearchService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,4 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "모임 관련 검색 API", description = "모임 관련 검색 api")
 @ApiResponse(responseCode = "200", description = "success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseResponse.class)))
 public class GatheringSearchController {
+
+    private final GatheringSearchService gatheringSearchService;
+
+    /**
+     * 모임 상태에 따른 모임 리스트 조회
+     * - 날짜 ( 시작일, 종료일 ) -> 유효성 검증 필요
+     * - 목표 독서 시간 ( 1 ~ 12 시간 )
+     * - 정렬 기준 -> 마감 임박, 참여 인원, 조회수, 신규 모임 순
+     *
+     * TODO - 필터가 아예 설정되지 않을 경우 Default값은?
+     */
+    @GetMapping
+    @Operation(summary = "모임 필터링 검색", description = "모임 필터링 검색 (와이어 프레임 확인 후 데이터 추가 필요)")
+    public BaseResponse<GatheringResponse> findGatherings(@ModelAttribute GatheringSearch gatheringSearch) {
+        gatheringSearchService.findGatherings(gatheringSearch);
+        return null;
+    }
 }

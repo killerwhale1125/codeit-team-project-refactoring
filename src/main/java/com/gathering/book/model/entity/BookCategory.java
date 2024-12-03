@@ -23,4 +23,15 @@ public class BookCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    public static BookCategory createBookCategory(Category category) {
+        BookCategory bookCategory = new BookCategory();
+        bookCategory.category = category;
+        category.getBookCategories().add(bookCategory);
+        return bookCategory;
+    }
+
+    public void addBook(Book book) {
+        this.book = book;
+    }
 }

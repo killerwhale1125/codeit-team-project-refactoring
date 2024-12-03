@@ -38,6 +38,7 @@ public class Gathering extends BaseTimeEntity {
     private int minCapacity;
     private int currentCapacity;
     private long ownerId;
+    private long viewCount;
 
     @Embedded
     private GatheringAddress gatheringAddress;
@@ -45,10 +46,10 @@ public class Gathering extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private GatheringStatus gatheringStatus;
 
-    @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
 
@@ -82,33 +83,34 @@ public class Gathering extends BaseTimeEntity {
     }
 
     // 모임 참여
-    public void join(long userId, GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
+    public static void join(Gathering gathering, User user,GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
         // 이미 참여한 유저인지 검증
-        isUserAlreadyJoined(userId);
+        gathering.isUserAlreadyJoined(user.getId());
         // 모임 상태가 참여할 수 있는 상태인지 검증
-        validateGatheringStatus();
-        addGatheringUser(gatheringUser, gatheringValidator);
-        increaseCurrentCapacity();
+        gathering.validateGatheringStatus();
+        gathering.addGatheringUser(gatheringUser, gatheringValidator);
+        gathering.increaseCurrentCapacity();
         // 인원 FULL일 경우 모집완료 상태 변경
-        checkIsFullAndUpdateStatus();
+        gathering.checkIsFullAndUpdateStatus();
     }
 
     // 모임 떠나기
-    public void leave(User user) {
+    public static void leave(Gathering gathering, User user) {
+        List<GatheringUser> gatheringUsers = gathering.getGatheringUsers();
         GatheringUser gatheringUser = gatheringUsers.stream()
                 .filter(gu -> gu.getUser().getId() == user.getId())
                 .findFirst()
                 .orElseThrow(() -> new BaseException(USER_NOT_IN_GATHERING));
 
-        gatheringUsers.remove(gatheringUser);  // 모임의 참여자 리스트에서 유저 제거
+        if(gatheringUser.getUser().getId() == gathering.getOwnerId())
+            throw new BaseException(HOST_CANNOT_LEAVE_GATHERING);
 
+        // 모임의 참여자 리스트에서 유저 제거
+        gatheringUsers.remove(gatheringUser);
         // 현재 인원 수 감소
-        decreaseCurrentCapacity();
-
+        gathering.decreaseCurrentCapacity();
         // 정원이 채워졌다면 모집 중으로 변경)
-        if (this.currentCapacity < this.maxCapacity && this.gatheringStatus == FULL) {
-            this.gatheringStatus = RECRUITING;
-        }
+        gathering.checkIsFullAndUpdateStatus();
     }
 
     // 모임 유저 추가
@@ -121,7 +123,7 @@ public class Gathering extends BaseTimeEntity {
     // 모임에 챌린지 추가
     private void addChallenge(Challenge challenge) {
         this.challenge = challenge;
-        challenge.addGathering(this);
+//        challenge.addGathering(this);
     }
 
     // 유저가 모임에 참여중인지 검증
@@ -159,10 +161,18 @@ public class Gathering extends BaseTimeEntity {
         this.currentCapacity--;
     }
 
+    public void increaseViewCount(long viewCount) {
+        this.viewCount += viewCount;
+    }
+
     // 모임 상태 변화
     private void checkIsFullAndUpdateStatus() {
         if (this.currentCapacity >= this.maxCapacity) {
             this.gatheringStatus = FULL;
+        }
+
+        if (this.currentCapacity < this.maxCapacity && this.gatheringStatus == FULL) {
+            this.gatheringStatus = RECRUITING;
         }
     }
 }

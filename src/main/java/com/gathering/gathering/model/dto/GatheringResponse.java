@@ -39,6 +39,7 @@ public class GatheringResponse {
                 .town(gathering.getGatheringAddress().getTown())
                 .content(gathering.getContent())
                 .goalDays(gathering.getGoalDays())
+                .endDate(gathering.getEndDateTime())
                 .minCapacity(gathering.getMinCapacity())
                 .maxCapacity(gathering.getMaxCapacity())
                 .gatheringStatus(gathering.getGatheringStatus())

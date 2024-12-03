@@ -40,7 +40,6 @@ public class ChallengeUser extends BaseTimeEntity {
 
     public void addChallenge(Challenge challenge) {
         this.challenge = challenge;
-        challenge.getChallengeUsers().add(this);
     }
 
     public void addUser(User user) {

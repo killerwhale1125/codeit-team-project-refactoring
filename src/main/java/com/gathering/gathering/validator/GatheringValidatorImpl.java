@@ -22,16 +22,16 @@ public class GatheringValidatorImpl implements GatheringValidator {
 
     @Override
     public boolean validateMinCapacity(int minCapacity) {
-        return minCapacity <= 0 ? false : true;
+        return minCapacity <= 0 ? true : false;
     }
 
     @Override
     public boolean validateMaxCapacity(int maxCapacity) {
-        return maxCapacity <= 0 ? false : true;
+        return maxCapacity <= 0 ? true : false;
     }
 
     @Override
     public boolean validateCapacityRange(int minCapacity, int maxCapacity) {
-        return maxCapacity < minCapacity ? false : true;
+        return maxCapacity < minCapacity ? true : false;
     }
 }

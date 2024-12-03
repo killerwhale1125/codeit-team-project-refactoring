@@ -24,7 +24,7 @@ public enum BaseResponseStatus {
     NOT_EXISTED_USER(false, "NON_EXISTED_USER", "This user does not exist"),
     DATABASE_ERROR(false, "DATABASE_ERROR", "Database error"),
 
-    // Gathering
+    // Gathering & CHALLENGE
     NON_EXISTED_GATHERING(false, "NON_EXISTED_GATHERING", "This gathering does not exist"),
     EXCEEDS_CAPACITY(false, "EXCEEDS_CAPACITY", "The gathering exceeds the capacity limit"),
     ALREADY_JOINED(false, "ALREADY_JOINED", "You are already a member of this gathering"),
@@ -33,6 +33,8 @@ public enum BaseResponseStatus {
     GATHERING_ALREADY_DELETED(false, "GATHERING_ALREADY_DELETED", "The gathering has been deleted"),
     GATHERING_ALREADY_ENDED(false, "GATHERING_ALREADY_ENDED", "The gathering has already ended"),
     USER_NOT_IN_GATHERING(false, "USER_NOT_IN_GATHERING", "User is not part of the gathering."),
+    USER_NOT_IN_CHALLENGE(false, "USER_NOT_IN_CHALLENGE", "User is not part of the challenge."),
+    HOST_CANNOT_LEAVE_GATHERING(false, "HOST_CANNOT_LEAVE_GATHERING", "The host cannot leave the gathering."),
     INVALID_GOAL_PERIOD(false, "INVALID_GOAL_PERIOD", "The goal period must be at least 1 day"),
     INVALID_MIN_CAPACITY(false, "INVALID_MIN_CAPACITY", "The minimum capacity must be at least 1"),
     INVALID_MAX_CAPACITY(false, "INVALID_MAX_CAPACITY", "The maximum capacity must be at least 1"),

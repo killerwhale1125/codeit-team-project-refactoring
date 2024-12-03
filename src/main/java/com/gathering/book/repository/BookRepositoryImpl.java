@@ -18,4 +18,14 @@ public class BookRepositoryImpl implements BookRepository {
         return bookJpaRepository.findBookByBookIdAndCategoryId(bookId, categoryId)
                 .orElseThrow(() -> new BaseException(BOOK_OR_CATEGORY_NOT_FOUND));
     }
+
+    @Override
+    public boolean existsByTitle(String title) {
+        return bookJpaRepository.existsByTitle(title);
+    }
+
+    @Override
+    public void save(Book book) {
+        bookJpaRepository.save(book);
+    }
 }

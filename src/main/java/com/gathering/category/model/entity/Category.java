@@ -23,4 +23,10 @@ public class Category {
     private List<BookCategory> bookCategories = new ArrayList<>();
 
     private String name;
+
+    public static Category createCategory(String categoryName) {
+        Category category = new Category();
+        category.name = categoryName;
+        return category;
+    }
 }

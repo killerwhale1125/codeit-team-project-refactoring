@@ -2,9 +2,11 @@ package com.gathering.gathering.controller;
 
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.gathering.model.dto.GatheringRequest;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.service.GatheringService;
+import com.gathering.security.auth.PrincipalDetails;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,16 +35,15 @@ public class GatheringController {
      */
     @PostMapping
     @Operation(summary = "모임 생성", description = "모임 생성 API (와이어 프레임 확인 후 데이터 추가 필요)")
-    public BaseResponse<Void> create(@RequestBody @Valid GatheringCreate gatheringCreate,
-                                     @AuthenticationPrincipal UserDetails userDetails) {
-        gatheringService.create(gatheringCreate, userDetails);
+    public BaseResponse<Void> create(@RequestBody @Valid GatheringCreate gatheringCreate, @AuthenticationPrincipal UserDetails userDetails) {
+        gatheringService.create(gatheringCreate, userDetails.getUsername());
         return new BaseResponse<>();
     }
 
     /**
      * TODO - Challenge 정보 추가 여부 보류
      */
-    @GetMapping("/{gathering_id}/details")
+    @GetMapping("/details/{gatheringId}")
     @Operation(summary = "모임 상세 조회", description = "모임 상세 조회 API, Challenge 정보 추가 여부 보류 (와이어 프레임 확인 후 데이터 추가 필요)")
     public BaseResponse<GatheringResponse> getGatheringByGatheringId(@PathVariable Long gatheringId) {
         return new BaseResponse<>(gatheringService.getGatheringByGatheringId(gatheringId));
@@ -51,7 +52,7 @@ public class GatheringController {
     /**
      * TODO - 참여 클릭 시 동시성 제어 추후 필요
      */
-    @PostMapping("/join/{gathering_id}")
+    @PostMapping("/join/{gatheringId}")
     @Operation(summary = "모임 참여", description = "모임 참여 API (와이어 프레임 확인 후 데이터 추가 필요)")
     public BaseResponse<Void> join(@PathVariable Long gatheringId,
                                    @AuthenticationPrincipal UserDetails userDetails) {
@@ -59,19 +60,16 @@ public class GatheringController {
         return new BaseResponse<>();
     }
 
-    /**
-     * TODO - 참여 클릭 시 동시성 제어 추후 필요
-     */
-    @PostMapping("/leave/{gathering_id}")
+    @PostMapping("/leave/{gatheringId}")
     @Operation(summary = "모임 떠나기", description = "모임 떠나기 API (와이어 프레임 확인 후 데이터 추가 필요)")
     public BaseResponse<Void> leave(@PathVariable Long gatheringId,
-                                    GatheringUserStatus gatheringUserStatus,
+                                    @RequestBody GatheringRequest gatheringRequest,
                                    @AuthenticationPrincipal UserDetails userDetails) {
-        gatheringService.leave(gatheringId, userDetails.getUsername(), gatheringUserStatus);
+        gatheringService.leave(gatheringId, userDetails.getUsername(), gatheringRequest.getGatheringUserStatus());
         return new BaseResponse<>();
     }
 
-    @DeleteMapping("/{gathering_id}")
+    @DeleteMapping("/{gatheringId}")
     @Operation(summary = "모임 삭제", description = "모임 삭제 API (와이어 프레임 확인 후 데이터 추가 필요)")
     public BaseResponse<Void> delete(@PathVariable Long gatheringId,
                                      @AuthenticationPrincipal UserDetails userDetails) {
@@ -88,4 +86,12 @@ public class GatheringController {
                                                                                    @RequestParam GatheringUserStatus gatheringUserStatus) {
         return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus));
     }
+
+    // 모임 조회수 증가
+//    @PostMapping("/{gatheringId}/increment-view-count")
+//    @Operation(summary = "모임 조회 수 증가", description = "모임 조회 수 증가 API (와이어 프레임 확인 후 데이터 추가 필요)")
+//    public BaseResponse<Void> incrementViewCount(@PathVariable Long gatheringId) {
+//        gatheringService.incrementViewCountAsync(gatheringId);
+//        return new BaseResponse<>();
+//    }
 }
