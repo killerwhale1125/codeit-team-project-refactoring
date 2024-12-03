@@ -1,13 +1,11 @@
 package com.gathering.book.model.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.util.YearMonthAttributeConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
