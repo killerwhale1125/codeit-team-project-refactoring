@@ -40,9 +40,6 @@ public class Gathering extends BaseTimeEntity {
     private long ownerId;
     private long viewCount;
 
-    @Embedded
-    private GatheringAddress gatheringAddress;
-
     @Enumerated(EnumType.STRING)
     private GatheringStatus gatheringStatus;
 
@@ -65,7 +62,6 @@ public class Gathering extends BaseTimeEntity {
                                             GatheringValidator gatheringValidator) {
         Gathering gathering = new Gathering();
         gathering.name = gatheringCreate.getName();
-        gathering.gatheringAddress = gatheringCreate.toAddress();
         gathering.content = gatheringCreate.getContent();
         gathering.endDateTime = gatheringCreate.getEndDate();
         gathering.goalDays = dateCalculateHolder.calculateGoalDays(gatheringCreate.getGatheringDate(), gatheringCreate.getEndDate());

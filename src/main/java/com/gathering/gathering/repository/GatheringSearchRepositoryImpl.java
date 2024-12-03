@@ -70,9 +70,6 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         // 각 필터 조건을 메서드로 분리하여 관리
 //        builder.and(categoryCondition(gatheringSearch.getCategoryId()));
         builder.and(bookTitleCondition(gatheringSearch.getBookTitle()));
-        builder.and(stateCondition(gatheringSearch.getState()));
-        builder.and(cityCondition(gatheringSearch.getCity()));
-        builder.and(townCondition(gatheringSearch.getTown()));
         builder.and(startDateCondition(gatheringSearch.getStartDate()));
         builder.and(endDateCondition(gatheringSearch.getEndDate()));
         builder.and(goalTimeCondition(gatheringSearch.getGoalTime()));
@@ -88,18 +85,6 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
     private BooleanExpression bookTitleCondition(String bookTitle) {
         return isNotEmpty(bookTitle) ? gathering.book.title.containsIgnoreCase(bookTitle) : null;
-    }
-
-    private BooleanExpression stateCondition(String state) {
-        return isNotEmpty(state) ? gathering.gatheringAddress.state.eq(state) : null;
-    }
-
-    private BooleanExpression cityCondition(String city) {
-        return isNotEmpty(city) ? gathering.gatheringAddress.city.eq(city) : null;
-    }
-
-    private BooleanExpression townCondition(String town) {
-        return isNotEmpty(town) ? gathering.gatheringAddress.town.eq(town) : null;
     }
 
     private BooleanExpression startDateCondition(LocalDate startDate) {

@@ -17,12 +17,6 @@ public class GatheringCreate {
     @NotEmpty
     private String name;    // 제목
     @NotEmpty
-    private String state;
-    @NotEmpty
-    private String city;
-    @NotEmpty
-    private String town;
-    @NotEmpty
     private String content;
     @NotNull
     private LocalDate endDate;  // 모임 종료일
@@ -38,8 +32,4 @@ public class GatheringCreate {
     private Long categoryId;
     @NotNull
     private GatheringStatus gatheringStatus;
-
-    public GatheringAddress toAddress() {
-        return new GatheringAddress(state, city, town);
-    }
 }
