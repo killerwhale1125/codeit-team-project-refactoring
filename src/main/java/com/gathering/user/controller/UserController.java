@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -145,8 +146,10 @@ public class UserController {
     *  3. 프로필 사진 변경시 기존 파일 삭제, 테이블 데이터 제거
     *  4. 이후 서베에 파일 저장, 사용자 정보 업데이트
     */
-    @RequestMapping(value = "/edit/user", method = RequestMethod.PUT)
-    @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정")
+    @RequestMapping(value = "/edit/user", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정<br>" +
+            "비밀번호의 경우 변경시 받고 없으면 제외하고 전송하면 됩니다.<br>" +
+            "변경여부 상관없이 아이디랑 이메일 값을 전송 하시면 됩니다.<br>")
     public BaseResponse<UserDto> editUser(
             @RequestPart("data") @Valid EditUserRequestDto editUserRequestDto,   // JSON 데이터
             @RequestPart(value = "file" ,required = false) MultipartFile file,
