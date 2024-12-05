@@ -9,7 +9,6 @@ public class EditUserRequestDto {
 
     @NotEmpty
     private String userName;
-    @NotEmpty
     private String password;
     @NotEmpty
     private String email;

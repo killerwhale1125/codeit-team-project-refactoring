@@ -23,6 +23,7 @@ public enum BaseResponseStatus {
     DUPLICATE_USERNAME(false, "DUPLICATE_USERNAME", "Duplicate username"),
     NOT_EXISTED_USER(false, "NON_EXISTED_USER", "This user does not exist"),
     DATABASE_ERROR(false, "DATABASE_ERROR", "Database error"),
+    EDIT_USER_FAIL(false, "EDIT_USER_FAIL", "Edit user fail"),
 
     // Gathering & CHALLENGE
     NON_EXISTED_GATHERING(false, "NON_EXISTED_GATHERING", "This gathering does not exist"),

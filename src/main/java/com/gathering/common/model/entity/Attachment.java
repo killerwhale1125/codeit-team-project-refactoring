@@ -2,11 +2,19 @@ package com.gathering.common.model.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
+import static com.gathering.util.file.FileUtil.getFileExtension;
 
 @Entity
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Attachment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +31,17 @@ public class Attachment extends BaseTimeEntity {
     private String fileName;
     @Comment("확장자")
     private String extension;
-
     @Comment("생성자")
-    private String creator_id;
-    
+    private long creatorId;
+
+    public static Attachment CreateAttachment(MultipartFile file, String code, String path, String serverFileName, long creatorId) {
+        return Attachment.builder()
+                .code(code)
+                .path(path)
+                .fileName(serverFileName)
+                .originalName(file.getOriginalFilename())
+                .extension(getFileExtension(file))
+                .creatorId(creatorId)
+                .build();
+    }
 }

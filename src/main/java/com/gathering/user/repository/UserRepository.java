@@ -1,7 +1,7 @@
 package com.gathering.user.repository;
 
 import com.gathering.user.model.dto.UserDto;
-import com.gathering.user.model.dto.request.SignInRequestDto;
+import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.User;
 
@@ -20,4 +20,6 @@ public interface UserRepository {
     // 이메일/아이디 체크
     boolean checkType(String param, boolean typeBol);
 
+    // 사용자 수정
+    UserDto editUser(EditUserRequestDto editUserRequestDto, String fileName, long userId);
 }

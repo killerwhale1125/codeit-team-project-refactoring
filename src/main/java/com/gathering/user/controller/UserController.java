@@ -4,6 +4,7 @@ import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
+import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.GetAccessTokenDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
@@ -12,7 +13,6 @@ import com.gathering.user.util.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -23,8 +23,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.HashMap;
 
 import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
 
@@ -74,7 +72,12 @@ public class UserController {
     public BaseResponse<Void> signUp(
             @Valid @RequestBody SignUpRequestDto signUpRequestDto  // JSON 데이터
     ) {
-        userService.signUp(signUpRequestDto);
+        try {
+            userService.signUp(signUpRequestDto);
+        } catch (Exception e) {
+            return new BaseResponse<>(BaseResponseStatus.DATABASE_ERROR);
+        }
+
         return new BaseResponse<>();
     }
 
@@ -135,13 +138,30 @@ public class UserController {
         return new BaseResponse<>();
     }
 
+    /*
+    *  사용자 정보 수정
+    *  1. 변경 여부 상관 없이 아이디,이메일 값을 받음 (비밀번호의 경우 변경이 있으면 받고 없으면 받지 않음)
+    *  2. 프로필 사진에 변경이 있을경우 file을 받고 없을경우 받지 않음
+    *  3. 프로필 사진 변경시 기존 파일 삭제, 테이블 데이터 제거
+    *  4. 이후 서베에 파일 저장, 사용자 정보 업데이트
+    */
     @RequestMapping(value = "/edit/user", method = RequestMethod.PUT)
     @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정")
-    public BaseResponse<Void> editUser(
-            @RequestPart("data") @Valid SignUpRequestDto signUpRequestDto,   // JSON 데이터
-            @RequestPart(value = "file" ,required = false) MultipartFile file
-    ) {
+    public BaseResponse<UserDto> editUser(
+            @RequestPart("data") @Valid EditUserRequestDto editUserRequestDto,   // JSON 데이터
+            @RequestPart(value = "file" ,required = false) MultipartFile file,
+            @AuthenticationPrincipal UserDetails userDetails
+    )throws RuntimeException {
 
-        return new BaseResponse<>();
+        UserDto user = null;
+        try {
+            user = userService.editUser(editUserRequestDto, file, userDetails.getUsername());
+            user.setPassword(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new BaseResponse<>(BaseResponseStatus.EDIT_USER_FAIL);
+        }
+
+        return new BaseResponse<>(user);
     }
 }
