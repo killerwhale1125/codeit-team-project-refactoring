@@ -15,10 +15,7 @@ import static com.gathering.gathering.redis.GatheringRedisKey.GATHERING_INCREMEN
 @RequiredArgsConstructor
 public class GatheringSearchAsync {
     private final GatheringRedisTemplate gatheringRedisTemplate;
-    /**
-     * 이렇게 RDB 사용하면 결국에 DB 부하 발생
-     * 여기서 비동기적으로 Redis 삽입 필요
-     */
+
     @Async
     @Transactional
     public void incrementViewCount(Long gatheringId, String userKey) {
