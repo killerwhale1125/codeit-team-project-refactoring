@@ -1,16 +1,14 @@
 package com.gathering.gathering.service.search;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.redis.GatheringRedisTemplate;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
-import com.gathering.gathering.repository.search.GatheringSearchRepository;
+import com.gathering.gathering.service.GatheringSearchAsync;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -18,11 +16,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
+
 @Service
 @RequiredArgsConstructor
 public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
+    private final GatheringSearchAsync gatheringSearchAsync;
+    private final GatheringRedisTemplate gatheringRedisTemplate;
 
     @Override
     public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
@@ -36,8 +38,12 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     }
 
     @Override
-    public GatheringResponse getById(Long gatheringId) {
-        return GatheringResponse.fromEntity(gatheringSearchJpaRepository.findByIdWithBooks(gatheringId)
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_GATHERING)));
+    public GatheringResponse getById(Long gatheringId, String userKey) {
+        Gathering gathering = gatheringSearchJpaRepository.findByIdWithBooks(gatheringId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+        // 조회수 비동기 처리
+        gatheringSearchAsync.incrementViewCount(gathering.getId(), userKey);
+
+        return GatheringResponse.fromEntity(gathering);
     }
 }

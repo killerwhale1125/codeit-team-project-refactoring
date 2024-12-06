@@ -76,11 +76,4 @@ public class GatheringController {
         return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus));
     }
 
-    // 모임 조회수 증가
-//    @PostMapping("/{gatheringId}/increment-view-count")
-//    @Operation(summary = "모임 조회 수 증가", description = "모임 조회 수 증가 API (와이어 프레임 확인 후 데이터 추가 필요)")
-//    public BaseResponse<Void> incrementViewCount(@PathVariable Long gatheringId) {
-//        gatheringService.incrementViewCountAsync(gatheringId);
-//        return new BaseResponse<>();
-//    }
 }

@@ -5,11 +5,14 @@ import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.service.search.GatheringSearchService;
+import com.gathering.util.web.UserSessionKeyGenerator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -46,7 +49,8 @@ public class GatheringSearchController {
      */
     @GetMapping("/{gatheringId}")
     @Operation(summary = "모임 상세 조회", description = "모임 상세 조회 API, Challenge 정보 추가 여부 보류 (와이어 프레임 확인 후 데이터 추가 필요)")
-    public BaseResponse<GatheringResponse> getGatheringByGatheringId(@PathVariable Long gatheringId) {
-        return new BaseResponse<>(gatheringSearchService.getById(gatheringId));
+    public BaseResponse<GatheringResponse> getById(@PathVariable Long gatheringId, HttpServletRequest request, HttpServletResponse response) {
+        return new BaseResponse<>(gatheringSearchService.getById(gatheringId,
+                UserSessionKeyGenerator.generateUserKey(request, response)));
     }
 }

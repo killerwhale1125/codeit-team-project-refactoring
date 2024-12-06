@@ -156,10 +156,6 @@ public class Gathering extends BaseTimeEntity {
         this.currentCapacity--;
     }
 
-    public void increaseViewCount(long viewCount) {
-        this.viewCount += viewCount;
-    }
-
     // 모임 상태 변화
     private void checkIsFullAndUpdateStatus() {
         if (this.currentCapacity >= this.maxCapacity) {

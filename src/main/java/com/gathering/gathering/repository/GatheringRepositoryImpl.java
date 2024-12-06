@@ -6,6 +6,8 @@ import com.gathering.gathering.model.entity.GatheringUserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 
 @Repository
@@ -38,5 +40,10 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     @Override
     public Gathering getGatheringAndGatheringUsersById(Long gatheringId) {
         return gatheringJpaRepository.getGatheringAndGatheringUsersById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+    }
+
+    @Override
+    public List<Gathering> findByIdIn(List<Long> list) {
+        return gatheringJpaRepository.findByIdIn(list);
     }
 }
