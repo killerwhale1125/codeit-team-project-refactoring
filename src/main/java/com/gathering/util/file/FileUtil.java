@@ -19,9 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileUtil {
 
-
     private final AttachmentJpaRepository attachmentJpaRepository;
-
     private static final String dot = ".";
     private static final List<String> ALLOWED_IMG_EXTENSIONS = Arrays.asList("jpg", "png");
 
