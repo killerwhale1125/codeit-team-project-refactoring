@@ -32,7 +32,8 @@ public class ReviewConroller {
     *  특정 책에 대한 리뷰 작성이 아무때나 가능한지 확인 필요
     */
     @PostMapping("/create")
-    @Operation(summary = "리뷰 생성", description = "리뷰 생성 API")
+    @Operation(summary = "리뷰 생성", description = "appr -> 평가.<br>" +
+            "tmprStrgYN -> 임시저장여부.<br>")
     public BaseResponse<ReviewDto> createReview(@RequestBody @Valid CreateReviewDto createReviewDto,
                                      @AuthenticationPrincipal UserDetails userDetails) {
 
