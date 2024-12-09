@@ -46,6 +46,9 @@ public class Gathering extends BaseTimeEntity {
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GatheringReview> gatheringReviews = new ArrayList<>();
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;

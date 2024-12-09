@@ -43,6 +43,10 @@ public enum BaseResponseStatus {
     INVALID_CAPACITY_RANGE(false, "INVALID_CAPACITY_RANGE", "The maximum capacity must be greater than or equal to the minimum capacity"),
     BOOK_OR_CATEGORY_NOT_FOUND(false, "BOOK_OR_CATEGORY_NOT_FOUND", "The specified book or category could not be found"),
 
+
+    // review
+    NON_EXISTED_REVIEW(false, "NON_EXISTED_REVIEW", "This review does not exist"),
+
     // Other
     UNKNOWN_ERROR(false, "UNKNOWN_ERROR", "Unknown error"),
     UNSUPPORTED_FILETYPE(false, "UNSUPPORTED_FILETYPE", "Unsupported File Type!"),

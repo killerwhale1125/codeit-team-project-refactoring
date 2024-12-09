@@ -45,14 +45,24 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     // 토큰 관련 오류 발생시 응답
+    public void FailedAuthorizationToken(HttpServletResponse response, BaseResponseStatus status) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON.toString());
+        response.setCharacterEncoding(String.valueOf(StandardCharsets.UTF_8));
+        BaseResponse<String> errorResponse = new BaseResponse<>(status);
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+
+    }
+
     public void FailedAuthorization(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON.toString());
         response.setCharacterEncoding(String.valueOf(StandardCharsets.UTF_8));
-        BaseResponse<String> errorResponse = new BaseResponse<>(BaseResponseStatus.TOKEN_ISEMPTY);
+        BaseResponse<String> errorResponse = new BaseResponse<>(BaseResponseStatus.UNKNOWN_ERROR);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
 
     }
+
 
     // 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게 됨.
     @Override
@@ -77,7 +87,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
             try {
                 String jwtToken = request.getHeader(header).replace(tokenPrefix, "");
-                String userName = extractUsername(jwtToken);
+                String userName = null;
+                try {
+                    userName = extractUsername(jwtToken);
+                } catch (io.jsonwebtoken.SignatureException se) {
+                    FailedAuthorizationToken(response, BaseResponseStatus.UNSUPPORTED_TOKEN);
+                    return;
+                }
                 // 서명이 정상적으로 됨
                 if(userName != null && validateToken(jwtToken)) {
                     User userEntity = userJpaRepository.findByUserName(userName).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
@@ -93,7 +109,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
                     chain.doFilter(request,response);
                 } else {
-                    FailedAuthorization(response);
+                    FailedAuthorizationToken(response, BaseResponseStatus.EXPIRED_TOKEN);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
