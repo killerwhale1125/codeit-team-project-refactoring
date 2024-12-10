@@ -171,7 +171,7 @@ public class UserController {
     @RequestMapping(value = "/password/check", method = RequestMethod.POST)
     @Operation(summary = "패스워드 확인", description = "패스워드 확인")
     public BaseResponse<Void> passwordCheck(
-            @RequestBody PasswordCheckDto passwordCheckDto,
+            @RequestBody @Valid PasswordCheckDto passwordCheckDto,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
