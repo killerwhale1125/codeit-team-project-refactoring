@@ -2,15 +2,15 @@ package com.gathering.gathering.repository.search;
 
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.model.entity.GatheringStatus;
+import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.search.util.GatheringSearchConditionBuilder;
 import com.gathering.gathering.repository.search.util.GatheringSortUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,22 +18,20 @@ import java.util.List;
 import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
+import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
 
 @Repository
+@RequiredArgsConstructor
 public class GatheringSearchRepositoryImpl implements GatheringSearchRepository {
 
     private final JPAQueryFactory queryFactory;
-
-    public GatheringSearchRepositoryImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
+    private final GatheringSearchConditionBuilder gatheringSearchConditionBuilder;
 
     // 무한스크롤 전용
     @Override
     public Slice<Gathering> findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
         // 조건 생성
-        BooleanBuilder builder = new GatheringSearchConditionBuilder(gatheringSearch).build();
-
+        BooleanBuilder builder = gatheringSearchConditionBuilder.buildConditionAll(gatheringSearch);
         // Query 생성
         JPAQuery<Gathering> query = queryFactory.selectFrom(gathering)
                 .leftJoin(gathering.challenge, challenge)
@@ -67,4 +65,25 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         return new SliceImpl<>(contents, pageable, hasNext);
     }
 
+    @Override
+    public Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
+        BooleanBuilder builder = gatheringSearchConditionBuilder.buildGatheringAndUserStatus(gatheringStatus, gatheringUserStatus);
+
+        JPAQuery<Gathering> query = queryFactory.select(gathering)
+                .from(gathering)
+                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .where(gatheringUser.user.userName.eq(username).and(builder));
+
+        List<Gathering> result = query.offset(pageable.getOffset())  // 페이지 시작 위치
+                .limit(pageable.getPageSize()) // 페이지 크기
+                .fetch();
+
+        long totalCount = queryFactory.select(gathering.id)
+                .from(gathering)
+                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .where(gatheringUser.user.userName.eq(username).and(builder))
+                .fetchCount();
+
+        return new PageImpl<>(result, pageable, totalCount);
+    }
 }

@@ -75,7 +75,7 @@ public class AladinCrawlerTask {
                     bookNames.add(nameElement.text());
 
                     // 상세 페이지 접근
-                    String detailPageUrl = "https://www.aladin.co.kr" + nameElement.attr("href");
+                    String detailPageUrl = nameElement.attr("href");
                     try {
                         Document detailPage = Jsoup.connect(detailPageUrl).get();
                         // 평점 추출
@@ -83,7 +83,7 @@ public class AladinCrawlerTask {
                         if (ratingElement != null) {
                             bookRatings.add(ratingElement.text());
                         } else {
-                            bookRatings.add("N/A");
+                            bookRatings.add("0.0");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

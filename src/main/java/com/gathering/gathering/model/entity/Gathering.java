@@ -32,11 +32,12 @@ public class Gathering extends BaseTimeEntity {
 
     private String name;
     private String content;
-    private LocalDate endDateTime;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private long goalDays;
     private int maxCapacity;
     private int minCapacity;
-    private int currentCapacity;
+    private int currentCapacity = 0;
     private long ownerId;
     private long viewCount;
 
@@ -66,15 +67,15 @@ public class Gathering extends BaseTimeEntity {
         Gathering gathering = new Gathering();
         gathering.name = gatheringCreate.getName();
         gathering.content = gatheringCreate.getContent();
-        gathering.endDateTime = gatheringCreate.getEndDate();
+        gathering.startDate = gatheringCreate.getStartDate();
+        gathering.endDate = gatheringCreate.getEndDate();
         gathering.goalDays = dateCalculateHolder.calculateGoalDays(gatheringCreate.getStartDate(), gatheringCreate.getEndDate());
         // 최소 최대 인원수 검증
         validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity(), gatheringValidator);
         gathering.maxCapacity = gatheringCreate.getMaxCapacity();
-        gathering.minCapacity = 5;
+        gathering.minCapacity = gatheringCreate.getMinCapacity();
         gathering.gatheringStatus = gatheringCreate.getGatheringStatus();
         gathering.book = book;
-        gathering.currentCapacity = 1;
         gathering.ownerId = gatheringUser.getUser().getId();
         gathering.addChallenge(challenge);
         gathering.addGatheringUser(gatheringUser, gatheringValidator);
@@ -117,6 +118,7 @@ public class Gathering extends BaseTimeEntity {
         gatheringValidator.validateCapacityLimit(this.currentCapacity, maxCapacity);
         gatheringUsers.add(gatheringUser);
         gatheringUser.addGathering(this);
+        this.currentCapacity++;
     }
 
     // 모임에 챌린지 추가

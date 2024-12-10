@@ -10,7 +10,7 @@ public class GatheringSortUtil {
         if (gatheringSortType == null) return;
 
         switch (gatheringSortType) {
-            case DEADLINE_ASC -> query.orderBy(gathering.endDateTime.asc());
+            case DEADLINE_ASC -> query.orderBy(gathering.endDate.asc());
             case PARTICIPANTS_DESC -> query.orderBy(gathering.challenge.challengeUsers.size().desc());
             case VIEWS_DESC -> query.orderBy(gathering.viewCount.desc());
             case NEWEST_FIRST -> query.orderBy(gathering.createdTime.desc());
