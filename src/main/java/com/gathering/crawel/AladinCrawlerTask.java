@@ -69,6 +69,27 @@ public class AladinCrawlerTask {
                 List<String> bookAuthors = new ArrayList<>();
                 List<String> bookPublishers = new ArrayList<>();
                 List<String> bookPublishDates = new ArrayList<>();
+                List<String> bookRatings = new ArrayList<>();
+
+                for (Element nameElement : bookNameElements) {
+                    bookNames.add(nameElement.text());
+
+                    // 상세 페이지 접근
+                    String detailPageUrl = "https://www.aladin.co.kr" + nameElement.attr("href");
+                    try {
+                        Document detailPage = Jsoup.connect(detailPageUrl).get();
+                        // 평점 추출
+                        Element ratingElement = detailPage.selectFirst("div.info_list a.Ere_str");
+                        if (ratingElement != null) {
+                            bookRatings.add(ratingElement.text());
+                        } else {
+                            bookRatings.add("N/A");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        bookRatings.add("N/A");
+                    }
+                }
 
                 // 책 제목, 가격, 이미지, 저자, 출판사 추출
                 for (Element nameElement : bookNameElements) {
@@ -112,7 +133,7 @@ public class AladinCrawlerTask {
                     }
                 }
 
-                aladinCrawlerService.saveBooksFromCrawler(categoryName, bookNames, bookImages, bookAuthors, bookPublishers, bookPublishDates);
+                aladinCrawlerService.saveBooksFromCrawler(categoryName, bookNames, bookImages, bookAuthors, bookPublishers, bookPublishDates, bookRatings);
             } catch (IOException e) {
                 e.printStackTrace();
             }
