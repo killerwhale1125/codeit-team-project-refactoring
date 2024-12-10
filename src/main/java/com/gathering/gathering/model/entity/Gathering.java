@@ -171,4 +171,8 @@ public class Gathering extends BaseTimeEntity {
             this.gatheringStatus = RECRUITING;
         }
     }
+
+    public void start() {
+        this.gatheringStatus = ACTIVE;
+    }
 }

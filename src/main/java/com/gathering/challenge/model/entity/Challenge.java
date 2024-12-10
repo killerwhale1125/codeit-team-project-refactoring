@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gathering.challenge.model.entity.ChallengeStatus.ACTIVE;
 import static com.gathering.common.base.response.BaseResponseStatus.USER_NOT_IN_CHALLENGE;
 
 @Getter
@@ -72,5 +73,9 @@ public class Challenge extends BaseTimeEntity {
 
     private void addGathering(Gathering gathering) {
         this.gathering = gathering;
+    }
+
+    public void start() {
+        this.challengeStatus = ACTIVE;
     }
 }

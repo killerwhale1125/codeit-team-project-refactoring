@@ -22,4 +22,15 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     public Challenge getChallengeUsersById(Long challengeId) {
         return challengeJpaRepository.getChallengeUsersById(challengeId).orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE));
     }
+
+    @Override
+    public Challenge findById(Long challengeId) {
+        return challengeJpaRepository.findById(challengeId).orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE));
+    }
+
+    @Override
+    public Challenge findGatheringAndChallengeById(Long challengeId) {
+        return challengeJpaRepository.findGatheringAndChallengeById(challengeId).orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE));
+    }
+
 }

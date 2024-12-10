@@ -4,6 +4,8 @@ import com.gathering.book.model.entity.Book;
 import com.gathering.book.repository.BookRepository;
 import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challenge.model.entity.ChallengeUser;
+import com.gathering.challenge.redis.ChallengeRedisKey;
+import com.gathering.challenge.redis.ChallengeRedisTemplate;
 import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.entity.Gathering;
@@ -19,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +36,7 @@ public class GatheringServiceImpl implements GatheringService {
     private final BookRepository bookRepository;
     private final GatheringValidator gatheringValidator;
     private final ChallengeRepository challengeRepository;
+    private final ChallengeRedisTemplate challengeRedisTemplate;
 
     /**
      * 모임 생성
@@ -52,6 +57,11 @@ public class GatheringServiceImpl implements GatheringService {
                 gatheringValidator);
 
         gatheringRepository.save(gathering);
+
+        long secondsUntilStart = dateCalculateHolder.calculateSecondsUntilStart(gathering.getStartDate(), LocalDateTime.now());
+        String challengeWaitingKey = ChallengeRedisKey.generateWaitingKey(gathering.getChallenge().getId());
+
+        challengeRedisTemplate.saveKeyWithExpire(challengeWaitingKey, "1", secondsUntilStart, TimeUnit.SECONDS);
     }
 
     /**
