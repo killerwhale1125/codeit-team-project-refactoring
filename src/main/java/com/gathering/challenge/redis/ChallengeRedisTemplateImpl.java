@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class ChallengeRedisTemplateImpl implements ChallengeRedisTemplate {
 
-    private RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public void saveKeyWithExpire(String key, String isTrue, long expireTime, TimeUnit seconds) {

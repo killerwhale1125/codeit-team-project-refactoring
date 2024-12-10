@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static com.gathering.common.base.response.BaseResponseStatus.INVALID_CHALLENGE_START_BETWEEN_TIME;
 import static com.gathering.common.base.response.BaseResponseStatus.INVALID_GOAL_PERIOD;
 
 /**
@@ -28,6 +29,10 @@ public class DateCalculateUtil implements DateCalculateHolder {
 
     @Override
     public long calculateSecondsUntilStart(LocalDate startDate, LocalDateTime now) {
-        return ChronoUnit.SECONDS.between(now, startDate.atStartOfDay());
+        long between = ChronoUnit.SECONDS.between(now, startDate.atStartOfDay());
+        if(between < 0) {
+            throw new BaseException(INVALID_CHALLENGE_START_BETWEEN_TIME);
+        }
+        return between;
     }
 }
