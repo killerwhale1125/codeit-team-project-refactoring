@@ -23,6 +23,7 @@ public class GatheringResponse {
     private LocalDate endDate;
     private Integer minCapacity;
     private Integer maxCapacity;
+    private Integer currentCapacity;
     private GatheringStatus gatheringStatus;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
@@ -43,6 +44,7 @@ public class GatheringResponse {
                 .endDate(gathering.getEndDate())
                 .minCapacity(gathering.getMinCapacity())
                 .maxCapacity(gathering.getMaxCapacity())
+                .currentCapacity(gathering.getCurrentCapacity())
                 .gatheringStatus(gathering.getGatheringStatus())
                 .createdTime(gathering.getCreatedTime())
                 .updatedTime(gathering.getModifiedTime())

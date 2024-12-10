@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.util.AntPathMatcher;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,12 +37,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     public static final String tokenPrefix = "Bearer ";
     private UserJpaRepository userJpaRepository;
     private List<String> excludePaths;
+    private List<String> includePaths;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository, List<String> excludePaths) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository, List<String> excludePaths, List<String> includePaths) {
         super(authenticationManager);
         this.userJpaRepository = userJpaRepository;
         this.excludePaths = excludePaths;
+        this.includePaths = includePaths;
     }
 
     // 토큰 관련 오류 발생시 응답
@@ -72,8 +75,20 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // 요청 경로가 제외된 경로 리스트에 포함되면 필터를 거치지 않음
         String requestUri = request.getRequestURI();
         // 경로가 제외 목록에 있는지 확인
+//        boolean isExcluded = excludePaths.stream()
+//                .anyMatch(requestUri::equals);
+
+        AntPathMatcher pathMatcher = new AntPathMatcher();
         boolean isExcluded = excludePaths.stream()
-                .anyMatch(requestUri::equals);
+                .anyMatch(path -> pathMatcher.match(path, requestUri));
+
+        boolean isIncluded = includePaths.stream()
+                .anyMatch(path -> pathMatcher.match(path, requestUri));
+
+        if(isExcluded && isIncluded) {
+            isExcluded = false;
+        }
+
         if(isExcluded || !requestUri.startsWith("/api") || requestUri.startsWith("/api/auths/check")) {
             chain.doFilter(request, response);
             return;
