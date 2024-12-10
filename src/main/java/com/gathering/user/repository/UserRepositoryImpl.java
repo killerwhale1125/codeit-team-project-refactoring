@@ -86,4 +86,9 @@ public class UserRepositoryImpl implements UserRepository{
         return null;
     }
 
+    @Override
+    public void save(User user) {
+        userJpaRepository.save(user);
+    }
+
 }

@@ -67,11 +67,11 @@ public class Gathering extends BaseTimeEntity {
         gathering.name = gatheringCreate.getName();
         gathering.content = gatheringCreate.getContent();
         gathering.endDateTime = gatheringCreate.getEndDate();
-        gathering.goalDays = dateCalculateHolder.calculateGoalDays(gatheringCreate.getGatheringDate(), gatheringCreate.getEndDate());
+        gathering.goalDays = dateCalculateHolder.calculateGoalDays(gatheringCreate.getStartDate(), gatheringCreate.getEndDate());
         // 최소 최대 인원수 검증
         validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity(), gatheringValidator);
         gathering.maxCapacity = gatheringCreate.getMaxCapacity();
-        gathering.minCapacity = gatheringCreate.getMinCapacity();
+        gathering.minCapacity = 5;
         gathering.gatheringStatus = gatheringCreate.getGatheringStatus();
         gathering.book = book;
         gathering.currentCapacity = 1;

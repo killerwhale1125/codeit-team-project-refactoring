@@ -14,9 +14,10 @@ public class GatheringRedisKey {
     // 중복 사용자 조회 방지 키
     public static final String GATHERING_DUPLICATE_CHECK_PREFIX = "gathering:duplication:";
     // 중복 사용자 조회 방지 키 만료 시간
-    public static final long DUPLICATE_CHECK_EXPIRATION = 300L; // 5분
+    public static final long DUPLICATE_CHECK_EXPIRATION = 600L; // 5분
     // 조회수가 만료될 키의 만료시간
     public static final long GATHERING_INCREMENT_VIEW_COUNT_EXPIRATION = 21600L; // 6시간
+//    public static final long GATHERING_INCREMENT_VIEW_COUNT_EXPIRATION = 10; // 6시간
 
     public static String generatedViewCountKey(Long gatheringId) {
         return GATHERING_VIEW_COUNT_PREFIX + gatheringId;

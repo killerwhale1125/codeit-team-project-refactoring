@@ -1,10 +1,8 @@
 package com.gathering.common.base.response;
 
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import static com.gathering.common.base.response.BaseResponseStatus.SUCCESS;
 
@@ -12,13 +10,13 @@ import static com.gathering.common.base.response.BaseResponseStatus.SUCCESS;
 @Getter
 @AllArgsConstructor
 public class BaseResponse<T> {
-    private final boolean success;
+    private final int status;
     private final String message;
     private final String code;
     private T result;
 
     public BaseResponse() {
-        this.success = SUCCESS.isSuccess();
+        this.status = SUCCESS.getHttpStatus().value();
         this.message = SUCCESS.getMessage();
         this.code = SUCCESS.getCode();
     }
@@ -28,7 +26,7 @@ public class BaseResponse<T> {
      * @param result
      */
     public BaseResponse(T result) {
-        this.success = SUCCESS.isSuccess();
+        this.status = SUCCESS.getHttpStatus().value();
         this.message = SUCCESS.getMessage();
         this.code = SUCCESS.getCode();
         this.result = result;
@@ -39,7 +37,7 @@ public class BaseResponse<T> {
      * @param status
      */
     public BaseResponse(BaseResponseStatus status) {
-        this.success = status.isSuccess();
+        this.status = status.getHttpStatus().value();
         this.message = status.getMessage();
         this.code = status.getCode();
     }

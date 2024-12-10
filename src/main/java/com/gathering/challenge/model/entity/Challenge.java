@@ -44,7 +44,7 @@ public class Challenge extends BaseTimeEntity {
         Challenge challenge = new Challenge();
         challenge.challengeStatus = ChallengeStatus.INACTIVE;
         challenge.completeRate = 0.0;
-        challenge.startDateTime = gatheringCreate.getGatheringDate();
+        challenge.startDateTime = gatheringCreate.getStartDate();
         challenge.endDateTime = gatheringCreate.getEndDate();
         challenge.addChallengeUser(challengeUsers);
         return challenge;

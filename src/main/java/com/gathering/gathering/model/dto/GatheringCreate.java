@@ -21,7 +21,7 @@ public class GatheringCreate {
     @NotNull
     private LocalDate endDate;  // 모임 종료일
     @NotNull
-    private LocalDate gatheringDate;    // 모임 시작일 ( 생성일 X, 챌린지가 시작되는 날짜 )
+    private LocalDate startDate;    // 모임 시작일 ( 생성일 X, 챌린지가 시작되는 날짜 )
     @Min(1)  // 최소 1명 이상
     private int minCapacity;
     @Min(1)  // 최소 1명 이상

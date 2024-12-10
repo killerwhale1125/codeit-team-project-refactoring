@@ -22,4 +22,6 @@ public interface UserRepository {
 
     // 사용자 수정
     UserDto editUser(EditUserRequestDto editUserRequestDto, String fileName, long userId);
+
+    void save(User user);
 }

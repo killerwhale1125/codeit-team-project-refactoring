@@ -81,6 +81,14 @@ public class GatheringServiceImpl implements GatheringService {
         Challenge.leave(challenge, user);
     }
 
+    @Override
+    @Transactional
+    public void wish(Long gatheringId, String username) {
+        User user = userRepository.findByUsername(username);
+        User.addWish(user, gatheringRepository.findIdById(gatheringId));
+        userRepository.save(user);
+    }
+
     /**
      * 모임 삭제
      */

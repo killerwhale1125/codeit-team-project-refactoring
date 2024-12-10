@@ -18,4 +18,6 @@ public interface GatheringRepository {
     Gathering getGatheringAndGatheringUsersById(Long gatheringId);
 
     List<Gathering> findByIdIn(List<Long> gatheringIds);
+
+    Long findIdById(Long gatheringId);
 }

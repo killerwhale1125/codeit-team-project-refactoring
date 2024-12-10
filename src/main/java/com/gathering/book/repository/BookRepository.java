@@ -10,4 +10,6 @@ public interface BookRepository {
     boolean existsByTitle(String title);
 
     void save(Book book);
+
+    Book findById(Long bookId);
 }

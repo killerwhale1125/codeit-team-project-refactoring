@@ -41,7 +41,7 @@ public class GatheringController {
     /**
      * TODO - 참여 클릭 시 동시성 제어 추후 필요
      */
-    @PostMapping("/join/{gatheringId}")
+    @PostMapping("/{gatheringId}/join")
     @Operation(summary = "모임 참여", description = "모임 참여 API (와이어 프레임 확인 후 데이터 추가 필요)")
     public BaseResponse<Void> join(@PathVariable Long gatheringId,
                                    @AuthenticationPrincipal UserDetails userDetails) {
@@ -76,4 +76,14 @@ public class GatheringController {
         return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus));
     }
 
+    /**
+     * TODO -
+     */
+    @PostMapping("/{gatheringId}/wish")
+    @Operation(summary = "모임 찜하기", description = "모임 찜하기 API")
+    public BaseResponse<Void> wish(@PathVariable Long gatheringId,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
+        gatheringService.wish(gatheringId, userDetails.getUsername());
+        return new BaseResponse<>();
+    }
 }

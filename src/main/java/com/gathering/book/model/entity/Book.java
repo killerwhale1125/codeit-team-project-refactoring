@@ -27,6 +27,7 @@ public class Book extends BaseTimeEntity {
 
     private String publishDate;
     private long selectedCount;
+    private int star;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     List<BookCategory> bookCategories = new ArrayList<>();
@@ -34,13 +35,14 @@ public class Book extends BaseTimeEntity {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     List<Review> reviews = new ArrayList<>();
 
-    public static Book createBook(String title, String image, String author, String publisher, BookCategory bookCategory, String publisherDate) {
+    public static Book createBook(String title, String image, String author, String publisher, BookCategory bookCategory, String publisherDate, String star) {
         Book book = new Book();
         book.title = title;
         book.image = image;
         book.author = author;
         book.publisher = publisher;
         book.publishDate = publisherDate;
+        book.star = Integer.parseInt(star);
         book.bookCategories.add(bookCategory);
         bookCategory.addBook(book);
         return book;

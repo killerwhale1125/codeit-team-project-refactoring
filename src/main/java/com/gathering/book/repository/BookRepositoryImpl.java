@@ -28,4 +28,9 @@ public class BookRepositoryImpl implements BookRepository {
     public void save(Book book) {
         bookJpaRepository.save(book);
     }
+
+    @Override
+    public Book findById(Long bookId) {
+        return bookJpaRepository.findById(bookId).orElseThrow(() -> new BaseException(NOT_EXISTED_BOOK));
+    }
 }

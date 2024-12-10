@@ -25,7 +25,7 @@ public class GatheringSearchAsync {
         if (!isDuplicateRequest(dupKey)) {
             // 게시물 총 조회수 키 생성 gathering:view:{gathering_id}
             String viewCountKey = GatheringRedisKey.generatedViewCountKey(gatheringId);
-            // 조회수 만료 키 생성 gathering:view:expired:{gathering_id}
+            // 조회수 만료 키 생성 gathering:view:expire:{gathering_id}
             String expireKey = GatheringRedisKey.generatedExpireViewCount(gatheringId);
 
             gatheringRedisTemplate.increment(viewCountKey);

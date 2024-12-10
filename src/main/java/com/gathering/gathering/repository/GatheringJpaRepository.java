@@ -23,4 +23,7 @@ public interface GatheringJpaRepository extends JpaRepository<Gathering, Long> {
     Optional<Gathering> getGatheringAndGatheringUsersById(@Param("gatheringId") Long gatheringId);
 
     List<Gathering> findByIdIn(List<Long> list);
+
+    @Query("SELECT g.id FROM Gathering g WHERE g.id = :gatheringId")
+    Optional<Long> findIdById(@Param("gatheringId") Long gatheringId);
 }

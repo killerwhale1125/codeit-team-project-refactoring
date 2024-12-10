@@ -17,5 +17,7 @@ public interface GatheringService {
 
     void leave(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus);
 
+    void wish(Long gatheringId, String username);
+
 //    void incrementViewCountAsync(Long gatheringId);
 }

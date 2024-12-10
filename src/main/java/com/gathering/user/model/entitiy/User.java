@@ -10,9 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -58,6 +56,20 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_wishes", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "gathering_id")
+    private Set<Long> wishGatheringIds = new HashSet<>();
+
+    public static void addWish(User user, Long gatheringId) {
+        Set<Long> gatheringIds = user.getWishGatheringIds();
+        if(gatheringIds.contains(gatheringId)) {
+            gatheringIds.remove(gatheringId);
+        } else {
+            gatheringIds.add(gatheringId);
+        }
+    }
+
     public List<String> getRoleList() {
         if(this.roles.length() > 0) {
             return Arrays.asList(this.roles.split(","));
@@ -65,7 +77,6 @@ public class User extends BaseTimeEntity {
 
         return new ArrayList<>();
     }
-
 
     public static User createUser(SignUpRequestDto dto) {
         return User.builder()
