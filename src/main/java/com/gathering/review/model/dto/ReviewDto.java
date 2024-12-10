@@ -20,7 +20,7 @@ public class ReviewDto {
 
     private String title;
 
-    private int appr;
+    private String apprCd;
 
     private String tag;
 
@@ -37,7 +37,7 @@ public class ReviewDto {
                 .userId(review.getUser().getId())
                 .bookId(review.getBook().getId())
                 .title(review.getTitle())
-                .appr(review.getAppr())
+                .apprCd(review.getApprCd())
                 .tag(review.getTagCd())
                 .content(review.getContent())
                 .likes(review.getLikes())

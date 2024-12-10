@@ -38,7 +38,7 @@ public class Review extends BaseTimeEntity {
     private String title;
 
     @Comment("평가")
-    private int appr;
+    private String apprCd;
 
     @Comment("태그")
     private String tagCd;
@@ -60,7 +60,7 @@ public class Review extends BaseTimeEntity {
                 .user(user)
                 .book(book)
                 .title(createReviewDto.getTitle())
-                .appr(createReviewDto.getAppr())
+                .apprCd(createReviewDto.getApprCd())
                 .tagCd(createReviewDto.getTag())
                 .content(createReviewDto.getContent())
                 .likes(0)

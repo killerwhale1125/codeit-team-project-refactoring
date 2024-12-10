@@ -20,8 +20,8 @@ public class CreateReviewDto {
     @NotEmpty
     private String title;
 
-    @NotNull
-    private int appr; // 평가
+    @NotEmpty
+    private String apprCd; // 평가
 
     @NotEmpty
     private String tag;
