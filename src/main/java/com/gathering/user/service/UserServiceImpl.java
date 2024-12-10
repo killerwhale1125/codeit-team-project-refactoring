@@ -1,5 +1,8 @@
 package com.gathering.user.service;
 
+import com.gathering.common.base.exception.BaseException;
+import com.gathering.common.base.response.BaseResponse;
+import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.common.model.constant.Code;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
@@ -12,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.gathering.common.base.response.BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service("userService")
@@ -31,14 +36,15 @@ public class UserServiceImpl implements UserService {
 
         UserDto userDto = userRepository.selectUser(requestDto.userName());
 
-        if (userDto != null || userDto.getPassword().equals(passwordEncoder.encode(requestDto.password()))) {
+        if (userDto == null) {
+            return null;
+        } else if(userDto.getPassword().equals(passwordEncoder.encode(requestDto.password()))) {
             userRepository.insertAttendance(userDto.getUsersId());
             userDto.setPassword(null);
             return userDto;
         } else {
-            return null;
+            throw new BaseException(BaseResponseStatus.SIGN_IN_FAIL);
         }
-
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.gathering.user.controller;
 
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
-import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
@@ -25,7 +25,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.gathering.common.base.response.BaseResponseStatus.*;
 import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
+import static com.gathering.user.util.Validator.isValidEmail;
 
 @RestController
 @RequestMapping("/api/auths")
@@ -65,7 +67,7 @@ public class UserController {
             return new BaseResponse<>(userDto);
         }
 
-        return new BaseResponse<>(BaseResponseStatus.AUTHORIZATION_FAIL);
+        return new BaseResponse<>(SIGN_IN_FAIL);
     }
 
     @RequestMapping(value = "/signUp", method = RequestMethod.POST)
@@ -76,7 +78,7 @@ public class UserController {
         try {
             userService.signUp(signUpRequestDto);
         } catch (Exception e) {
-            return new BaseResponse<>(BaseResponseStatus.DATABASE_ERROR);
+            return new BaseResponse<>(DATABASE_ERROR);
         }
 
         return new BaseResponse<>();
@@ -94,22 +96,22 @@ public class UserController {
         boolean typeBol = type.equals(SingUpType.EMAIL.getValue());
 
         if (param == null || param.isBlank()) {
-            return new BaseResponse<>(BaseResponseStatus.INVALID_REQUEST);
+            return new BaseResponse<>(INVALID_REQUEST);
         }
 
         // 이메일일 경우 이메일 유효성 검사
-        if (typeBol && !Validator.isValidEmail(param)) {
-            return new BaseResponse<>(BaseResponseStatus.INVALID_REQUEST);
+        if (typeBol && !isValidEmail(param)) {
+            return new BaseResponse<>(INVALID_REQUEST);
         }
         boolean result = userService.checkType(param, typeBol);
 
         if(result) {
             return new BaseResponse<>();
         }
-        return new BaseResponse<>(typeBol ? BaseResponseStatus.DUPLICATE_EMAIL : BaseResponseStatus.DUPLICATE_USERNAME);
+        return new BaseResponse<>(typeBol ? DUPLICATE_EMAIL : DUPLICATE_USERNAME);
     }
 
-    @RequestMapping(value = "/signout", method = RequestMethod.POST)
+    @RequestMapping(value = "/signOut", method = RequestMethod.POST)
     @Operation(summary = "사용자 로그아웃", description = "사용자 로그아웃 ")
     public BaseResponse<Void> signout(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -128,7 +130,7 @@ public class UserController {
     /*
     * TODO - 참여 모임 , 작성한 리뷰 등 모임 관련 내용 추가 핋요
     * */
-    @RequestMapping(value = "/myprofile", method = RequestMethod.GET)
+    @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
     @Operation(summary = "마이 프로필", description = "사용자 정보 제공")
     public BaseResponse<Void> myprofile(
             @AuthenticationPrincipal UserDetails userDetails
@@ -159,10 +161,13 @@ public class UserController {
         UserDto user = null;
         try {
             user = userService.editUser(editUserRequestDto, file, userDetails.getUsername());
+            if(user != null) {
+                String accessToken = generateToken(user.getUserName());
+                user.setToken(accessToken);
+            }
             user.setPassword(null);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new BaseResponse<>(BaseResponseStatus.EDIT_USER_FAIL);
+            throw new BaseException(EDIT_USER_FAIL);
         }
 
         return new BaseResponse<>(user);

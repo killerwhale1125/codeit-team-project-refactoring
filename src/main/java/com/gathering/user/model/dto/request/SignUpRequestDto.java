@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class SignUpRequestDto extends BaseTimeEntity {
+public class SignUpRequestDto{
 
     @NotEmpty
     private String userName;
