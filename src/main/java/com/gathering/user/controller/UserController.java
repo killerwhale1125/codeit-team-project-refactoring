@@ -2,12 +2,10 @@ package com.gathering.user.controller;
 
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
+import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
-import com.gathering.user.model.dto.request.EditUserRequestDto;
-import com.gathering.user.model.dto.request.GetAccessTokenDto;
-import com.gathering.user.model.dto.request.SignInRequestDto;
-import com.gathering.user.model.dto.request.SignUpRequestDto;
+import com.gathering.user.model.dto.request.*;
 import com.gathering.user.service.UserService;
 import com.gathering.user.util.Validator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +36,7 @@ import static com.gathering.user.util.Validator.isValidEmail;
 @Validated  // 파라미터의 유효성 검사를 활성화
 public class UserController {
 
-
+    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
     @RequestMapping(value = "/getAccessToken", method = RequestMethod.POST)
@@ -58,11 +57,7 @@ public class UserController {
         UserDto userDto = userService.sginIn(requestDto);
         // 토큰 발급
         if(userDto != null) {
-            GetAccessTokenDto getAccessTokenDto= new GetAccessTokenDto();
-            getAccessTokenDto.setUserId(requestDto.userName());
-            getAccessTokenDto.setPassword(requestDto.password());
-            String accessToken = generateToken(getAccessTokenDto.getUserId());
-
+            String accessToken = generateToken(userDto.getUserName());
             userDto.setToken(accessToken);
             return new BaseResponse<>(userDto);
         }
@@ -172,4 +167,25 @@ public class UserController {
 
         return new BaseResponse<>(user);
     }
+
+    @RequestMapping(value = "/password/check", method = RequestMethod.POST)
+    @Operation(summary = "패스워드 확인", description = "패스워드 확인")
+    public BaseResponse<Void> passwordCheck(
+            @RequestBody PasswordCheckDto passwordCheckDto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        String username = userDetails.getUsername();
+
+        UserDto userDto = userService.selectUserInfo(username);
+
+        if (passwordEncoder.matches(passwordCheckDto.getPassword(), userDto.getPassword())) {
+            return new BaseResponse<>();
+        } else {
+            return new BaseResponse<>(BaseResponseStatus.PASSWORD_MISMATCHED);
+        }
+
+
+    }
+
 }

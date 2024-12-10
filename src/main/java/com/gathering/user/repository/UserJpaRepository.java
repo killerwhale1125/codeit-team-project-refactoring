@@ -17,4 +17,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         return  findByUserName(userName).orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_EXISTED_USER));
     }
 
+    default User findByEmailOrThrow(String email) {
+        return  findByEmail(email).orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_EXISTED_USER));
+    }
 }

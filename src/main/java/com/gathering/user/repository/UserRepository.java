@@ -24,4 +24,7 @@ public interface UserRepository {
     UserDto editUser(EditUserRequestDto editUserRequestDto, String fileName, long userId);
 
     void save(User user);
+
+    // 이메일로 사용자 찾기
+    UserDto selectUserByEmail(String email);
 }

@@ -91,4 +91,10 @@ public class UserRepositoryImpl implements UserRepository{
         userJpaRepository.save(user);
     }
 
+    @Override
+    public UserDto selectUserByEmail(String email) {
+        User user = userJpaRepository.findByEmailOrThrow(email);
+        return UserDto.fromEntity(user);
+    }
+
 }

@@ -34,11 +34,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto sginIn(SignInRequestDto requestDto) {
 
-        UserDto userDto = userRepository.selectUser(requestDto.userName());
+        UserDto userDto = userRepository.selectUserByEmail(requestDto.email());
 
         if (userDto == null) {
             return null;
-        } else if(userDto.getPassword().equals(passwordEncoder.encode(requestDto.password()))) {
+        } else if(passwordEncoder.matches(requestDto.password(), userDto.getPassword())) {
             userRepository.insertAttendance(userDto.getUsersId());
             userDto.setPassword(null);
             return userDto;
