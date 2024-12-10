@@ -32,7 +32,7 @@ public class GatheringController {
      * TODO -
      */
     @PostMapping
-    @Operation(summary = "모임 생성", description = "모임 생성 API (와이어 프레임 확인 후 데이터 추가 필요)")
+    @Operation(summary = "모임 생성", description = "gatheringStatus는 RECRUITING, 최소 인원 5 이상 최대인원 6 이상")
     public BaseResponse<Void> create(@RequestBody @Valid GatheringCreate gatheringCreate, @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.create(gatheringCreate, userDetails.getUsername());
         return new BaseResponse<>();
@@ -42,15 +42,15 @@ public class GatheringController {
      * TODO - 참여 클릭 시 동시성 제어 추후 필요
      */
     @PostMapping("/{gatheringId}/join")
-    @Operation(summary = "모임 참여", description = "모임 참여 API (와이어 프레임 확인 후 데이터 추가 필요)")
+    @Operation(summary = "모임 참여", description = "Notion 참고")
     public BaseResponse<Void> join(@PathVariable Long gatheringId,
                                    @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.join(gatheringId, userDetails.getUsername());
         return new BaseResponse<>();
     }
 
-    @PostMapping("/leave/{gatheringId}")
-    @Operation(summary = "모임 떠나기", description = "모임 떠나기 API (와이어 프레임 확인 후 데이터 추가 필요)")
+    @PostMapping("/{gatheringId}/leave")
+    @Operation(summary = "모임 떠나기", description = "Notion 참고")
     public BaseResponse<Void> leave(@PathVariable Long gatheringId,
                                     @RequestBody GatheringRequest gatheringRequest,
                                    @AuthenticationPrincipal UserDetails userDetails) {
@@ -59,7 +59,7 @@ public class GatheringController {
     }
 
     @DeleteMapping("/{gatheringId}")
-    @Operation(summary = "모임 삭제", description = "모임 삭제 API (와이어 프레임 확인 후 데이터 추가 필요)")
+    @Operation(summary = "모임 삭제", description = "Notion 참고")
     public BaseResponse<Void> delete(@PathVariable Long gatheringId,
                                      @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.delete(gatheringId, userDetails.getUsername());
@@ -70,7 +70,7 @@ public class GatheringController {
      * TODO -
      */
     @GetMapping("/{gatheringId}/users")
-    @Operation(summary = "모임 참여 상태에 따른 유저 조회", description = "모임 참여 상태에 따른 유저 조회 API (와이어 프레임 확인 후 데이터 추가 필요) 참여 상태 -> PARTICIPATING(참여 O), NOT_PARTICIPATING(참여 X)")
+    @Operation(summary = "모임 참여 상태에 따른 유저 조회", description = "참여 상태 -> PARTICIPATING(참여 O), NOT_PARTICIPATING(참여 X)")
     public BaseResponse<List<UserResponseDto>> findGatheringWithUsersByIdAndStatus(@PathVariable Long gatheringId,
                                                                                    @RequestParam GatheringUserStatus gatheringUserStatus) {
         return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus));
@@ -80,7 +80,7 @@ public class GatheringController {
      * TODO -
      */
     @PostMapping("/{gatheringId}/wish")
-    @Operation(summary = "모임 찜하기", description = "모임 찜하기 API")
+    @Operation(summary = "모임 찜하기", description = "Notion 참고")
     public BaseResponse<Void> wish(@PathVariable Long gatheringId,
                                        @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.wish(gatheringId, userDetails.getUsername());

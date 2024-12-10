@@ -4,6 +4,8 @@ import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
+import com.gathering.gathering.model.entity.GatheringStatus;
+import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.service.search.GatheringSearchService;
 import com.gathering.util.web.UserSessionKeyGenerator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,27 +32,31 @@ public class GatheringSearchController {
     private final GatheringSearchService gatheringSearchService;
 
     /**
-     * 모임 상태에 따른 모임 리스트 조회
-     * - 날짜 ( 시작일, 종료일 ) -> 유효성 검증 필요
-     * - 목표 독서 시간 ( 1 ~ 12 시간 )
-     * - 정렬 기준 -> 마감 임박, 참여 인원, 조회수, 신규 모임 순
-     *
      * TODO - 필터가 아예 설정되지 않을 경우 Default값은?
      *      - 쿼리 최적화 필요
      */
     @GetMapping
-    @Operation(summary = "모임 필터링 검색", description = "모임 필터링 검색 (와이어 프레임 확인 후 데이터 추가 필요)")
+    @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "파라미터 상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findGatherings(@ModelAttribute GatheringSearch gatheringSearch,
                                                                 @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
         return new BaseResponse<>(gatheringSearchService
                 .findGatherings(gatheringSearch, pageable));
     }
 
+    @GetMapping("/participating")
+    @Operation(summary = "내가 참여한 모임 리스트", description = "파라미터 상세 조건 Notion 참고")
+    public BaseResponse<GatheringSearchResponse> findMyGatherings(@AuthenticationPrincipal UserDetails userDetails,
+                                                                  @RequestParam(required = false) GatheringUserStatus gatheringUserStatus,
+                                                                  @RequestParam(required = false) GatheringStatus gatheringStatus,
+                                                                  @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
+        return new BaseResponse<>(gatheringSearchService.findMyGatherings(userDetails.getUsername(), pageable, gatheringStatus, gatheringUserStatus));
+    }
+
     /**
      * TODO - Challenge 정보 추가 여부 보류
      */
     @GetMapping("/{gatheringId}")
-    @Operation(summary = "모임 상세 조회", description = "모임 상세 조회 API, Challenge 정보 추가 여부 보류 (와이어 프레임 확인 후 데이터 추가 필요)")
+    @Operation(summary = "모임 상세 조회", description = "파라미터 상세 조건 Notion 참고")
     public BaseResponse<GatheringResponse> getById(@PathVariable Long gatheringId, HttpServletRequest request, HttpServletResponse response) {
         return new BaseResponse<>(gatheringSearchService.getById(gatheringId,
                 UserSessionKeyGenerator.generateUserKey(request, response)));

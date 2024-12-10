@@ -40,8 +40,8 @@ public enum BaseResponseStatus {
     USER_NOT_IN_CHALLENGE(HttpStatus.BAD_REQUEST, "USER_NOT_IN_CHALLENGE", "User is not part of the challenge."),
     HOST_CANNOT_LEAVE_GATHERING(HttpStatus.BAD_REQUEST, "HOST_CANNOT_LEAVE_GATHERING", "The host cannot leave the gathering."),
     INVALID_GOAL_PERIOD(HttpStatus.BAD_REQUEST, "INVALID_GOAL_PERIOD", "The goal period must be at least 1 day"),
-    INVALID_MIN_CAPACITY(HttpStatus.BAD_REQUEST, "INVALID_MIN_CAPACITY", "The minimum capacity must be at least 1"),
-    INVALID_MAX_CAPACITY(HttpStatus.BAD_REQUEST, "INVALID_MAX_CAPACITY", "The maximum capacity must be at least 1"),
+    INVALID_MIN_CAPACITY(HttpStatus.BAD_REQUEST, "INVALID_MIN_CAPACITY", "The minimum capacity must be at least 5"),
+    INVALID_MAX_CAPACITY(HttpStatus.BAD_REQUEST, "INVALID_MAX_CAPACITY", "The maximum capacity must be at least 6"),
     INVALID_CAPACITY_RANGE(HttpStatus.BAD_REQUEST, "INVALID_CAPACITY_RANGE", "The maximum capacity must be greater than or equal to the minimum capacity"),
 
     // Book & CATEGORY

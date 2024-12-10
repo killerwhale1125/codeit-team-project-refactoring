@@ -19,7 +19,7 @@ public interface GatheringRedisTemplate {
 
     Boolean hasKey(String dupKey);
 
-    void saveKeyWithExpire(String key, String s, long expireTime, TimeUnit seconds);
+    void saveKeyWithExpire(String key, String isTrue, long expireTime, TimeUnit seconds);
 
     void saveList(String expiredKey, String value);
 

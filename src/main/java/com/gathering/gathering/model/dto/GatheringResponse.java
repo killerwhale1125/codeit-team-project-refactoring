@@ -1,26 +1,28 @@
 package com.gathering.gathering.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GatheringResponse {
 
     private Long id;
     private String name;
     private String content;
-    private long goalDays;
+    private Long goalDays;
+    private Integer readingTimeGoal;
+    private LocalDate startDate;
     private LocalDate endDate;
-    private int minCapacity;
-    private int maxCapacity;
+    private Integer minCapacity;
+    private Integer maxCapacity;
     private GatheringStatus gatheringStatus;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
@@ -28,6 +30,7 @@ public class GatheringResponse {
     private String bookImage;
     private String publisher;
     private String publishDate;
+    private Double star;
 
     public static GatheringResponse fromEntity(Gathering gathering) {
         return GatheringResponse.builder()
@@ -35,7 +38,9 @@ public class GatheringResponse {
                 .name(gathering.getName())
                 .content(gathering.getContent())
                 .goalDays(gathering.getGoalDays())
-                .endDate(gathering.getEndDateTime())
+                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .startDate(gathering.getStartDate())
+                .endDate(gathering.getEndDate())
                 .minCapacity(gathering.getMinCapacity())
                 .maxCapacity(gathering.getMaxCapacity())
                 .gatheringStatus(gathering.getGatheringStatus())
@@ -44,7 +49,16 @@ public class GatheringResponse {
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
                 .publisher(gathering.getBook().getPublisher())
-                .publishDate(gathering.getBook().getPublisher())
+                .publishDate(gathering.getBook().getPublishDate())
+                .star(gathering.getBook().getStar())
+                .build();
+    }
+
+    public static GatheringResponse myGatheringFromEntity(Gathering gathering) {
+        return GatheringResponse.builder()
+                .name(gathering.getName())
+                .startDate(gathering.getStartDate())
+                .endDate(gathering.getEndDate())
                 .build();
     }
 }

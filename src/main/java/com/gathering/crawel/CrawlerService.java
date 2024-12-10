@@ -33,7 +33,7 @@ public class CrawlerService {
             String author = authors.size() > i ? authors.get(i) : "저자 미제공";
             String publisher = publishers.size() > i ? publishers.get(i) : "출판사 미제공";
             String publishDateStr = bookPublishDates.size() > i ? bookPublishDates.get(i) : "출판일 미제공";
-            String star = bookRatings.size() > i ? bookRatings.get(i) : "평점 미제공";
+            double star = bookRatings.size() > i ? Double.parseDouble(bookRatings.get(i)) : 0.0;
 //            YearMonth publisherDate = parsePublishDate(publishDateStr);
 
             // 책 이미 저장되어있으면 건너뛰기

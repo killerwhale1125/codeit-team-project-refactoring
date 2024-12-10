@@ -5,6 +5,7 @@ import com.gathering.util.holder.DateCalculateHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import static com.gathering.common.base.response.BaseResponseStatus.INVALID_GOAL_PERIOD;
@@ -23,5 +24,10 @@ public class DateCalculateUtil implements DateCalculateHolder {
 
         // LocalDate 객체 간 차이를 ChronoUnit.DAYS.between()을 사용하여 계산
         return ChronoUnit.DAYS.between(startDate, endDate);
+    }
+
+    @Override
+    public long calculateSecondsUntilStart(LocalDate startDate, LocalDateTime now) {
+        return ChronoUnit.SECONDS.between(now, startDate.atStartOfDay());
     }
 }

@@ -13,4 +13,8 @@ public interface ChallengeJpaRepository extends JpaRepository<Challenge, Long> {
     @EntityGraph(attributePaths = {"challengeUsers"})
     @Query("SELECT c FROM Challenge c WHERE c.id = :challengeId")
     Optional<Challenge> getChallengeUsersById(@Param("challengeId") Long challengeId);
+
+    @EntityGraph(attributePaths = {"gathering"})
+    @Query("SELECT c FROM Challenge c WHERE c.id = :challengeId")
+    Optional<Challenge> findGatheringAndChallengeById(@Param("challengeId") Long challengeId);
 }
