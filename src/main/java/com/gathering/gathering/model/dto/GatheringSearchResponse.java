@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -27,6 +28,13 @@ public class GatheringSearchResponse {
         return GatheringSearchResponse.builder()
                 .gatheringResponses(gatheringResponses)
                 .totalCount(totalCount)
+                .build();
+    }
+
+    public static GatheringSearchResponse empty() {
+        return GatheringSearchResponse.builder()
+                .gatheringResponses(new ArrayList<>())
+                .totalCount(0L)
                 .build();
     }
 }

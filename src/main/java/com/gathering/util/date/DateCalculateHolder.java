@@ -1,4 +1,4 @@
-package com.gathering.util.holder;
+package com.gathering.util.date;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

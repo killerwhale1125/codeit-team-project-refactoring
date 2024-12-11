@@ -13,4 +13,10 @@ public interface GatheringSearchService {
     GatheringResponse getById(Long gatheringId, String userKey);
 
     GatheringSearchResponse findMyGatherings(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
+
+    GatheringSearchResponse findTop5Gatherings();
+
+    GatheringSearchResponse findMyCreated(String username, Pageable pageable);
+
+    GatheringSearchResponse findMyWishes(String username, Pageable pageable);
 }

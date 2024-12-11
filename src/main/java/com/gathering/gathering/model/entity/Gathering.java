@@ -7,7 +7,7 @@ import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.user.model.entitiy.User;
-import com.gathering.util.holder.DateCalculateHolder;
+import com.gathering.util.date.DateCalculateHolder;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,6 +40,7 @@ public class Gathering extends BaseTimeEntity {
     private int currentCapacity = 0;
     private long ownerId;
     private long viewCount;
+    private String thumbnail;
 
     @Enumerated(EnumType.STRING)
     private GatheringStatus gatheringStatus;

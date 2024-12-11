@@ -16,7 +16,7 @@ import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
-import com.gathering.util.holder.DateCalculateHolder;
+import com.gathering.util.date.DateCalculateHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

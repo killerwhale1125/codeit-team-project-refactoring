@@ -8,8 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
+import java.util.Set;
+
 public interface GatheringSearchRepository {
     Slice<Gathering> findGatherings(GatheringSearch gatheringSearch, Pageable pageable);
 
     Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
+
+    Page<Gathering> findMyCreated(Long userId, Pageable pageable);
+
+    Page<Gathering> findMyWishes(Set<Long> wishGatheringIds, Pageable pageable);
 }

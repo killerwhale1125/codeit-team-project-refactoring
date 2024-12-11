@@ -53,10 +53,13 @@ public enum BaseResponseStatus {
 
     // Other
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "UNKNOWN_ERROR", "Unknown error"),
-    UNSUPPORTED_FILETYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "UNSUPPORTED_FILETYPE", "Unsupported File Type!"),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "Invalid request parameters"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Internal Server Error!"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "Bad Request"),
+
+    // File
+    UNSUPPORTED_FILETYPE(HttpStatus.BAD_REQUEST, "UNSUPPORTED_FILETYPE", "Unsupported File Type!"),
+    NON_EXISTED_IMAGE(HttpStatus.NOT_FOUND, "IMAGE_NOT_FOUND", "This image does not exist"),
 
     // Oauth
     SC_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SC_UNAUTHORIZED", "Unauthorized: Missing or invalid JWT");

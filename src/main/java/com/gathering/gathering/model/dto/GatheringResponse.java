@@ -32,6 +32,7 @@ public class GatheringResponse {
     private String publisher;
     private String publishDate;
     private Double star;
+    private Double completeRate;
 
     public static GatheringResponse fromEntity(Gathering gathering) {
         return GatheringResponse.builder()
@@ -61,6 +62,10 @@ public class GatheringResponse {
                 .name(gathering.getName())
                 .startDate(gathering.getStartDate())
                 .endDate(gathering.getEndDate())
+                .completeRate(gathering.getChallenge().getCompleteRate())
+                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .bookTitle(gathering.getBook().getTitle())
+                .bookImage(gathering.getBook().getImage())
                 .build();
     }
 }

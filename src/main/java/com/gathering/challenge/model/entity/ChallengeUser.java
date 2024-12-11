@@ -28,12 +28,14 @@ public class ChallengeUser extends BaseTimeEntity {
     private User user;
 
     private LocalDateTime attendanceDate;   // 출석 날짜
-    private double attendanceRate;
+    private double attendanceRate;  // 출석률
+    private double readingRate; // 독서 달성률
 
     public static ChallengeUser createChallengeUser(User user) {
         ChallengeUser challengeUser = new ChallengeUser();
         challengeUser.attendanceDate = null;
         challengeUser.attendanceRate = 0.0;
+        challengeUser.readingRate = 0.0;
         challengeUser.addUser(user);
         return challengeUser;
     }
