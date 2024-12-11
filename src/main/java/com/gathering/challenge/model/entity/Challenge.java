@@ -37,7 +37,7 @@ public class Challenge extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ChallengeStatus challengeStatus;
 
-    private double completeRate;    // 챌린지 달성률
+    private double completeRate;    // 챌린지 전체 달성률 ( 유저 비율당 계산 예정 )
     private LocalDate startDateTime;
     private LocalDate endDateTime;  // 챌린지 종료일
     private ReadingTimeGoal readingTimeGoal;

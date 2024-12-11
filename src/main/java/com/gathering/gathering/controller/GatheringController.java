@@ -33,7 +33,7 @@ public class GatheringController {
      */
     @PostMapping
     @Operation(summary = "모임 생성", description = "gatheringStatus는 RECRUITING, 최소 인원 5 이상 최대인원 6 이상")
-    public BaseResponse<Void> create(@RequestBody @Valid GatheringCreate gatheringCreate, @AuthenticationPrincipal UserDetails userDetails) {
+    public BaseResponse<Void> create(@RequestPart @Valid GatheringCreate gatheringCreate, @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.create(gatheringCreate, userDetails.getUsername());
         return new BaseResponse<>();
     }

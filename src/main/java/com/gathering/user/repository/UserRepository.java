@@ -5,6 +5,8 @@ import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.User;
 
+import java.util.Set;
+
 public interface UserRepository {
     
     // 사용자 정보 조회
@@ -27,4 +29,6 @@ public interface UserRepository {
 
     // 이메일로 사용자 찾기
     UserDto selectUserByEmail(String email);
+
+    Set<Long> findWishGatheringIdsByUserName(String username);
 }

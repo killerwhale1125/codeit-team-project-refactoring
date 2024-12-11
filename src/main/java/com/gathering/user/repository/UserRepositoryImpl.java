@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
 
@@ -95,6 +96,11 @@ public class UserRepositoryImpl implements UserRepository{
     public UserDto selectUserByEmail(String email) {
         User user = userJpaRepository.findByEmailOrThrow(email);
         return UserDto.fromEntity(user);
+    }
+
+    @Override
+    public Set<Long> findWishGatheringIdsByUserName(String username) {
+        return userJpaRepository.findWishGatheringIdsByUserName(username);
     }
 
 }

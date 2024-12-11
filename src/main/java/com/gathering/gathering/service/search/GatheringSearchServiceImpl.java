@@ -19,6 +19,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
@@ -57,30 +58,39 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public GatheringSearchResponse findMyGatherings(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
         Page<Gathering> result = gatheringSearchJpaRepository.findGatheringsForUserByUsername(username, pageable, gatheringStatus, gatheringUserStatus);
-
-        List<GatheringResponse> gatheringResponses = result.getContent().stream()
-                .map(GatheringResponse::myGatheringFromEntity)
-                .collect(Collectors.toList());
-
-        return GatheringSearchResponse.myGatheringsFromEntity(gatheringResponses, result.getTotalElements());
+        return getMyGatheringPage(result);
     }
 
     @Override
-    public GatheringSearchResponse findMyCreatedGatherings(String username, Pageable pageable) {
+    public GatheringSearchResponse findMyCreated(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username);
+        Page<Gathering> result = gatheringSearchJpaRepository.findMyCreated(user.getId(), pageable);
+        return getMyGatheringPage(result);
+    }
 
-        Page<Gathering> result = gatheringSearchJpaRepository.findMyCreatedGatherings(user.getId(), pageable);
+    @Override
+    public GatheringSearchResponse findMyWishes(String username, Pageable pageable) {
+        Set<Long> wishGatheringIds = userRepository.findWishGatheringIdsByUserName(username);
 
-        List<GatheringResponse> gatheringResponses = result.getContent().stream()
-                .map(GatheringResponse::myGatheringFromEntity)
-                .collect(Collectors.toList());
+        if (wishGatheringIds.isEmpty()) {
+            return GatheringSearchResponse.empty();
+        }
 
-        return GatheringSearchResponse.myGatheringsFromEntity(gatheringResponses, result.getTotalElements());
+        Page<Gathering> result = gatheringSearchJpaRepository.findMyWishes(wishGatheringIds, pageable);
+        return getMyGatheringPage(result);
     }
 
     @Override
     public GatheringSearchResponse findTop5Gatherings() {
 
         return null;
+    }
+
+    public GatheringSearchResponse getMyGatheringPage(Page<Gathering> result) {
+        List<GatheringResponse> gatheringResponses = result.getContent().stream()
+                .map(GatheringResponse::myGatheringFromEntity)
+                .collect(Collectors.toList());
+
+        return GatheringSearchResponse.myGatheringsFromEntity(gatheringResponses, result.getTotalElements());
     }
 }

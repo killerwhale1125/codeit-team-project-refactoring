@@ -16,5 +16,7 @@ public interface GatheringSearchService {
 
     GatheringSearchResponse findTop5Gatherings();
 
-    GatheringSearchResponse findMyCreatedGatherings(String username, Pageable pageable);
+    GatheringSearchResponse findMyCreated(String username, Pageable pageable);
+
+    GatheringSearchResponse findMyWishes(String username, Pageable pageable);
 }

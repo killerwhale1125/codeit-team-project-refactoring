@@ -66,6 +66,12 @@ public class GatheringSearchController {
     @Operation(summary = "내가 만든 모임 리스트", description = "파라미터 상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> my(@AuthenticationPrincipal UserDetails userDetails,
                                                     @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.findMyCreatedGatherings(userDetails.getUsername(), pageable));
+        return new BaseResponse<>(gatheringSearchService.findMyCreated(userDetails.getUsername(), pageable));
+    }
+
+    @GetMapping("/wishes")
+    public BaseResponse<GatheringSearchResponse> wishes(@AuthenticationPrincipal UserDetails userDetails,
+                                                        @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
+        return new BaseResponse<>(gatheringSearchService.findMyWishes(userDetails.getUsername(), pageable));
     }
 }
