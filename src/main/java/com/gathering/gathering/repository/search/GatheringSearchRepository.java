@@ -12,4 +12,6 @@ public interface GatheringSearchRepository {
     Slice<Gathering> findGatherings(GatheringSearch gatheringSearch, Pageable pageable);
 
     Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
+
+    Page<Gathering> findMyCreatedGatherings(Long userId, Pageable pageable);
 }

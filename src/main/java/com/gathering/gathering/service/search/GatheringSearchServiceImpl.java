@@ -10,6 +10,7 @@ import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.redis.GatheringRedisTemplate;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.gathering.service.GatheringSearchAsync;
+import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
     private final GatheringSearchAsync gatheringSearchAsync;
     private final GatheringRedisTemplate gatheringRedisTemplate;
+    private final UserRepository userRepository;
 
     @Override
     public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
@@ -55,9 +57,30 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public GatheringSearchResponse findMyGatherings(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
         Page<Gathering> result = gatheringSearchJpaRepository.findGatheringsForUserByUsername(username, pageable, gatheringStatus, gatheringUserStatus);
+
         List<GatheringResponse> gatheringResponses = result.getContent().stream()
                 .map(GatheringResponse::myGatheringFromEntity)
                 .collect(Collectors.toList());
+
         return GatheringSearchResponse.myGatheringsFromEntity(gatheringResponses, result.getTotalElements());
+    }
+
+    @Override
+    public GatheringSearchResponse findMyCreatedGatherings(String username, Pageable pageable) {
+        User user = userRepository.findByUsername(username);
+
+        Page<Gathering> result = gatheringSearchJpaRepository.findMyCreatedGatherings(user.getId(), pageable);
+
+        List<GatheringResponse> gatheringResponses = result.getContent().stream()
+                .map(GatheringResponse::myGatheringFromEntity)
+                .collect(Collectors.toList());
+
+        return GatheringSearchResponse.myGatheringsFromEntity(gatheringResponses, result.getTotalElements());
+    }
+
+    @Override
+    public GatheringSearchResponse findTop5Gatherings() {
+
+        return null;
     }
 }

@@ -72,6 +72,8 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         JPAQuery<Gathering> query = queryFactory.select(gathering)
                 .from(gathering)
                 .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .leftJoin(gathering.challenge, challenge).fetchJoin()
+                .leftJoin(gathering.book, book).fetchJoin()
                 .where(gatheringUser.user.userName.eq(username).and(builder));
 
         List<Gathering> result = query.offset(pageable.getOffset())  // 페이지 시작 위치
@@ -84,6 +86,25 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .where(gatheringUser.user.userName.eq(username).and(builder))
                 .fetchCount();
 
+        return new PageImpl<>(result, pageable, totalCount);
+    }
+
+    // 내가 만든 모임
+    @Override
+    public Page<Gathering> findMyCreatedGatherings(Long userId, Pageable pageable) {
+        List<Gathering> result = queryFactory.select(gathering)
+                .from(gathering)
+                .leftJoin(gathering.challenge, challenge).fetchJoin()
+                .leftJoin(gathering.book, book).fetchJoin()
+                .where(gathering.ownerId.eq(userId))
+                .offset(pageable.getOffset())  // 페이지 시작 위치
+                .limit(pageable.getPageSize()) // 페이지 크기
+                .fetch();
+
+        long totalCount = queryFactory.select(gathering.id)
+                .from(gathering)
+                .where(gathering.ownerId.eq(userId))
+                .fetchCount();
         return new PageImpl<>(result, pageable, totalCount);
     }
 }
