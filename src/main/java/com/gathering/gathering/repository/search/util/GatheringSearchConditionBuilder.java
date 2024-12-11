@@ -27,7 +27,7 @@ public class GatheringSearchConditionBuilder {
             builder.and(gathering.challenge.endDateTime.loe(gatheringSearch.getEndDate()));
         }
 
-        if (gatheringSearch.getGoalTime() != null && gatheringSearch.getGoalTime() > 0) {
+        if (gatheringSearch.getReadingTimeGoals() != null) {
             builder.and(gathering.challenge.readingTimeGoal.in(gatheringSearch.getReadingTimeGoals()));
         }
 

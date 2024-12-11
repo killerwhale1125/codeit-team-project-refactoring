@@ -17,7 +17,6 @@ public class GatheringSearch {
     private String bookTitle;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long goalTime;
     private GatheringStatus gatheringStatus;
     private List<ReadingTimeGoal> readingTimeGoals;
 }
