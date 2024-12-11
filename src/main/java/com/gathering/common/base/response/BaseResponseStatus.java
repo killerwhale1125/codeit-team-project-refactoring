@@ -59,6 +59,7 @@ public enum BaseResponseStatus {
 
     // File
     UNSUPPORTED_FILETYPE(HttpStatus.BAD_REQUEST, "UNSUPPORTED_FILETYPE", "Unsupported File Type!"),
+    NON_EXISTED_IMAGE(HttpStatus.NOT_FOUND, "IMAGE_NOT_FOUND", "This image does not exist"),
 
     // Oauth
     SC_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SC_UNAUTHORIZED", "Unauthorized: Missing or invalid JWT");

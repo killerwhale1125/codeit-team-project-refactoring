@@ -70,6 +70,7 @@ public class GatheringSearchController {
     }
 
     @GetMapping("/wishes")
+    @Operation(summary = "내가 찜한 모임 리스트", description = "파라미터 상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> wishes(@AuthenticationPrincipal UserDetails userDetails,
                                                         @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
         return new BaseResponse<>(gatheringSearchService.findMyWishes(userDetails.getUsername(), pageable));

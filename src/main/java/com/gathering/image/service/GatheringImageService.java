@@ -5,8 +5,10 @@ import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.image.entity.EntityType;
 import com.gathering.image.entity.Image;
 import com.gathering.image.repository.ImageJdbcRepository;
+import com.gathering.image.repository.ImageRepository;
 import com.gathering.util.image.FileUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,13 +17,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class GatheringImageUploadService {
+public class GatheringImageService {
 
     private final AwsS3Service awsS3Service;
     private final ImageJdbcRepository imageJdbcRepository;
     private final GatheringRepository gatheringRepository;
+    private final ImageRepository imageRepository;
 
     @Transactional
     public void upload(Long gatheringId, List<MultipartFile> files) throws IOException {
@@ -40,7 +44,7 @@ public class GatheringImageUploadService {
     /**
      * AWS S3 이미지 업로드
      */
-    private List<Image> uploadImageToStorageServer(List<MultipartFile> files, Gathering gathering){
+    private List<Image> uploadImageToStorageServer(List<MultipartFile> files, Gathering gathering) {
         return files.stream()
                 .map(file -> {
                     try {
@@ -63,5 +67,20 @@ public class GatheringImageUploadService {
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void delete(Long gatheringId) {
+        imageRepository.findImageByGatheringId(gatheringId).stream()
+                .forEach(image -> {
+                    try {
+                        awsS3Service.delete(image.getUrl());
+                    } catch (Exception e) {
+                        // 로깅 및 예외 처리
+                        log.error("Failed to delete image from S3: " + image.getUrl(), e);
+                    }
+                });
+
+        imageJdbcRepository.deleteAllByGatheringId(gatheringId);
     }
 }

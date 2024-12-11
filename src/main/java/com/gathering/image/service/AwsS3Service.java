@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,16 @@ public class AwsS3Service implements StorageService {
 
     public String upload(MultipartFile file, String filename, EntityType entityType) throws IOException {
         return putObjectToS3Storage(client, FileUtils.getFilePath(file, filename, entityType, uploadPath), file);
+    }
+
+    // S3에서 파일 삭제
+    public void delete(String filePath) throws URISyntaxException {
+        // URL을 URI로 파싱
+        URI uri = new URI(filePath);
+
+        // URI에서 호스트를 제외한 경로만 추출
+        String path = uri.getPath().substring(1);
+        client.deleteObject(properties.getBucket(), path);
     }
 
     /**

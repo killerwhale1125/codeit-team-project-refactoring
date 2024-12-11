@@ -16,6 +16,8 @@ public class ImageJdbcRepository {
             "`image`(`image_name` , `image_url`, `created_time`, `modified_time`, `gathering_id`, `is_removed`) " +
             "VALUES(?, ?, ?, ?, ?, ?)";
 
+    private static final String BULK_DELETE_SQL = "DELETE FROM `image` WHERE `gathering_id` = ?";
+
     private final JdbcTemplate jdbcTemplate;
 
     /**
@@ -34,5 +36,12 @@ public class ImageJdbcRepository {
                     ps.setLong(5, image.getGathering().getId());
                     ps.setBoolean(6, image.isRemoved());
                 });
+    }
+
+    /**
+     * 특정 gatheringId에 해당하는 이미지 벌크 삭제
+     */
+    public void deleteAllByGatheringId(Long gatheringId) {
+        jdbcTemplate.update(BULK_DELETE_SQL, gatheringId);
     }
 }
