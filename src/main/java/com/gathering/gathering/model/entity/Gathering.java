@@ -119,7 +119,6 @@ public class Gathering extends BaseTimeEntity {
         gatheringValidator.validateCapacityLimit(this.currentCapacity, maxCapacity);
         gatheringUsers.add(gatheringUser);
         gatheringUser.addGathering(this);
-        this.currentCapacity++;
     }
 
     // 모임에 챌린지 추가

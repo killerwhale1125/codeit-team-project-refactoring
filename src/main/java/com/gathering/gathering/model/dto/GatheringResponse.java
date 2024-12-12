@@ -62,6 +62,7 @@ public class GatheringResponse {
                 .name(gathering.getName())
                 .startDate(gathering.getStartDate())
                 .endDate(gathering.getEndDate())
+                .currentCapacity(gathering.getCurrentCapacity())
                 .completeRate(gathering.getChallenge().getCompleteRate())
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
                 .bookTitle(gathering.getBook().getTitle())
