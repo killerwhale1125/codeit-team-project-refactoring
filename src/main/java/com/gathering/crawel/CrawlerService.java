@@ -20,7 +20,7 @@ public class CrawlerService {
     private final CategoryJpaRepository categoryJpaRepository;
 
     @Transactional
-    public void saveBooksFromCrawler(String categoryName, List<String> titles, List<String> images, List<String> authors, List<String> publishers, List<String> bookPublishDates, List<String> bookRatings) {
+    public void saveBooksFromCrawler(String categoryName, List<String> titles, List<String> images, List<String> authors, List<String> publishers, List<String> bookPublishDates, List<String> bookRatings, List<Integer> bookPages, List<String> bookDescriptions) {
         // 카테고리 찾거나 생성
         if(categoryRepository.existCategoryByName(categoryName)) return;
 
@@ -34,6 +34,8 @@ public class CrawlerService {
             String publisher = publishers.size() > i ? publishers.get(i) : "출판사 미제공";
             String publishDateStr = bookPublishDates.size() > i ? bookPublishDates.get(i) : "출판일 미제공";
             double star = bookRatings.size() > i ? Double.parseDouble(bookRatings.get(i)) : 0.0;
+            String introduce = bookDescriptions.size() > i ? bookDescriptions.get(i) : "";
+            int page = bookPages.size() > i ? bookPages.get(i) : 0;
 //            YearMonth publisherDate = parsePublishDate(publishDateStr);
 
             // 책 이미 저장되어있으면 건너뛰기
@@ -41,7 +43,7 @@ public class CrawlerService {
 
             // BookCategory 생성 및 저장
             BookCategory bookCategory = BookCategory.createBookCategory(category);
-            Book book = Book.createBook(title, image, author, publisher, bookCategory, publishDateStr, star);
+            Book book = Book.createBook(title, image, author, publisher, bookCategory, publishDateStr, star, introduce, page);
 
             bookRepository.save(book);
         }

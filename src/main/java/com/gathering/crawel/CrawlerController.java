@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class CrawlerController {
 
     private final AladinCrawlerTask aladinCrawlerTask;
+    private final Yes24CrawlerTask yes24CrawlerTask;
 
-    @GetMapping("/crawler")
+//    @GetMapping("/crawler")
     public BaseResponse<Void> crawler() {
-        aladinCrawlerTask.crawlAndSave();
+        yes24CrawlerTask.crawlAndSave();
         return new BaseResponse<>();
     }
 }
