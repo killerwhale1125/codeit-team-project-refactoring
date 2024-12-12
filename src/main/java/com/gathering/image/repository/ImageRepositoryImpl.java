@@ -1,7 +1,7 @@
 package com.gathering.image.repository;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.entity.Image;
+import com.gathering.image.model.entity.Image;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

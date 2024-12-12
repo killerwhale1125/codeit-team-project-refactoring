@@ -3,6 +3,7 @@ package com.gathering.gathering.controller;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringRequest;
+import com.gathering.gathering.model.dto.GatheringUpdate;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.service.GatheringService;
 import com.gathering.user.model.dto.response.UserResponseDto;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,9 +35,17 @@ public class GatheringController {
      */
     @PostMapping
     @Operation(summary = "모임 생성", description = "gatheringStatus는 RECRUITING, 최소 인원 5 이상 최대인원 6 이상")
-    public BaseResponse<Void> create(@RequestBody @Valid GatheringCreate gatheringCreate, @AuthenticationPrincipal UserDetails userDetails) {
-        gatheringService.create(gatheringCreate, userDetails.getUsername());
+    public BaseResponse<Void> create(@RequestPart("gatheringCreate") @Valid GatheringCreate gatheringCreate,
+                                     @RequestPart(value = "file", required = false) List<MultipartFile> files,
+                                     @AuthenticationPrincipal UserDetails userDetails) {
+        gatheringService.create(gatheringCreate, files, userDetails.getUsername());
         return new BaseResponse<>();
+    }
+
+    @PatchMapping("/{gatheringId}")
+    public BaseResponse<Void> update(@RequestBody @Valid GatheringUpdate gatheringUpdate, @AuthenticationPrincipal UserDetails userDetails) {
+        gatheringService.update(gatheringUpdate, userDetails.getUsername());
+        return null;
     }
 
     /**

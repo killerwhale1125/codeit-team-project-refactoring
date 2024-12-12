@@ -1,30 +1,23 @@
 package com.gathering.gathering.service;
 
-import com.gathering.book.model.entity.Book;
-import com.gathering.book.repository.BookRepository;
-import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.challenge.model.entity.ChallengeUser;
-import com.gathering.challenge.redis.ChallengeRedisKey;
-import com.gathering.challenge.redis.ChallengeRedisTemplate;
-import com.gathering.challenge.repository.ChallengeRepository;
+import com.gathering.challenge.redis.ChallengeRedisService;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.gathering.model.dto.GatheringUpdate;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
-import com.gathering.gathering.validator.GatheringValidator;
+import com.gathering.gathering.util.GatheringActions;
+import com.gathering.image.service.gathering.GatheringImageService;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
-import com.gathering.util.date.DateCalculateHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,63 +25,31 @@ public class GatheringServiceImpl implements GatheringService {
 
     private final GatheringRepository gatheringRepository;
     private final UserRepository userRepository;
-    private final DateCalculateHolder dateCalculateHolder;
-    private final BookRepository bookRepository;
-    private final GatheringValidator gatheringValidator;
-    private final ChallengeRepository challengeRepository;
-    private final ChallengeRedisTemplate challengeRedisTemplate;
+    private final GatheringImageService gatheringImageService;
+    private final GatheringActions gatheringActions;
+    private final ChallengeRedisService challengeRedisService;
 
-    /**
-     * 모임 생성
-     */
     @Override
     @Transactional
-    public void create(GatheringCreate gatheringCreate, String username) {
-        User user = userRepository.findByUsername(username);
-        Book book = bookRepository.findBookByBookIdAndCategoryId(gatheringCreate.getBookId(), gatheringCreate.getCategoryId());
-        book.incrementSelectedCount();
-        // Gathering 생성 ( 양방향 관계 설정 )
-        Gathering gathering = Gathering.createGathering(
-                gatheringCreate,
-                Challenge.createChallenge(gatheringCreate, ChallengeUser.createChallengeUser(user)),    // Challenge 생성 ( 양방향 관계 설정 )
-                book,
-                GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING),
-                dateCalculateHolder,
-                gatheringValidator);
-
+    public void create(GatheringCreate gatheringCreate, List<MultipartFile> files, String username) {
+        Gathering gathering = gatheringActions.createGathering(gatheringCreate, username);
         gatheringRepository.save(gathering);
-
-        long secondsUntilStart = dateCalculateHolder.calculateSecondsUntilStart(gathering.getStartDate(), LocalDateTime.now());
-        String challengeWaitingKey = ChallengeRedisKey.generateWaitingKey(gathering.getChallenge().getId());
-
-        challengeRedisTemplate.saveKeyWithExpire(challengeWaitingKey, "1", secondsUntilStart, TimeUnit.SECONDS);
+        // 현재 시간에서 모임 시작일까지 시간 간격을 계산하여 그 시간을 만료설정으로 레디스에 저장하여 Pub/Sub 이벤트 발생시켜 추후 Challenge 상태변화
+        challengeRedisService.scheduleChallengeStateChange(gathering.getChallenge(), gathering.getStartDate());
+        // 이미지 저장
+        gatheringImageService.uploadGatheringImage(gathering.getId(), files);
     }
 
-    /**
-     * 모임 참여
-     */
     @Override
     @Transactional
     public void join(Long gatheringId, String userName) {
-        User user = userRepository.findByUsername(userName);
-        Gathering gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
-        Gathering.join(gathering, user, GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING), gatheringValidator);
-        Challenge.join(gathering.getChallenge(), ChallengeUser.createChallengeUser(user));
+        gatheringActions.joinGathering(gatheringId, userName);
     }
 
-    /**
-     * 모임 떠나기
-     */
     @Override
     @Transactional
     public void leave(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus) {
-        Gathering gathering = gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus);
-        User user = userRepository.findByUsername(username);
-
-        Gathering.leave(gathering, user);
-
-        Challenge challenge = challengeRepository.getChallengeUsersById(gathering.getChallenge().getId());
-        Challenge.leave(challenge, user);
+        gatheringActions.leaveGathering(gatheringId, username, gatheringUserStatus);
     }
 
     @Override
@@ -99,26 +60,21 @@ public class GatheringServiceImpl implements GatheringService {
         userRepository.save(user);
     }
 
-    /**
-     * 모임 삭제
-     */
+    @Override
+    public void update(GatheringUpdate gatheringUpdate, String username) {
+
+    }
+
     @Override
     @Transactional
     public void delete(Long gatheringId, String userName) {
-        User user = userRepository.findByUsername(userName);
-        Gathering gathering = gatheringRepository.getById(gatheringId);
-        gatheringValidator.validateOwner(gathering.getOwnerId(), user.getId());
-        gatheringRepository.delete(gathering);
+        gatheringRepository.delete(gatheringActions.deleteGathering(gatheringId, userName));
     }
 
-    /**
-     * 모임 참여 상태에 따른 유저 조회
-     */
     @Override
     public List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringUserStatus) {
-        return gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus).getGatheringUsers().stream()
-                .map(gatheringUser -> UserResponseDto.fromEntity(gatheringUser.getUser()))
-                .collect(Collectors.toList());
+        List<GatheringUser> gatheringUsers = gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus).getGatheringUsers();
+        return gatheringActions.mapToUserResponseDtos(gatheringUsers);
     }
 
 }

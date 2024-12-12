@@ -1,4 +1,4 @@
-package com.gathering.image.entity;
+package com.gathering.image.model.entity;
 
 public enum EntityType {
     GATHERING("gathering"),

@@ -39,8 +39,7 @@ public class GatheringSearchController {
     @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "파라미터 상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findGatherings(@ModelAttribute GatheringSearch gatheringSearch,
                                                                 @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService
-                .findGatherings(gatheringSearch, pageable));
+        return new BaseResponse<>(gatheringSearchService.findGatherings(gatheringSearch, pageable));
     }
 
     @GetMapping("/participating")

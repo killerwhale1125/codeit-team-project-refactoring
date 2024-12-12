@@ -1,21 +1,31 @@
-package com.gathering.image.service;
+package com.gathering.image.service.gathering;
 
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.repository.GatheringRepository;
-import com.gathering.image.entity.EntityType;
-import com.gathering.image.entity.Image;
-import com.gathering.image.repository.ImageJdbcRepository;
+import com.gathering.image.model.DefaultMultipartFile;
+import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.model.entity.Image;
+import com.gathering.image.repository.gathering.GatheringImageJdbcRepository;
 import com.gathering.image.repository.ImageRepository;
+import com.gathering.image.service.AwsS3Service;
 import com.gathering.util.image.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.gathering.common.base.response.BaseResponseStatus.FILE_UPLOAD_FAILED;
+import static com.gathering.common.base.response.BaseResponseStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @Service
@@ -23,14 +33,23 @@ import java.util.stream.Collectors;
 public class GatheringImageService {
 
     private final AwsS3Service awsS3Service;
-    private final ImageJdbcRepository imageJdbcRepository;
-    private final GatheringRepository gatheringRepository;
+    private final GatheringImageJdbcRepository gatheringImageJdbcRepository;
     private final ImageRepository imageRepository;
+    private final GatheringRepository gatheringRepository;
 
     @Transactional
-    public void upload(Long gatheringId, List<MultipartFile> files) throws IOException {
+    public void uploadGatheringImage(Long gatheringId, List<MultipartFile> files) {
         Gathering gathering = gatheringRepository.getById(gatheringId);
-        upload(files, gathering);
+        upload(validateAndPrepareFiles(files), gathering);
+    }
+
+    private List<MultipartFile> validateAndPrepareFiles(List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) {
+            List<MultipartFile> defaultFiles = new ArrayList<>();
+            defaultFiles.add(DefaultMultipartFile.createDefaultImage());
+            return defaultFiles;
+        }
+        return files;
     }
 
     /**
@@ -38,7 +57,7 @@ public class GatheringImageService {
      */
     private void upload(List<MultipartFile> files, Gathering gathering) {
         List<Image> images = uploadImageToStorageServer(files, gathering);
-        imageJdbcRepository.saveAll(images);
+        gatheringImageJdbcRepository.saveAll(images);
     }
 
     /**
@@ -53,17 +72,13 @@ public class GatheringImageService {
                         /**
                          * File path를 가져오기 위한 과정
                          * 1. File 확장자명 유효성을 검사 하여 Filepath fullname 생성
-                         * 2. 생성한 fullname으로 AWS S3에 파일 업로드 
+                         * 2. 생성한 fullname으로 AWS S3에 파일 업로드
                          * 3. S3 bucket에 업로드한 해당 AWS client의 파일 fath를 가져옴
                          */
                         String filepath = awsS3Service.upload(file, filename, EntityType.GATHERING);
-                        return Image.builder()
-                                .name(filename)
-                                .url(filepath)
-                                .gathering(gathering)
-                                .build();
+                        return Image.createImage(filepath, filename, gathering);
                     } catch (IOException e) {
-                        throw new RuntimeException("Failed to upload file", e);
+                        throw new BaseException(FILE_UPLOAD_FAILED);
                     }
                 })
                 .collect(Collectors.toList());
@@ -81,6 +96,6 @@ public class GatheringImageService {
                     }
                 });
 
-        imageJdbcRepository.deleteAllByGatheringId(gatheringId);
+        gatheringImageJdbcRepository.deleteAllByGatheringId(gatheringId);
     }
 }

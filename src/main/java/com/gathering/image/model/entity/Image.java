@@ -1,10 +1,9 @@
-package com.gathering.image.entity;
+package com.gathering.image.model.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.Gathering;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,13 +26,14 @@ public class Image extends BaseTimeEntity {
     private boolean removed;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gathering_id")
+    @JoinColumn(name = "gathering_id", nullable = true)
     private Gathering gathering;
 
-    @Builder
-    public Image(String name, String url, Gathering gathering) {
-        this.name = name;
-        this.url = url;
-        this.gathering = gathering;
+    public static Image createImage(String filepath, String filename, Gathering gathering) {
+        Image image = new Image();
+        image.name = filename;
+        image.url = filepath;
+        image.gathering = gathering;
+        return image;
     }
 }

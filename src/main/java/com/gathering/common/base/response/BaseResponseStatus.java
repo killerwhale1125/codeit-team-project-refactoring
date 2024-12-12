@@ -60,9 +60,13 @@ public enum BaseResponseStatus {
     // File
     UNSUPPORTED_FILETYPE(HttpStatus.BAD_REQUEST, "UNSUPPORTED_FILETYPE", "Unsupported File Type!"),
     NON_EXISTED_IMAGE(HttpStatus.NOT_FOUND, "IMAGE_NOT_FOUND", "This image does not exist"),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD_FAILED", "File upload failed"),
 
     // Oauth
-    SC_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SC_UNAUTHORIZED", "Unauthorized: Missing or invalid JWT");
+    SC_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SC_UNAUTHORIZED", "Unauthorized: Missing or invalid JWT"),
+
+    // Redis
+    REDIS_OPERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "REDIS_OPERATION_FAILED", "Failed to save key to Redis");
 
     private final HttpStatus httpStatus;
     private final String code;

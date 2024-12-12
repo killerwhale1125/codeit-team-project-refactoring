@@ -1,6 +1,6 @@
 package com.gathering.image.repository;
 
-import com.gathering.image.entity.Image;
+import com.gathering.image.model.entity.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

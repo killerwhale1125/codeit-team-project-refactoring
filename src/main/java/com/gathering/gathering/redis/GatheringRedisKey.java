@@ -18,6 +18,7 @@ public class GatheringRedisKey {
     // 조회수가 만료될 키의 만료시간
     public static final long GATHERING_INCREMENT_VIEW_COUNT_EXPIRATION = 21600L; // 6시간
 //    public static final long GATHERING_INCREMENT_VIEW_COUNT_EXPIRATION = 10; // 6시간
+    public static final String TRUE = "1";
 
     public static String generatedViewCountKey(Long gatheringId) {
         return GATHERING_VIEW_COUNT_PREFIX + gatheringId;

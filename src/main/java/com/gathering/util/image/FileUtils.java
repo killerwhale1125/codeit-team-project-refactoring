@@ -1,7 +1,7 @@
 package com.gathering.util.image;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.entity.EntityType;
+import com.gathering.image.model.entity.EntityType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 

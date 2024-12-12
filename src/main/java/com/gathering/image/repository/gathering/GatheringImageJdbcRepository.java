@@ -1,6 +1,6 @@
-package com.gathering.image.repository;
+package com.gathering.image.repository.gathering;
 
-import com.gathering.image.entity.Image;
+import com.gathering.image.model.entity.Image;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class ImageJdbcRepository {
+public class GatheringImageJdbcRepository {
     private static final String BULK_INSERT_SQL = "INSERT INTO " +
             "`image`(`image_name` , `image_url`, `created_time`, `modified_time`, `gathering_id`, `is_removed`) " +
             "VALUES(?, ?, ?, ?, ?, ?)";
