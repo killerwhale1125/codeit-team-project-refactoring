@@ -67,7 +67,7 @@ public class GatheringActions {
     public Gathering deleteGathering(Long gatheringId, String username) {
         User user = userRepository.findByUsername(username);
         Gathering gathering = gatheringRepository.getById(gatheringId);
-        gatheringValidator.validateOwner(gathering.getOwnerId(), user.getId());
+        gatheringValidator.validateOwner(gathering.getOwner(), user.getUserName());
         return gathering;
     }
 

@@ -19,4 +19,6 @@ public interface GatheringSearchService {
     GatheringSearchResponse findMyCreated(String username, Pageable pageable);
 
     GatheringSearchResponse findMyWishes(String username, Pageable pageable);
+
+    GatheringResponse introduce(Long gatheringId);
 }

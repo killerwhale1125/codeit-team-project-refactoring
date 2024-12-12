@@ -12,6 +12,7 @@ import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.gathering.service.GatheringSearchAsync;
 import com.gathering.gathering.util.GatheringSearchActions;
 import com.gathering.user.model.entitiy.User;
+import com.gathering.user.repository.UserJpaRepository;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,9 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 
@@ -34,6 +33,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     private final GatheringSearchActions gatheringSearchActions;
     private final GatheringRedisTemplate gatheringRedisTemplate;
     private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     @Override
     public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
@@ -61,7 +61,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public GatheringSearchResponse findMyCreated(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username);
-        Page<Gathering> result = gatheringSearchJpaRepository.findMyCreated(user.getId(), pageable);
+        Page<Gathering> result = gatheringSearchJpaRepository.findMyCreated(user.getUserName(), pageable);
         return gatheringSearchActions.getMyGatheringPage(result);
     }
 
@@ -75,6 +75,13 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
         Page<Gathering> result = gatheringSearchJpaRepository.findMyWishes(wishGatheringIds, pageable);
         return gatheringSearchActions.getMyGatheringPage(result);
+    }
+
+    @Override
+    public GatheringResponse introduce(Long gatheringId) {
+        Gathering gathering = gatheringSearchJpaRepository.getGatheringWithChallengeAndBook(gatheringId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+        return GatheringResponse.introduceFromEntity(gathering);
     }
 
     @Override

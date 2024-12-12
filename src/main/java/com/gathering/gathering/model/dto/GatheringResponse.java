@@ -21,6 +21,7 @@ public class GatheringResponse {
     private Integer readingTimeGoal;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String owner;
     private Integer minCapacity;
     private Integer maxCapacity;
     private Integer currentCapacity;
@@ -34,10 +35,12 @@ public class GatheringResponse {
     private Double star;
     private String author;
     private Double completeRate;
+    private String introduce;
 
     public static GatheringResponse fromEntity(Gathering gathering) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
+                .owner(gathering.getOwner())
                 .name(gathering.getName())
                 .content(gathering.getContent())
                 .goalDays(gathering.getGoalDays())
@@ -59,6 +62,9 @@ public class GatheringResponse {
                 .build();
     }
 
+    /**
+     * 마이페이지 모임 리스트 조회
+     */
     public static GatheringResponse myGatheringFromEntity(Gathering gathering) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
@@ -70,6 +76,26 @@ public class GatheringResponse {
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
+                .build();
+    }
+
+    /**
+     * 모임 소개
+     */
+    public static GatheringResponse introduceFromEntity(Gathering gathering) {
+        return GatheringResponse.builder()
+                .id(gathering.getId())
+                .owner(gathering.getOwner())
+                .name(gathering.getName())
+                .content(gathering.getContent())
+                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .bookTitle(gathering.getBook().getTitle())
+                .bookImage(gathering.getBook().getImage())
+                .publisher(gathering.getBook().getPublisher())
+                .publishDate(gathering.getBook().getPublishDate())
+                .star(gathering.getBook().getStar())
+                .author(gathering.getBook().getAuthor())
+                .introduce(gathering.getBook().getIntroduce())
                 .build();
     }
 }

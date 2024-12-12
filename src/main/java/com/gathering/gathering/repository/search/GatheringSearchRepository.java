@@ -15,7 +15,7 @@ public interface GatheringSearchRepository {
 
     Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
 
-    Page<Gathering> findMyCreated(Long userId, Pageable pageable);
+    Page<Gathering> findMyCreated(String username, Pageable pageable);
 
     Page<Gathering> findMyWishes(Set<Long> wishGatheringIds, Pageable pageable);
 }

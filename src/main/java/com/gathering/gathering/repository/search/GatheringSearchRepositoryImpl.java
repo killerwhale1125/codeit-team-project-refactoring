@@ -21,6 +21,7 @@ import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
 
+
 @Repository
 @RequiredArgsConstructor
 public class GatheringSearchRepositoryImpl implements GatheringSearchRepository {
@@ -92,19 +93,19 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
     // 내가 만든 모임
     @Override
-    public Page<Gathering> findMyCreated(Long userId, Pageable pageable) {
+    public Page<Gathering> findMyCreated(String username, Pageable pageable) {
         List<Gathering> result = queryFactory.select(gathering)
                 .from(gathering)
                 .leftJoin(gathering.challenge, challenge).fetchJoin()
                 .leftJoin(gathering.book, book).fetchJoin()
-                .where(gathering.ownerId.eq(userId))
+                .where(gathering.owner.eq(username))
                 .offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기
                 .fetch();
 
         long totalCount = queryFactory.select(gathering.id)
                 .from(gathering)
-                .where(gathering.ownerId.eq(userId))
+                .where(gathering.owner.eq(username))
                 .fetchCount();
         return new PageImpl<>(result, pageable, totalCount);
     }

@@ -36,14 +36,14 @@ public class GatheringSearchController {
      *      - 쿼리 최적화 필요
      */
     @GetMapping
-    @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "파라미터 상세 조건 Notion 참고")
+    @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findGatherings(@ModelAttribute GatheringSearch gatheringSearch,
                                                                 @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
         return new BaseResponse<>(gatheringSearchService.findGatherings(gatheringSearch, pageable));
     }
 
     @GetMapping("/participating")
-    @Operation(summary = "내가 참여한 모임 리스트", description = "파라미터 상세 조건 Notion 참고")
+    @Operation(summary = "내가 참여한 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findMyGatherings(@AuthenticationPrincipal UserDetails userDetails,
                                                                   @RequestParam(required = false) GatheringUserStatus gatheringUserStatus,
                                                                   @RequestParam(required = false) GatheringStatus gatheringStatus,
@@ -55,23 +55,29 @@ public class GatheringSearchController {
      * TODO - Challenge 정보 추가 여부 보류
      */
     @GetMapping("/{gatheringId}")
-    @Operation(summary = "모임 상세 조회", description = "파라미터 상세 조건 Notion 참고")
+    @Operation(summary = "모임 상세 조회", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringResponse> getById(@PathVariable Long gatheringId, HttpServletRequest request, HttpServletResponse response) {
         return new BaseResponse<>(gatheringSearchService.getById(gatheringId,
                 UserSessionKeyGenerator.generateUserKey(request, response)));
     }
 
     @GetMapping("/my")
-    @Operation(summary = "내가 만든 모임 리스트", description = "파라미터 상세 조건 Notion 참고")
+    @Operation(summary = "내가 만든 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> my(@AuthenticationPrincipal UserDetails userDetails,
                                                     @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
         return new BaseResponse<>(gatheringSearchService.findMyCreated(userDetails.getUsername(), pageable));
     }
 
     @GetMapping("/wishes")
-    @Operation(summary = "내가 찜한 모임 리스트", description = "파라미터 상세 조건 Notion 참고")
+    @Operation(summary = "내가 찜한 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> wishes(@AuthenticationPrincipal UserDetails userDetails,
                                                         @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
         return new BaseResponse<>(gatheringSearchService.findMyWishes(userDetails.getUsername(), pageable));
+    }
+
+    @Operation(summary = "모임 소개", description = "상세 조건 Notion 참고")
+    @GetMapping("/{gatheringId}/introduce")
+    public BaseResponse<GatheringResponse> introduce(@PathVariable Long gatheringId) {
+        return new BaseResponse<>(gatheringSearchService.introduce(gatheringId));
     }
 }

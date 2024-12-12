@@ -39,7 +39,7 @@ public class Gathering extends BaseTimeEntity {
     private int maxCapacity;
     private int minCapacity;
     private int currentCapacity = 0;
-    private long ownerId;
+    private String owner;
     private long viewCount;
     private String thumbnail;
 
@@ -81,7 +81,7 @@ public class Gathering extends BaseTimeEntity {
         gathering.minCapacity = gatheringCreate.getMinCapacity();
         gathering.gatheringStatus = gatheringCreate.getGatheringStatus();
         gathering.book = book;
-        gathering.ownerId = gatheringUser.getUser().getId();
+        gathering.owner = gatheringUser.getUser().getUserName();
         gathering.addChallenge(challenge);
         gathering.addGatheringUser(gatheringUser, gatheringValidator);
         return gathering;
@@ -107,7 +107,7 @@ public class Gathering extends BaseTimeEntity {
                 .findFirst()
                 .orElseThrow(() -> new BaseException(USER_NOT_IN_GATHERING));
 
-        if(gatheringUser.getUser().getId() == gathering.getOwnerId())
+        if(gatheringUser.getUser().getUserName() == gathering.getOwner())
             throw new BaseException(HOST_CANNOT_LEAVE_GATHERING);
 
         // 모임의 참여자 리스트에서 유저 제거

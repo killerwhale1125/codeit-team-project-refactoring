@@ -16,8 +16,8 @@ public class GatheringValidatorImpl implements GatheringValidator {
     }
 
     @Override
-    public void validateOwner(Long ownerId, Long userId) {
-        if(ownerId != userId) throw new BaseException(ACCESS_DENIED);
+    public void validateOwner(String owner, String user) {
+        if(!owner.equals(user)) throw new BaseException(ACCESS_DENIED);
     }
 
     @Override
