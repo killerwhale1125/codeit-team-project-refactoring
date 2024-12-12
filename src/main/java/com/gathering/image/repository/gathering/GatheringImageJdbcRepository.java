@@ -13,10 +13,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GatheringImageJdbcRepository {
     private static final String BULK_INSERT_SQL = "INSERT INTO " +
-            "`image`(`image_name` , `image_url`, `created_time`, `modified_time`, `gathering_id`, `is_removed`) " +
+            "`IMAGE`(`IMAGE_NAME` , `IMAGE_URL`, `CREATED_TIME`, `MODIFIED_TIME`, `GATHERING_ID`, `IS_REMOVED`) " +
             "VALUES(?, ?, ?, ?, ?, ?)";
 
-    private static final String BULK_DELETE_SQL = "DELETE FROM `image` WHERE `gathering_id` = ?";
+    private static final String BULK_DELETE_SQL = "DELETE FROM `IMAGE` WHERE `GATHERING_ID` = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
