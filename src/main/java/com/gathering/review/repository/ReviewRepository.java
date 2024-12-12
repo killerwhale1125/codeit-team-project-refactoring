@@ -5,7 +5,7 @@ import com.gathering.review.model.dto.CreateReviewDto;
 import com.gathering.review.model.dto.ReviewDto;
 
 public interface ReviewRepository {
-    ReviewDto createReview(CreateReviewDto createReviewDto, String username);
+    ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type);
 
     ReviewDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
 }

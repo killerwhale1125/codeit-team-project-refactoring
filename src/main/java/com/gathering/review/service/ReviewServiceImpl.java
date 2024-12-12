@@ -14,8 +14,8 @@ public class ReviewServiceImpl implements ReviewService{
     private final ReviewRepository reviewRepository;
 
     @Override
-    public ReviewDto createReview(CreateReviewDto createReviewDto, String username) {
-        return reviewRepository.createReview(createReviewDto, username);
+    public ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type) {
+        return reviewRepository.createReview(createReviewDto, username, type);
     }
 
     @Override

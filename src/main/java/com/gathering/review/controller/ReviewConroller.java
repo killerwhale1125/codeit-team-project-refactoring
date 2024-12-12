@@ -12,10 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/review")
@@ -26,18 +23,15 @@ public class ReviewConroller {
     private final ReviewService reviewService;
 
 
-    /*
-    * TODO
-    *  리뷰가 특정 모임 참석 이후 책을 다읽엇을떄 작성이 가능한지
-    *  특정 책에 대한 리뷰 작성이 아무때나 가능한지 확인 필요
-    */
-    @PostMapping("/create")
-    @Operation(summary = "리뷰 생성", description = "appr -> 평가.<br>" +
+    @PostMapping("/create/{type}")
+    @Operation(summary = "리뷰 생성", description = "apprCd -> 평가.<br>" +
             "tmprStrgYN -> 임시저장여부.<br>")
-    public BaseResponse<ReviewDto> createReview(@RequestBody @Valid CreateReviewDto createReviewDto,
-                                     @AuthenticationPrincipal UserDetails userDetails) {
+    public BaseResponse<ReviewDto> createReview(
+            @RequestBody @Valid CreateReviewDto createReviewDto,
+            @PathVariable String type,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        ReviewDto reviewDto = reviewService.createReview(createReviewDto, userDetails.getUsername());
+        ReviewDto reviewDto = reviewService.createReview(createReviewDto, userDetails.getUsername(), type);
 
         // TODO 추후 예외처리 상세화 필요
         if(reviewDto == null) {

@@ -6,6 +6,7 @@ import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.validator.GatheringValidator;
+import com.gathering.review.model.entitiy.GatheringReview;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.util.date.DateCalculateHolder;
 import jakarta.persistence.*;
@@ -47,6 +48,9 @@ public class Gathering extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GatheringUser> gatheringUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GatheringBookReview> gatheringBookReviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GatheringReview> gatheringReviews = new ArrayList<>();

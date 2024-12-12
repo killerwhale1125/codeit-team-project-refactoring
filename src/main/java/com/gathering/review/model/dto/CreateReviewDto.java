@@ -12,23 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateReviewDto {
 
-    @NotNull
     private long bookId;
-    @NotNull
     private long gatheringId;
-
-    @NotEmpty
     private String title;
-
-    @NotEmpty
     private String apprCd; // 평가
-
-    @NotEmpty
     private String tag;
-
     @NotEmpty
     private String content;
-
+    private int score;
     private String tmprStrgYN; // 임시저장 여부
 
 }

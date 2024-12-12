@@ -1,6 +1,7 @@
 package com.gathering.review.model.dto;
 
-import com.gathering.review.model.entitiy.Review;
+import com.gathering.review.model.entitiy.BookReview;
+import com.gathering.review.model.entitiy.GatheringReview;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,8 @@ public class ReviewDto {
 
     private long bookId;
 
+    private long gatheringId;
+
     private String title;
 
     private String apprCd;
@@ -28,10 +31,13 @@ public class ReviewDto {
 
     private int likes;
 
+    private int score;
+
     private String status;
 
 
-    public static ReviewDto formEntity(Review review) {
+
+    public static ReviewDto formEntity(BookReview review) {
         return ReviewDto.builder()
                 .id(review.getId())
                 .userId(review.getUser().getId())
@@ -45,4 +51,14 @@ public class ReviewDto {
                 .build();
     }
 
+    public static ReviewDto formEntity(GatheringReview review) {
+        return ReviewDto.builder()
+                .id(review.getId())
+                .userId(review.getUser().getId())
+                .gatheringId(review.getGathering().getId())
+                .content(review.getContent())
+                .score(review.getScore())
+                .status(review.getStatus())
+                .build();
+    }
 }

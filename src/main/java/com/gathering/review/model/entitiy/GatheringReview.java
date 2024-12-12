@@ -2,6 +2,7 @@ package com.gathering.review.model.entitiy;
 
 import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.jpa.BaseTimeEntity;
+import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.review.model.dto.CreateReviewDto;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Review extends BaseTimeEntity {
+public class GatheringReview extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,41 +31,26 @@ public class Review extends BaseTimeEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
-    @Comment("책")
-    private Book book;
-
-    @Comment("제목")
-    private String title;
-
-    @Comment("평가")
-    private String apprCd;
-
-    @Comment("태그")
-    private String tagCd;
+    @JoinColumn(name = "gathering_id")
+    @Comment("모임")
+    private Gathering gathering;
 
     @Comment("내용")
     private String content;
 
-    @Comment("좋아요")
-    private int likes;
+    @Comment("점수")
+    private int score;
 
     @Comment("상태")
     private String status;
 
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReviewComment> reviewComments = new ArrayList<>();
-
-    public static Review createEntity(Book book, User user, CreateReviewDto createReviewDto) {
-        return Review.builder()
+    public static GatheringReview createEntity(Gathering gathering, User user, CreateReviewDto createReviewDto) {
+        return GatheringReview.builder()
                 .user(user)
-                .book(book)
-                .title(createReviewDto.getTitle())
-                .apprCd(createReviewDto.getApprCd())
-                .tagCd(createReviewDto.getTag())
+                .gathering(gathering)
                 .content(createReviewDto.getContent())
-                .likes(0)
-                .status(createReviewDto.getTmprStrgYN().equals("Y") ? "T" : "Y") // T = 임시저장, Y= '저장' , N = 삭제'
+                .score(createReviewDto.getScore())
+                .status("Y")
                 .build();
     }
 }

@@ -5,13 +5,15 @@ import com.gathering.book.repository.BookJpaRepository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.GatheringReview;
+import com.gathering.gathering.model.entity.GatheringBookReview;
 import com.gathering.gathering.repository.GatheringJpaRepository;
 import com.gathering.review.model.dto.CreateReviewCommentDto;
 import com.gathering.review.model.dto.CreateReviewDto;
 import com.gathering.review.model.dto.ReviewDto;
-import com.gathering.review.model.entitiy.Review;
+import com.gathering.review.model.entitiy.BookReview;
+import com.gathering.review.model.entitiy.GatheringReview;
 import com.gathering.review.model.entitiy.ReviewComment;
+import com.gathering.user.model.constant.REVIEWTYPE;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserJpaRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -28,38 +30,55 @@ import static com.gathering.review.model.entitiy.QReviewComment.reviewComment;
 @Transactional
 public class ReviewRepositoryImpl implements ReviewRepository{
 
-    private final ReviewJpaRepository reviewJpaRepository;
+    private final BookReviewJpaRepository bookReviewJpaRepository;
     private final BookJpaRepository bookJpaRepository;
     private final UserJpaRepository userJpaRepository;
     private final GatheringJpaRepository gatheringJpaRepository;
     private final ReviewCommentJpaRepository reviewCommentJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
-
+    private final GatheringReviewJpaRepository gatheringReviewJpaRepository;
     @Override
-    public ReviewDto createReview(CreateReviewDto createReviewDto, String username) {
-
-        Book book = bookJpaRepository.findById(createReviewDto.getBookId())
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND));
+    public ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type) {
 
         User user = userJpaRepository.findByUserNameOrThrow(username);
+        Gathering gathering = null;
+        if(createReviewDto.getGatheringId() != 0) {
+            gathering = gatheringJpaRepository.findById(createReviewDto.getGatheringId())
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_GATHERING));
+        }
 
-        Gathering gathering = gatheringJpaRepository.findById(createReviewDto.getGatheringId())
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_GATHERING));
+        // 모임 리뷰
+        if(type.equalsIgnoreCase(REVIEWTYPE.GATHERING.getValue())) {
+            GatheringReview review = GatheringReview.createEntity(gathering, user, createReviewDto);
 
-       Review review = Review.createEntity(book, user, createReviewDto);
+            review = gatheringReviewJpaRepository.save(review);
 
-       review = reviewJpaRepository.save(review);
+            return ReviewDto.formEntity(review);
+        } else {
+            // 독서 리뷰
 
-       GatheringReview gatheringReview = GatheringReview.createGatheringReview(gathering, review);
-       gatheringReview.addGatheringReview(gathering);
+            Book book = bookJpaRepository.findById(createReviewDto.getBookId())
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND));
 
-       return ReviewDto.formEntity(review);
+
+            BookReview review = BookReview.createEntity(book, user, createReviewDto);
+
+            review = bookReviewJpaRepository.save(review);
+
+            GatheringBookReview gatheringReview = GatheringBookReview.createGatheringReview(gathering, review);
+
+            if(gathering != null) {
+                gatheringReview.addGatheringReview(gathering);
+            }
+            return ReviewDto.formEntity(review);
+        }
+
     }
 
     @Override
     public ReviewDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username) {
 
-        Review review = reviewJpaRepository.findByIdOrThrow(createReviewCommentDto.getReviewId());
+        BookReview review = bookReviewJpaRepository.findByIdOrThrow(createReviewCommentDto.getReviewId());
         User user = userJpaRepository.findByUserNameOrThrow(username);
 
         // 댓글 순서 조회

@@ -28,7 +28,7 @@ public class ReviewComment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
     @Comment("리뷰")
-    private Review review;
+    private BookReview review;
 
     @Comment("내용")
     private String content;
@@ -42,7 +42,7 @@ public class ReviewComment extends BaseTimeEntity {
     @Comment("상태")
     private String status;
 
-    public static ReviewComment createEntity(Review review, User user
+    public static ReviewComment createEntity(BookReview review, User user
             , CreateReviewCommentDto createReviewCommentDto, int orders) {
         return ReviewComment.builder()
                 .user(user)
