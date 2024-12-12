@@ -70,6 +70,10 @@ public class AladinCrawlerTask {
                 List<String> bookPublishers = new ArrayList<>();
                 List<String> bookPublishDates = new ArrayList<>();
                 List<String> bookRatings = new ArrayList<>();
+                // 페이지 수를 저장할 리스트
+                List<Integer> bookPages = new ArrayList<>();
+                // 책 소개를 저장할 리스트
+                List<String> bookDescriptions = new ArrayList<>();
 
                 for (Element nameElement : bookNameElements) {
                     bookNames.add(nameElement.text());
@@ -78,6 +82,17 @@ public class AladinCrawlerTask {
                     String detailPageUrl = nameElement.attr("href");
                     try {
                         Document detailPage = Jsoup.connect(detailPageUrl).get();
+
+                        // 페이지 수 추출
+                        Element pageElement = detailPage.selectFirst("div.Ere_prod_mconts_R div.conts_info_list1 li");
+                        if (pageElement != null) {
+                            // "216쪽" 텍스트 추출
+                            String pageText = pageElement.text();
+                            bookPages.add(Integer.parseInt(pageText));
+                        } else {
+                            bookPages.add(0);
+                        }
+
                         // 평점 추출
                         Element ratingElement = detailPage.selectFirst("div.info_list a.Ere_str");
                         if (ratingElement != null) {
@@ -85,6 +100,9 @@ public class AladinCrawlerTask {
                         } else {
                             bookRatings.add("0.0");
                         }
+
+                        bookDescriptions.add("책소개 추후 추가 예정");
+                        
                     } catch (IOException e) {
                         e.printStackTrace();
                         bookRatings.add("N/A");
@@ -133,7 +151,7 @@ public class AladinCrawlerTask {
                     }
                 }
 
-                aladinCrawlerService.saveBooksFromCrawler(categoryName, bookNames, bookImages, bookAuthors, bookPublishers, bookPublishDates, bookRatings);
+                aladinCrawlerService.saveBooksFromCrawler(categoryName, bookNames, bookImages, bookAuthors, bookPublishers, bookPublishDates, bookRatings, bookPages, bookDescriptions);
             } catch (IOException e) {
                 e.printStackTrace();
             }
