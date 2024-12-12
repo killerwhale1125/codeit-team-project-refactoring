@@ -61,6 +61,7 @@ public class GatheringResponse {
 
     public static GatheringResponse myGatheringFromEntity(Gathering gathering) {
         return GatheringResponse.builder()
+                .id(gathering.getId())
                 .name(gathering.getName())
                 .startDate(gathering.getStartDate())
                 .endDate(gathering.getEndDate())

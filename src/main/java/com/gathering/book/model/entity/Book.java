@@ -29,13 +29,19 @@ public class Book extends BaseTimeEntity {
     private long selectedCount;
     private double star;
 
+    @Lob
+    @Column(columnDefinition="TEXT")
+    private String introduce;
+
+    private int totalPage;
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     List<BookCategory> bookCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     List<BookReview> reviews = new ArrayList<>();
 
-    public static Book createBook(String title, String image, String author, String publisher, BookCategory bookCategory, String publisherDate, double star) {
+    public static Book createBook(String title, String image, String author, String publisher, BookCategory bookCategory, String publisherDate, double star, String introduce, int page) {
         Book book = new Book();
         book.title = title;
         book.image = image;
@@ -43,6 +49,8 @@ public class Book extends BaseTimeEntity {
         book.publisher = publisher;
         book.publishDate = publisherDate;
         book.star = star;
+        book.introduce = introduce;
+        book.totalPage = page;
         book.bookCategories.add(bookCategory);
         bookCategory.addBook(book);
         return book;
