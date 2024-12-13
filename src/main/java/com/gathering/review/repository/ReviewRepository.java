@@ -10,4 +10,6 @@ public interface ReviewRepository {
     ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
 
     ReviewListDto selectUserReviewList(String username, String type);
+
+    ReviewListDto selectBookReviewList(String username);
 }

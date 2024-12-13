@@ -13,4 +13,6 @@ public interface BookReviewJpaRepository extends JpaRepository<BookReview, Long>
     default BookReview findByIdOrThrow(long id) {
         return findById(id).orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_REVIEW));
     };
+
+    long countByUserId(long id);
 }

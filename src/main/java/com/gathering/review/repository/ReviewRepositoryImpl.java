@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
+import static com.gathering.gathering.model.entity.QGatheringBookReview.gatheringBookReview;
 import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
 import static com.gathering.review.model.entitiy.QBookReview.bookReview;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
@@ -139,15 +140,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
             // TODO 작성 가능한 리뷰 목록 조회하는 기준 확인 필요
 
             // 모임이 종료되었지만 리뷰를 작성하지 않은 목록
-            List<Long> list = jpaQueryFactory
-                    .select(gathering.id)
-                    .from(gathering)
-                    .leftJoin(gathering.gatheringUsers, gatheringUser)
-                    .leftJoin(gathering.gatheringReviews, gatheringReview)
-                    .where(gatheringUserIdEq(user.getId()),
-                            gatheringStatusEq(GatheringStatus.COMPLETED),
-                            gatheringReview.gathering.id.isNull())
-                    .fetch();
+            List<Long> list = findUnreviewedCompletedGatherings(user.getId());
 
             // 모임 response
             List<GatheringResponse> gatheringResponses = jpaQueryFactory
@@ -180,6 +173,46 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         }
     }
 
+    @Override
+    public ReviewListDto selectBookReviewList(String username) {
+
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+
+        long myReviewCount = bookReviewJpaRepository.countByUserId(user.getId());
+
+        List<Long> unReviewCount = findUnreviewedCompletedGatherings(user.getId());
+
+
+        return null;
+    }
+
+    // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록
+    private List<Long> findUnreviewedCompletedGatherings(long userId) {
+
+        return jpaQueryFactory
+                .select(gathering.id)
+                .from(gathering)
+                .leftJoin(gathering.gatheringUsers, gatheringUser)
+                .leftJoin(gathering.gatheringReviews, gatheringReview)
+                .where(gatheringUserIdEq(userId),
+                        gatheringStatusEq(GatheringStatus.COMPLETED),
+                        gatheringReview.gathering.id.isNull())
+                .fetch();
+    }
+
+    // 모임이 종료되었지만 독서 리뷰를 작성하지 않은 목록
+    private List<Long> findUnreviewedCompletedBook(long userId) {
+
+        return jpaQueryFactory
+                .select(gathering.id)
+                .from(gathering)
+                .leftJoin(gathering.gatheringUsers, gatheringUser)
+                .leftJoin(gathering.gatheringBookReviews, gatheringBookReview)
+                .where(gatheringUserIdEq(userId),
+                        gatheringStatusEq(GatheringStatus.COMPLETED),
+                        gatheringBookReview.gathering.id.isNull())
+                .fetch();
+    }
     private BooleanExpression gatheringUserIdEq(long userId) {
         return isEmpty(userId) ? null : gatheringUser.user.id.eq(userId);
     }

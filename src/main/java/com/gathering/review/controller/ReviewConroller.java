@@ -2,12 +2,16 @@ package com.gathering.review.controller;
 
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.gathering.model.entity.GatheringReviewSortType;
+import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +61,17 @@ public class ReviewConroller {
         ReviewListDto result = reviewService.selectUserReviewList(userDetails.getUsername(), type);
 
         return new BaseResponse<>(result);
+
+    }
+
+
+    @GetMapping
+    @Operation(summary = "독서 리뷰", description = "상세 조건 Notion 참고")
+    public BaseResponse<ReviewListDto> selectBookReviewList(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        ReviewListDto result = reviewService.selectBookReviewList(userDetails.getUsername());
+        return new BaseResponse<>(null);
 
     }
 }

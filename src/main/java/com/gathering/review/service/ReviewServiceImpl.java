@@ -27,4 +27,9 @@ public class ReviewServiceImpl implements ReviewService{
     public ReviewListDto selectUserReviewList(String username, String type) {
         return reviewRepository.selectUserReviewList(username, type);
     }
+
+    @Override
+    public ReviewListDto selectBookReviewList(String username) {
+        return reviewRepository.selectBookReviewList(username);
+    }
 }

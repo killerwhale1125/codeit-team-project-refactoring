@@ -14,4 +14,7 @@ public interface ReviewService {
 
     // 나의 리뷰 목록 조회
     ReviewListDto selectUserReviewList(String username, String type);
+
+    // 독서 리뷰 페이지 정보 조회
+    ReviewListDto selectBookReviewList(String username);
 }
