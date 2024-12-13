@@ -84,6 +84,7 @@ public class Gathering extends BaseTimeEntity {
         gathering.owner = gatheringUser.getUser().getUserName();
         gathering.addChallenge(challenge);
         gathering.addGatheringUser(gatheringUser, gatheringValidator);
+        gathering.increaseCurrentCapacity();
         return gathering;
     }
 
