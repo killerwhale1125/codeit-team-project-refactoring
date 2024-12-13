@@ -80,4 +80,5 @@ public class GatheringSearchController {
     public BaseResponse<GatheringResponse> introduce(@PathVariable Long gatheringId) {
         return new BaseResponse<>(gatheringSearchService.introduce(gatheringId));
     }
+
 }
