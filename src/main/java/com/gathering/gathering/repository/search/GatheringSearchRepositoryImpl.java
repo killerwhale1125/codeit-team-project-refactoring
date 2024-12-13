@@ -2,11 +2,17 @@ package com.gathering.gathering.repository.search;
 
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.search.util.GatheringSearchConditionBuilder;
 import com.gathering.gathering.repository.search.util.GatheringSortUtil;
+import com.gathering.review.model.dto.GatheringReviewDto;
+import com.gathering.review.model.dto.ReviewListDto;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +26,8 @@ import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
+import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
+import static com.gathering.user.model.entitiy.QUser.user;
 
 
 @Repository
@@ -127,5 +135,58 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .fetchCount();
 
         return new PageImpl<>(result, pageable, totalCount);
+    }
+
+    @Override
+    public ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, Pageable pageable) {
+        // 리뷰 목록
+        JPAQuery<GatheringReviewDto> query = queryFactory
+                .select(Projections.constructor(GatheringReviewDto.class,
+                        gatheringReview.id,
+                        user.id,
+                        user.userName,
+                        user.profile,
+                        gatheringReview.score,
+                        gatheringReview.content,
+                        Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", gatheringReview.createdTime)))
+                .from(gatheringReview)
+                .leftJoin(user).on(user.id.eq(gatheringReview.user.id))
+                .where(gatheringReview.gathering.id.eq(gatheringId).and(gatheringReview.status.eq("Y")))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1);
+
+        // 정렬 처리
+        GatheringSortUtil.applyReviewSorting(query, sort);
+
+        List<GatheringReviewDto> reviews = query.fetch();
+
+        boolean hasNext = reviews.size() > pageable.getPageSize();
+
+        // Remove the extra record from the content (if it exists)
+        if (hasNext) {
+            reviews.remove(reviews.size() - 1);
+        }
+
+        Tuple result = queryFactory
+                .select(
+                        gatheringReview.id.count(), // COUNT
+                        gatheringReview.score.avg() // AVG
+                )
+                .from(gatheringReview)
+                .where(
+                        gatheringReview.gathering.id.eq(gatheringId)
+                                .and(gatheringReview.status.eq("Y"))
+                )
+                .fetchOne();
+
+        long total = (result != null && result.get(gatheringReview.id.count()) != null)
+                ? result.get(gatheringReview.id.count())
+                : 0L;
+
+        Double averageScore = (result != null && result.get(gatheringReview.score.avg()) != null)
+                ? result.get(gatheringReview.score.avg())
+                : 0.0;
+
+        return ReviewListDto.fromGatheringReviews(reviews, total, averageScore, hasNext);
     }
 }

@@ -12,8 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/review")
 @RequiredArgsConstructor
@@ -24,8 +22,7 @@ public class ReviewConroller {
 
 
     @PostMapping("/create/{type}")
-    @Operation(summary = "리뷰 생성", description = "apprCd -> 평가.<br>" +
-            "tmprStrgYN -> 임시저장여부.<br>")
+    @Operation(summary = "리뷰 생성", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewDto> createReview(
             @RequestBody @Valid CreateReviewDto createReviewDto,
             @PathVariable String type,
@@ -42,8 +39,7 @@ public class ReviewConroller {
     }
 
     @PostMapping("/comment/create")
-    @Operation(summary = "댓글 생성", description = "대댓글의 경우 parent값을 부모 댓글의 id값을 넣으시면 됩니다.<br>" +
-            "댓글일 경우 parent값을 0으로 넣으시면 됩니다.<br>")
+    @Operation(summary = "댓글 생성", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewCommentDto> createReviewComment(@RequestBody @Valid CreateReviewCommentDto createReviewCommentDto,
                                                 @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -53,7 +49,7 @@ public class ReviewConroller {
 
     }
     @GetMapping("/user/{type}")
-    @Operation(summary = "나의 리뷰", description = "나의 리뷰")
+    @Operation(summary = "나의 리뷰", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewListDto> selectUserReviewList(
             @PathVariable String type,
             @AuthenticationPrincipal UserDetails userDetails) {

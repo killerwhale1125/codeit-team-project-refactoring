@@ -5,12 +5,14 @@ import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.redis.GatheringRedisTemplate;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.gathering.service.GatheringSearchAsync;
 import com.gathering.gathering.util.GatheringSearchActions;
+import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserJpaRepository;
 import com.gathering.user.repository.UserRepository;
@@ -82,6 +84,11 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         Gathering gathering = gatheringSearchJpaRepository.getGatheringWithChallengeAndBook(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
         return GatheringResponse.introduceFromEntity(gathering);
+    }
+
+    @Override
+    public ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, Pageable pageable) {
+        return gatheringSearchJpaRepository.getGatheringReviewList(gatheringId, sort, pageable);
     }
 
     @Override

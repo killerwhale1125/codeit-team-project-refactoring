@@ -4,9 +4,11 @@ import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
+import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.service.search.GatheringSearchService;
+import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.util.web.UserSessionKeyGenerator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -79,6 +82,14 @@ public class GatheringSearchController {
     @GetMapping("/{gatheringId}/introduce")
     public BaseResponse<GatheringResponse> introduce(@PathVariable Long gatheringId) {
         return new BaseResponse<>(gatheringSearchService.introduce(gatheringId));
+    }
+
+    @Operation(summary = "모임 리뷰", description = "상세 조건 Notion 참고")
+    @GetMapping("/{gatheringId}/review")
+    public BaseResponse<ReviewListDto> review(@PathVariable Long gatheringId,
+                                              @RequestParam @Valid GatheringReviewSortType sort,
+                                              @PageableDefault(page = 0, size = 5, sort = "id,desc") Pageable pageable) {
+        return new BaseResponse<>(gatheringSearchService.review(gatheringId, sort, pageable));
     }
 
 }

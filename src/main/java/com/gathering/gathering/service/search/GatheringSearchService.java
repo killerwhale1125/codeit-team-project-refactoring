@@ -3,8 +3,10 @@ package com.gathering.gathering.service.search;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
+import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
+import com.gathering.review.model.dto.ReviewListDto;
 import org.springframework.data.domain.Pageable;
 
 public interface GatheringSearchService {
@@ -21,4 +23,6 @@ public interface GatheringSearchService {
     GatheringSearchResponse findMyWishes(String username, Pageable pageable);
 
     GatheringResponse introduce(Long gatheringId);
+
+    ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, Pageable pageable);
 }
