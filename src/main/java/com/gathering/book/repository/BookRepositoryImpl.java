@@ -4,6 +4,8 @@ import com.gathering.book.model.dto.BookSearchResponse;
 import com.gathering.book.model.dto.QBookSearchResponse;
 import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.exception.BaseException;
+import com.gathering.util.string.FullTextIndexParser;
+import com.gathering.util.string.StringUtil;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.gathering.book.model.entity.QBook.book;
-import static com.gathering.common.base.response.BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND;
-import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_BOOK;
+import static com.gathering.common.base.response.BaseResponseStatus.*;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 
 @Repository
@@ -58,5 +59,13 @@ public class BookRepositoryImpl implements BookRepository {
                 .offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기
                 .fetch();
+    }
+
+    @Override
+    public List<Book> searchBooksBySearchWord(String searchWord) {
+        if (!StringUtil.isValidLength(searchWord, 3)) {
+            throw new BaseException(INVALID_SEARCH_WORD);
+        }
+        return bookJpaRepository.searchBooksBySearchWord(FullTextIndexParser.formatForFullTextQuery(searchWord));
     }
 }

@@ -1,5 +1,6 @@
 package com.gathering.book.repository;
 
+import com.gathering.book.model.dto.BookResponse;
 import com.gathering.book.model.dto.BookSearchResponse;
 import com.gathering.book.model.entity.Book;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface BookRepository {
     Book findById(Long bookId);
 
     List<BookSearchResponse> findPopularBooks(Pageable pageable);
+
+    List<Book> searchBooksBySearchWord(String title);
 }

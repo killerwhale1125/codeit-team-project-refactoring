@@ -47,7 +47,7 @@ public enum BaseResponseStatus {
     // Book & CATEGORY
     BOOK_OR_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOK_OR_CATEGORY_NOT_FOUND", "The specified book or category could not be found"),
     NOT_EXISTED_BOOK(HttpStatus.NOT_FOUND, "NOT_EXISTED_BOOK", "This book does not exist"),
-
+    INVALID_SEARCH_WORD(HttpStatus.BAD_REQUEST, "INVALID_SEARCH_WORD", "The search keyword must be at least 3 characters long"),
     // review
     NON_EXISTED_REVIEW(HttpStatus.NOT_FOUND, "NON_EXISTED_REVIEW", "This review does not exist"),
 

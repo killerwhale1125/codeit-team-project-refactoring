@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BookJpaRepository extends JpaRepository<Book, Long> {
@@ -12,4 +13,10 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
     Optional<Book> findBookByBookIdAndCategoryId(@Param("bookId") Long bookId, @Param("categoryId") Long categoryId);
 
     boolean existsByTitle(String title);
+
+    /**
+     * 책 Title에 FULL TEXT INDEX 적용
+     */
+    @Query(value = "SELECT * FROM BOOK b WHERE MATCH(b.title) AGAINST(:searchWord IN BOOLEAN MODE)", nativeQuery = true)
+    List<Book> searchBooksBySearchWord(@Param("searchWord") String searchWord);
 }

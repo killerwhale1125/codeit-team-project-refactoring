@@ -8,13 +8,11 @@ import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
-import com.gathering.gathering.redis.GatheringRedisTemplate;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.gathering.service.GatheringSearchAsync;
 import com.gathering.gathering.util.GatheringSearchActions;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.user.model.entitiy.User;
-import com.gathering.user.repository.UserJpaRepository;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,9 +31,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
     private final GatheringSearchAsync gatheringSearchAsync;
     private final GatheringSearchActions gatheringSearchActions;
-    private final GatheringRedisTemplate gatheringRedisTemplate;
     private final UserRepository userRepository;
-    private final UserJpaRepository userJpaRepository;
 
     @Override
     public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
@@ -89,11 +85,5 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, Pageable pageable) {
         return gatheringSearchJpaRepository.getGatheringReviewList(gatheringId, sort, pageable);
-    }
-
-    @Override
-    public GatheringSearchResponse findTop5Gatherings() {
-
-        return null;
     }
 }
