@@ -3,10 +3,8 @@ package com.gathering.review.model.entitiy;
 import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.review.model.dto.CreateReviewDto;
-import com.gathering.user.model.constant.REVIEWTYPE;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 

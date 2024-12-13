@@ -3,14 +3,16 @@ package com.gathering.gathering.model.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
-import lombok.Builder;
-import lombok.Getter;
+import com.gathering.gathering.model.entity.ReadingTimeGoal;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GatheringResponse {
 
@@ -36,6 +38,7 @@ public class GatheringResponse {
     private String author;
     private Double completeRate;
     private String introduce;
+    private String thumbnail;
 
     public static GatheringResponse fromEntity(Gathering gathering) {
         return GatheringResponse.builder()
@@ -97,5 +100,18 @@ public class GatheringResponse {
                 .author(gathering.getBook().getAuthor())
                 .introduce(gathering.getBook().getIntroduce())
                 .build();
+    }
+
+    /**
+     * 나의 리뷰 - 작성 가능한 모임 목록 생성자
+     */
+    public GatheringResponse(Long id, String name, LocalDate startDate, LocalDate endDate
+            , ReadingTimeGoal readingTimeGoal, String thumbnail) {
+        this.id = id;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.readingTimeGoal = readingTimeGoal.getMinutes();
+        this.thumbnail = thumbnail;
     }
 }

@@ -1,11 +1,11 @@
 package com.gathering.review.service;
 
-import com.gathering.review.model.dto.CreateReviewCommentDto;
-import com.gathering.review.model.dto.CreateReviewDto;
-import com.gathering.review.model.dto.ReviewDto;
+import com.gathering.review.model.dto.*;
 import com.gathering.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +19,12 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username) {
+    public ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username) {
         return reviewRepository.createReviewComment(createReviewCommentDto, username);
+    }
+
+    @Override
+    public ReviewListDto selectUserReviewList(String username, String type) {
+        return reviewRepository.selectUserReviewList(username, type);
     }
 }

@@ -1,16 +1,16 @@
-package com.gathering.user.model.constant;
+package com.gathering.review.model.constant;
 
 import lombok.Getter;
 
 @Getter
-public enum REVIEWTYPE {
+public enum ReviewType {
 
     GATHERING("GATHERING"),
     BOOK("BOOK");
 
     private final String value;
 
-    REVIEWTYPE(String value) {
+    ReviewType(String value) {
         this.value = value;
     }
 }

@@ -4,26 +4,36 @@ import com.gathering.book.model.entity.Book;
 import com.gathering.book.repository.BookJpaRepository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringBookReview;
+import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.repository.GatheringJpaRepository;
-import com.gathering.review.model.dto.CreateReviewCommentDto;
-import com.gathering.review.model.dto.CreateReviewDto;
-import com.gathering.review.model.dto.ReviewDto;
+import com.gathering.review.model.constant.ReviewType;
+import com.gathering.review.model.dto.*;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.GatheringReview;
 import com.gathering.review.model.entitiy.ReviewComment;
-import com.gathering.user.model.constant.REVIEWTYPE;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserJpaRepository;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import static com.gathering.challenge.model.entity.QChallenge.challenge;
+import static com.gathering.gathering.model.entity.QGathering.gathering;
+import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
+import static com.gathering.review.model.entitiy.QBookReview.bookReview;
+import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 import static com.gathering.review.model.entitiy.QReviewComment.reviewComment;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Repository
 @RequiredArgsConstructor
@@ -48,12 +58,12 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         }
 
         // 모임 리뷰
-        if(type.equalsIgnoreCase(REVIEWTYPE.GATHERING.getValue())) {
+        if(type.equalsIgnoreCase(ReviewType.GATHERING.getValue())) {
             GatheringReview review = GatheringReview.createEntity(gathering, user, createReviewDto);
 
             review = gatheringReviewJpaRepository.save(review);
 
-            return ReviewDto.formEntity(review);
+            return GatheringReviewDto.formEntity(review);
         } else {
             // 독서 리뷰
 
@@ -70,13 +80,13 @@ public class ReviewRepositoryImpl implements ReviewRepository{
             if(gathering != null) {
                 gatheringReview.addGatheringReview(gathering);
             }
-            return ReviewDto.formEntity(review);
+            return BookReviewDto.formEntity(review);
         }
 
     }
 
     @Override
-    public ReviewDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username) {
+    public ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username) {
 
         BookReview review = bookReviewJpaRepository.findByIdOrThrow(createReviewCommentDto.getReviewId());
         User user = userJpaRepository.findByUserNameOrThrow(username);
@@ -100,8 +110,81 @@ public class ReviewRepositoryImpl implements ReviewRepository{
 
         ReviewComment reviewComment = ReviewComment.createEntity(review, user, createReviewCommentDto, orders);
 
-        reviewCommentJpaRepository.save(reviewComment);
+        reviewComment = reviewCommentJpaRepository.save(reviewComment);
 
-        return null;
+        return ReviewCommentDto.formEntity(reviewComment);
+    }
+
+    @Override
+    public ReviewListDto selectUserReviewList(String username, String type) {
+
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+        ReviewListDto result = null;
+        if(type.equalsIgnoreCase(ReviewType.BOOK.getValue())) {
+            List<BookReviewDto> reviews = jpaQueryFactory
+                    .select(Projections.constructor(BookReviewDto.class,
+                                    bookReview.id,
+                                    bookReview.title,
+                                    Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime),
+                                    bookReview.content))
+                    .from(bookReview)
+                    .where(bookReview.user.id.eq(user.getId()))
+                    .fetch();
+
+            result = ReviewListDto.fromBookReviews(reviews);
+
+            return result;
+        } else {
+
+            // TODO 작성 가능한 리뷰 목록 조회하는 기준 확인 필요
+
+            // 모임이 종료되었지만 리뷰를 작성하지 않은 목록
+            List<Long> list = jpaQueryFactory
+                    .select(gathering.id)
+                    .from(gathering)
+                    .leftJoin(gathering.gatheringUsers, gatheringUser)
+                    .leftJoin(gathering.gatheringReviews, gatheringReview)
+                    .where(gatheringUserIdEq(user.getId()),
+                            gatheringStatusEq(GatheringStatus.COMPLETED),
+                            gatheringReview.gathering.id.isNull())
+                    .fetch();
+
+            // 모임 response
+            List<GatheringResponse> gatheringResponses = jpaQueryFactory
+                    .select(Projections.constructor(GatheringResponse.class,
+                            gathering.id,
+                            gathering.name,
+                            gathering.startDate,
+                            gathering.endDate,
+                            challenge.readingTimeGoal,
+                            gathering.thumbnail))
+                    .from(gathering)
+                    .leftJoin(gathering.challenge, challenge)
+                    .where(gathering.id.in(list))
+                    .fetch();
+
+            //작성한 리뷰 조회
+            List<GatheringReviewDto> reviews = jpaQueryFactory
+                    .select(Projections.constructor(GatheringReviewDto.class,
+                            gatheringReview.id,
+                            gatheringReview.score,
+                            Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", gatheringReview.createdTime),
+                            gatheringReview.content))
+                    .from(gatheringReview)
+                    .where(gatheringReview.user.id.eq(user.getId()))
+                    .fetch();
+
+            result = ReviewListDto.fromGatheringReviews(gatheringResponses, reviews);
+
+            return result;
+        }
+    }
+
+    private BooleanExpression gatheringUserIdEq(long userId) {
+        return isEmpty(userId) ? null : gatheringUser.user.id.eq(userId);
+    }
+
+    private BooleanExpression gatheringStatusEq(GatheringStatus gatheringStatus) {
+        return isEmpty(gatheringStatus) ? null : gathering.gatheringStatus.eq(gatheringStatus);
     }
 }

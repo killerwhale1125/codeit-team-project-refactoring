@@ -1,11 +1,13 @@
 package com.gathering.review.repository;
 
-import com.gathering.review.model.dto.CreateReviewCommentDto;
-import com.gathering.review.model.dto.CreateReviewDto;
-import com.gathering.review.model.dto.ReviewDto;
+import com.gathering.review.model.dto.*;
+
+import java.util.List;
 
 public interface ReviewRepository {
     ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type);
 
-    ReviewDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
+    ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
+
+    ReviewListDto selectUserReviewList(String username, String type);
 }

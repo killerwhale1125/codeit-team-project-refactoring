@@ -1,8 +1,8 @@
 package com.gathering.review.service;
 
-import com.gathering.review.model.dto.CreateReviewCommentDto;
-import com.gathering.review.model.dto.CreateReviewDto;
-import com.gathering.review.model.dto.ReviewDto;
+import com.gathering.review.model.dto.*;
+
+import java.util.List;
 
 public interface ReviewService {
     
@@ -10,5 +10,8 @@ public interface ReviewService {
     ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type);
 
     // 리뷰 댓글 생성
-    ReviewDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
+    ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
+
+    // 나의 리뷰 목록 조회
+    ReviewListDto selectUserReviewList(String username, String type);
 }
