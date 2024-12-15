@@ -2,7 +2,6 @@ package com.gathering.review.controller;
 
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.ReviewService;
@@ -69,9 +68,20 @@ public class ReviewConroller {
     @Operation(summary = "독서 리뷰", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewListDto> selectBookReviewList(
             @AuthenticationPrincipal UserDetails userDetails) {
+        String name = null;
+        if(userDetails != null) {
+            name = userDetails.getUsername();
+        }
+        ReviewListDto result = reviewService.selectBookReviewList(name);
+        return new BaseResponse<>(result);
 
-        ReviewListDto result = reviewService.selectBookReviewList(userDetails.getUsername());
-        return new BaseResponse<>(null);
+    }
 
+    @GetMapping("/search")
+    @Operation(summary = "리뷰 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
+    public BaseResponse<ReviewListDto> findGatherings(
+            @RequestParam BookReviewTagType tag,
+            @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
+        return new BaseResponse<>(reviewService.findReviews(tag, pageable));
     }
 }

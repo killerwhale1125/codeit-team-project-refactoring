@@ -1,8 +1,8 @@
 package com.gathering.review.service;
 
+import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.dto.*;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
     
@@ -17,4 +17,7 @@ public interface ReviewService {
 
     // 독서 리뷰 페이지 정보 조회
     ReviewListDto selectBookReviewList(String username);
+
+    // 리뷰 목록 조회(무한 스크롤)
+    ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable);
 }

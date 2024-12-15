@@ -3,11 +3,12 @@ package com.gathering.user.controller;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.security.auth.PrincipalDetails;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.*;
+import com.gathering.user.model.entitiy.User;
 import com.gathering.user.service.UserService;
-import com.gathering.user.util.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -59,6 +63,17 @@ public class UserController {
         if(userDto != null) {
             String accessToken = generateToken(userDto.getUserName());
             userDto.setToken(accessToken);
+
+            // UserDetails 생성
+            UserDetails userDetails = new PrincipalDetails(User.fromDto(userDto));
+
+            // Authentication 생성
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+            // SecurityContext에 설정
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
             return new BaseResponse<>(userDto);
         }
 

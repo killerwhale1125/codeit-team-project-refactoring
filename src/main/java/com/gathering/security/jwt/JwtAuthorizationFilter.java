@@ -38,13 +38,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private UserJpaRepository userJpaRepository;
     private List<String> excludePaths;
     private List<String> includePaths;
+    private List<String> publicPaths;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository, List<String> excludePaths, List<String> includePaths) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository,
+                                  List<String> excludePaths, List<String> includePaths, List<String> publicPaths) {
         super(authenticationManager);
         this.userJpaRepository = userJpaRepository;
         this.excludePaths = excludePaths;
         this.includePaths = includePaths;
+        this.publicPaths = publicPaths;
     }
 
     // 토큰 관련 오류 발생시 응답
@@ -93,12 +96,19 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         } else {
-            // header가 있는지 확인
-            if(jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
+            boolean isPublic = publicPaths.stream()
+                    .anyMatch(path -> pathMatcher.match(path, requestUri));
+
+            if(isPublic && (jwtHeader == null || !jwtHeader.startsWith("Bearer"))) {
+                chain.doFilter(request, response);
+                return;
+            } else if(jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
                 // 401 Unauthorized 응답 처리
                 FailedAuthorization(response);
                 return;
             }
+
+
             // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
             try {
                 String jwtToken = request.getHeader(header).replace(tokenPrefix, "");

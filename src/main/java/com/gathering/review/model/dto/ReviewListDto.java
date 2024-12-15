@@ -1,6 +1,7 @@
 package com.gathering.review.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.book.model.dto.BookResponse;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,9 @@ public class ReviewListDto {
     // 작성한 리뷰
     private List<GatheringReviewDto> gatheringReviews;
 
+    // 작성하지 않은 리뷰 책정보
+    private List<BookResponse> bookResponseList;
+
     private long total;
     private double scoreAvg;
     @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -43,6 +47,24 @@ public class ReviewListDto {
                 .build();
     }
 
+
+    // 리뷰 조회 무한 스크롤
+    public static ReviewListDto fromGatheringReviews(List<BookReviewDto> bookReviews, boolean hasNext) {
+        return ReviewListDto.builder()
+                .bookReviews(bookReviews)
+                .hasNext(hasNext)
+                .build();
+    }
+
+
+    public static ReviewListDto fromGatheringReviews(List<BookResponse> bookResponseList,List<BookReviewDto> bookReviews, long total) {
+        return ReviewListDto.builder()
+                .bookReviews(bookReviews)
+                .bookResponseList(bookResponseList)
+                .total(total)
+                .build();
+    }
+    
     public static ReviewListDto fromGatheringReviews(List<GatheringResponse> gatheringResponses, List<GatheringReviewDto> gatheringReviews) {
         return ReviewListDto.builder()
                 .gatheringResponses(gatheringResponses)

@@ -4,6 +4,7 @@ import com.gathering.challenge.model.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
+import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -84,6 +85,15 @@ public class User extends BaseTimeEntity {
                 .userName(dto.getUserName())
                 .password(dto.getPassword())
                 .email(dto.getEmail())
+                .build();
+    }
+
+    public static User fromDto(UserDto userDto) {
+        return User.builder()
+                .roles("USER")
+                .userName(userDto.getUserName())
+                .password(userDto.getPassword())
+                .email(userDto.getEmail())
                 .build();
     }
 }

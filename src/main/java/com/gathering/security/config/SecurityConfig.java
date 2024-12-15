@@ -35,6 +35,9 @@ public class SecurityConfig {
     private List<String> excludePaths;
     @Value("${security.include.paths}")
     private List<String> includePaths;
+    @Value("${security.public.paths}")
+    private List<String> publicPaths;
+
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -49,7 +52,7 @@ public class SecurityConfig {
                 .addFilter(corsFilter) // @CrossOrigin(인증 x), 시큐리티 필터에 등록 인증 (O)
                 .formLogin(AbstractHttpConfigurer::disable) // 시큐리티 로그인 화면 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .addFilter(new JwtAuthorizationFilter(manager, userJpaRepository, excludePaths, includePaths)) // AuthenticationManger
+                .addFilter(new JwtAuthorizationFilter(manager, userJpaRepository, excludePaths, includePaths, publicPaths)) // AuthenticationManger
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 // 관리자 기능 구현 후 권한 관련 기능 활성화 필요

@@ -1,5 +1,6 @@
 package com.gathering.review.repository;
 
+import com.gathering.book.model.dto.BookResponse;
 import com.gathering.book.model.entity.Book;
 import com.gathering.book.repository.BookJpaRepository;
 import com.gathering.common.base.exception.BaseException;
@@ -9,31 +10,40 @@ import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringBookReview;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.repository.GatheringJpaRepository;
+import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.GatheringReview;
 import com.gathering.review.model.entitiy.ReviewComment;
+import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserJpaRepository;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 import static com.gathering.gathering.model.entity.QGatheringBookReview.gatheringBookReview;
 import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
+import static com.gathering.review.model.dto.ReviewListDto.fromGatheringReviews;
 import static com.gathering.review.model.entitiy.QBookReview.bookReview;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 import static com.gathering.review.model.entitiy.QReviewComment.reviewComment;
+import static com.gathering.user.model.entitiy.QUser.user;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Repository
@@ -81,7 +91,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
             if(gathering != null) {
                 gatheringReview.addGatheringReview(gathering);
             }
-            return BookReviewDto.formEntity(review);
+            return BookReviewDto.fromEntity(review);
         }
 
     }
@@ -167,7 +177,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                     .where(gatheringReview.user.id.eq(user.getId()))
                     .fetch();
 
-            result = ReviewListDto.fromGatheringReviews(gatheringResponses, reviews);
+            result = fromGatheringReviews(gatheringResponses, reviews);
 
             return result;
         }
@@ -176,14 +186,91 @@ public class ReviewRepositoryImpl implements ReviewRepository{
     @Override
     public ReviewListDto selectBookReviewList(String username) {
 
-        User user = userJpaRepository.findByUserNameOrThrow(username);
+        User user = null;
+        long myReviewCount = 0;
+        List<BookResponse> unreviewsBookInfo = null;
+        if(username != null) {
+            user = userJpaRepository.findByUserNameOrThrow(username);
+            // 작성한 독서 리뷰 갯수
+            myReviewCount  = bookReviewJpaRepository.countByUserId(user.getId());
 
-        long myReviewCount = bookReviewJpaRepository.countByUserId(user.getId());
+            // 모임이 종료되었지만 독서 리뷰를 작성하지 않은 책 정보 목록
+            unreviewsBookInfo = findUnreviewedCompletedBook(user.getId());
+        }
 
-        List<Long> unReviewCount = findUnreviewedCompletedGatherings(user.getId());
+        // best 리뷰 목록
+        List<BookReviewDto> bestReview = jpaQueryFactory
+                .select(Projections.constructor(BookReviewDto.class,
+                        bookReview.id
+                        ,bookReview.title
+                        ,bookReview.content
+                        ,bookReview.likes
+                        ,JPAExpressions
+                                .select(reviewComment.count())
+                                .from(reviewComment)
+                                .where(reviewComment.review.id.eq(bookReview.id))
+                        ,JPAExpressions
+                                .select(bookReview.count())
+                                .from(bookReview)
+                                .where(bookReview.user.id.eq(QUser.user.id))
+                        ,QUser.user.userName
+                        ,QUser.user.profile
+                ))
+                .from(bookReview)
+                .leftJoin(QUser.user).on(bookReview.user.id.eq(QUser.user.id))
+                .where(bookReview.user.id.eq(QUser.user.id).and(bookReview.status.eq("Y")))
+                .orderBy(bookReview.likes.desc())
+                .limit(5)
+                .fetch();
 
+        ReviewListDto result = fromGatheringReviews(unreviewsBookInfo, bestReview, myReviewCount);
+        return result;
+    }
 
-        return null;
+    @Override
+    public ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if (!BookReviewTagType.ALL.getType().equals(tag.getType())) {
+            builder.and(bookReview.tagCd.like("%" + tag + "%"));
+            builder.and(bookReview.status.eq("Y"));
+        }
+
+        // Query 생성
+        JPAQuery<BookReviewDto> query = jpaQueryFactory
+                .select(Projections.constructor(BookReviewDto.class,
+                        bookReview.id
+                        ,bookReview.title
+                        ,bookReview.apprCd
+                        ,bookReview.book.image
+                        ,bookReview.content
+                        ,bookReview.likes
+                        ,JPAExpressions
+                                .select(reviewComment.count())
+                                .from(reviewComment)
+                                .where(reviewComment.review.id.eq(bookReview.id))
+                        ,bookReview.user.id
+                        ,bookReview.user.profile
+                        ,bookReview.user.userName
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime))
+                )
+                .from(bookReview)
+                .leftJoin(bookReview.user, user)
+                .leftJoin(bookReview.book, book)
+                .leftJoin(bookReview.reviewComments, reviewComment)
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1);
+
+        List<BookReviewDto> reviews = query.fetch();
+
+        boolean hasNext = reviews.size() > pageable.getPageSize();
+
+        // Remove the extra record from the content (if it exists)
+        if (hasNext) {
+            reviews.remove(reviews.size() - 1);
+        }
+
+        return ReviewListDto.fromGatheringReviews(reviews, hasNext);
     }
 
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록
@@ -200,11 +287,19 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .fetch();
     }
 
-    // 모임이 종료되었지만 독서 리뷰를 작성하지 않은 목록
-    private List<Long> findUnreviewedCompletedBook(long userId) {
+    // 모임이 종료되었지만 독서 리뷰를 작성하지 않은 책 정보 목록
+    private List<BookResponse> findUnreviewedCompletedBook(long userId) {
 
         return jpaQueryFactory
-                .select(gathering.id)
+                .select(Projections.constructor(BookResponse.class,
+                                gathering.book.id
+                                ,gathering.book.title
+                                ,gathering.book.author
+                                ,gathering.book.publisher
+                                ,gathering.book.publishDate
+                                ,gathering.book.star
+                                ,gathering.book.image
+                                ,gathering.id))
                 .from(gathering)
                 .leftJoin(gathering.gatheringUsers, gatheringUser)
                 .leftJoin(gathering.gatheringBookReviews, gatheringBookReview)
