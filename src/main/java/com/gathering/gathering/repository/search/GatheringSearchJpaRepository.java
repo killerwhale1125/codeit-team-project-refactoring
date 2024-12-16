@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, Long>, GatheringSearchRepository {
 
-    @EntityGraph(attributePaths = {"challenge", "book"})
+    @EntityGraph(attributePaths = {"challenge", "book", "image"})
     @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
     Optional<Gathering> getGatheringWithChallengeAndBook(@Param("gatheringId") Long gatheringId);
 

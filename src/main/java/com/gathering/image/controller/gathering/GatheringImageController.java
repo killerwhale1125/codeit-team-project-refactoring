@@ -24,9 +24,8 @@ public class GatheringImageController {
 
     @PostMapping("/{gatheringId}/images")
     @Operation(summary = "모임 이미지 업로드", description = "상세 조건 Notion 참고")
-    public BaseResponse<Void> uploadImages(@PathVariable Long gatheringId,
-                                           @RequestParam("file") List<MultipartFile> files) throws IOException {
-        gatheringImageService.uploadGatheringImage(gatheringId, files);
+    public BaseResponse<Void> uploadImages(@RequestParam("file") List<MultipartFile> files) throws IOException {
+        gatheringImageService.uploadGatheringImage(files);
 
         return new BaseResponse<>();
     }

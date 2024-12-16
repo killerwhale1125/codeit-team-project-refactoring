@@ -1,31 +1,25 @@
 package com.gathering.image.service.gathering;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.image.model.DefaultMultipartFile;
 import com.gathering.image.model.entity.EntityType;
 import com.gathering.image.model.entity.Image;
-import com.gathering.image.repository.gathering.GatheringImageJdbcRepository;
 import com.gathering.image.repository.ImageRepository;
+import com.gathering.image.repository.gathering.GatheringImageJdbcRepository;
 import com.gathering.image.service.AwsS3Service;
 import com.gathering.util.image.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.FILE_UPLOAD_FAILED;
-import static com.gathering.common.base.response.BaseResponseStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @Service
@@ -35,12 +29,10 @@ public class GatheringImageService {
     private final AwsS3Service awsS3Service;
     private final GatheringImageJdbcRepository gatheringImageJdbcRepository;
     private final ImageRepository imageRepository;
-    private final GatheringRepository gatheringRepository;
 
     @Transactional
-    public void uploadGatheringImage(Long gatheringId, List<MultipartFile> files) {
-        Gathering gathering = gatheringRepository.getById(gatheringId);
-        upload(validateAndPrepareFiles(files), gathering);
+    public List<Image> uploadGatheringImage(List<MultipartFile> files) {
+        return upload(validateAndPrepareFiles(files));
     }
 
     private List<MultipartFile> validateAndPrepareFiles(List<MultipartFile> files) {
@@ -55,15 +47,16 @@ public class GatheringImageService {
     /**
      * 게시물에 이미지 파일 업로드
      */
-    private void upload(List<MultipartFile> files, Gathering gathering) {
-        List<Image> images = uploadImageToStorageServer(files, gathering);
+    private List<Image> upload(List<MultipartFile> files) {
+        List<Image> images = uploadImageToStorageServer(files);
         gatheringImageJdbcRepository.saveAll(images);
+        return images;
     }
 
     /**
      * AWS S3 이미지 업로드
      */
-    private List<Image> uploadImageToStorageServer(List<MultipartFile> files, Gathering gathering) {
+    private List<Image> uploadImageToStorageServer(List<MultipartFile> files) {
         return files.stream()
                 .map(file -> {
                     try {
@@ -76,7 +69,7 @@ public class GatheringImageService {
                          * 3. S3 bucket에 업로드한 해당 AWS client의 파일 fath를 가져옴
                          */
                         String filepath = awsS3Service.upload(file, filename, EntityType.GATHERING);
-                        return Image.createImage(filepath, filename, gathering);
+                        return Image.createImage(filepath, filename);
                     } catch (IOException e) {
                         throw new BaseException(FILE_UPLOAD_FAILED);
                     }

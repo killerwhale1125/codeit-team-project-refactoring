@@ -27,6 +27,7 @@ public class ImageRepositoryImpl implements ImageRepository {
 
     @Override
     public List<Image> findImageByGatheringId(Long gatheringId) {
-        return imageJpaRepository.findImageByGatheringId(gatheringId);
+//        return imageJpaRepository.findImageByGatheringId(gatheringId);
+        return null;
     }
 }

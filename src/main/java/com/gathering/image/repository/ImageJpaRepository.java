@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface ImageJpaRepository extends JpaRepository<Image, Long> {
 
-    @Query("SELECT i FROM Image i JOIN FETCH i.gathering g WHERE g.id = :gatheringId")
-    List<Image> findImageByGatheringId(@Param("gatheringId") Long gatheringId);
+//    @Query("SELECT i FROM Image i JOIN FETCH i.gathering g WHERE g.id = :gatheringId")
+//    List<Image> findImageByGatheringId(@Param("gatheringId") Long gatheringId);
 }

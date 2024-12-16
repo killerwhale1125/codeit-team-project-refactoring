@@ -13,8 +13,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GatheringImageJdbcRepository {
     private static final String BULK_INSERT_SQL = "INSERT INTO " +
-            "`IMAGE`(`IMAGE_NAME` , `IMAGE_URL`, `CREATED_TIME`, `MODIFIED_TIME`, `GATHERING_ID`, `IS_REMOVED`) " +
-            "VALUES(?, ?, ?, ?, ?, ?)";
+            "`IMAGE`(`IMAGE_NAME` , `IMAGE_URL`, `CREATED_TIME`, `MODIFIED_TIME`, `IS_REMOVED`) " +
+            "VALUES(?, ?, ?, ?, ?)";
 
     private static final String BULK_DELETE_SQL = "DELETE FROM `IMAGE` WHERE `GATHERING_ID` = ?";
 
@@ -33,8 +33,7 @@ public class GatheringImageJdbcRepository {
                     ps.setString(2, image.getUrl());
                     ps.setTimestamp(3, Timestamp.valueOf(now));
                     ps.setTimestamp(4, Timestamp.valueOf(now));
-                    ps.setLong(5, image.getGathering().getId());
-                    ps.setBoolean(6, image.isRemoved());
+                    ps.setBoolean(5, image.isRemoved());
                 });
     }
 

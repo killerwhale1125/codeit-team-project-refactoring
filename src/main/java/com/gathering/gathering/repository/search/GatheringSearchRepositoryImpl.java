@@ -10,11 +10,9 @@ import com.gathering.gathering.repository.search.util.GatheringSortUtil;
 import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +26,7 @@ import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
+import static com.gathering.image.model.entity.QImage.image;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 import static com.gathering.user.model.entitiy.QUser.user;
 
@@ -48,6 +47,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         JPAQuery<Gathering> query = queryFactory.selectFrom(gathering)
                 .leftJoin(gathering.challenge, challenge)
                 .leftJoin(gathering.book, book).fetchJoin()
+                .leftJoin(gathering.image, image).fetchJoin()
                 .where(builder);
 
         // 정렬 처리

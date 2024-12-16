@@ -6,9 +6,9 @@ import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.validator.GatheringValidator;
+import com.gathering.image.model.entity.Image;
 import com.gathering.review.model.entitiy.GatheringReview;
 import com.gathering.user.model.entitiy.User;
-import com.gathering.util.date.DateCalculateHolder;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,7 +40,6 @@ public class Gathering extends BaseTimeEntity {
     private int currentCapacity = 0;
     private String owner;
     private long viewCount;
-    private String thumbnail;
 
     @Enumerated(EnumType.STRING)
     private GatheringStatus gatheringStatus;
@@ -65,11 +64,14 @@ public class Gathering extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private GatheringWeek gatheringWeek;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     public static Gathering createGathering(GatheringCreate gatheringCreate,
                                             Challenge challenge,
                                             Book book,
-                                            GatheringUser gatheringUser,
-                                            DateCalculateHolder dateCalculateHolder,
+                                            List<Image> images, GatheringUser gatheringUser,
                                             GatheringValidator gatheringValidator) {
         Gathering gathering = new Gathering();
         gathering.name = gatheringCreate.getName();
@@ -87,6 +89,8 @@ public class Gathering extends BaseTimeEntity {
         gathering.addChallenge(challenge);
         gathering.addGatheringUser(gatheringUser, gatheringValidator);
         gathering.increaseCurrentCapacity();
+        // 현재 썸네일은 1개뿐이라 get(0)으로 지정
+        gathering.image = images.get(0);
         return gathering;
     }
 

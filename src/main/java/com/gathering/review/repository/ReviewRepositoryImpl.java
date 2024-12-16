@@ -160,7 +160,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                             gathering.startDate,
                             gathering.endDate,
                             challenge.readingTimeGoal,
-                            gathering.thumbnail))
+                            gathering.image.url))
                     .from(gathering)
                     .leftJoin(gathering.challenge, challenge)
                     .where(gathering.id.in(list))

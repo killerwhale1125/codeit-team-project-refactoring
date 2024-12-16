@@ -12,12 +12,15 @@ import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.validator.GatheringValidator;
+import com.gathering.image.model.entity.Image;
+import com.gathering.image.service.gathering.GatheringImageService;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.date.DateCalculateHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -33,8 +36,10 @@ public class GatheringActions {
     private final GatheringValidator gatheringValidator;
     private final BookRepository bookRepository;
     private final DateCalculateHolder dateCalculateHolder;
+    private final GatheringImageService gatheringImageService;
 
-    public Gathering createGathering(GatheringCreate gatheringCreate, String username) {
+    public Gathering createGathering(GatheringCreate gatheringCreate, String username, List<MultipartFile> files) {
+        List<Image> images = gatheringImageService.uploadGatheringImage(files);
         User user = userRepository.findByUsername(username);
         Book book = bookRepository.findBookByBookIdAndCategoryId(gatheringCreate.getBookId(), gatheringCreate.getCategoryId());
         book.incrementSelectedCount();
@@ -43,8 +48,8 @@ public class GatheringActions {
                 gatheringCreate,
                 Challenge.createChallenge(gatheringCreate, ChallengeUser.createChallengeUser(user)),
                 book,
+                images,
                 GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING),
-                dateCalculateHolder,
                 gatheringValidator);
     }
 

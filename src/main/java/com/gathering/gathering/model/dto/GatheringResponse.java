@@ -49,6 +49,7 @@ public class GatheringResponse {
                 .owner(gathering.getOwner())
                 .name(gathering.getName())
                 .content(gathering.getContent())
+                .thumbnail(gathering.getImage().getUrl())
                 .gatheringWeek(gathering.getGatheringWeek().getWeek())
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
                 .startDate(gathering.getStartDate())
@@ -112,7 +113,7 @@ public class GatheringResponse {
                 .currentCapacity(gathering.getCurrentCapacity())
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
                 .gatheringWeek(gathering.getGatheringWeek().getWeek())
-                .thumbnail(gathering.getThumbnail())
+                .thumbnail(gathering.getImage().getUrl())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
                 .build();

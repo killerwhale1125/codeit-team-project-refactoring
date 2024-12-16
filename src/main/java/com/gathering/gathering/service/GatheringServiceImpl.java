@@ -35,12 +35,10 @@ public class GatheringServiceImpl implements GatheringService {
     @Override
     @Transactional
     public void create(GatheringCreate gatheringCreate, List<MultipartFile> files, String username) {
-        Gathering gathering = gatheringActions.createGathering(gatheringCreate, username);
+        Gathering gathering = gatheringActions.createGathering(gatheringCreate, username, files);
         gatheringRepository.save(gathering);
         // 현재 시간에서 모임 시작일까지 시간 간격을 계산하여 그 시간을 만료설정으로 레디스에 저장하여 Pub/Sub 이벤트 발생시켜 추후 Challenge 상태변화
         challengeRedisService.scheduleChallengeStateChange(gathering.getChallenge(), gathering.getStartDate());
-        // 이미지 저장
-        gatheringImageService.uploadGatheringImage(gathering.getId(), files);
     }
 
     @Override
