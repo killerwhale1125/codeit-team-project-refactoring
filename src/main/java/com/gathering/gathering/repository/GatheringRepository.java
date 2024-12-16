@@ -4,6 +4,7 @@ import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 
 import java.util.List;
+import java.util.Set;
 
 public interface GatheringRepository {
 
@@ -20,4 +21,12 @@ public interface GatheringRepository {
     List<Gathering> findByIdIn(List<Long> gatheringIds);
 
     Long findIdById(Long gatheringId);
+
+    long getActiveAndParticipatingCount(long id);
+
+    long getCompletedCount(long id);
+
+    long getMyCreatedCount(String userName);
+
+    long getMyWishedCountByGatheringIds(Set<Long> wishGatheringIds);
 }

@@ -3,9 +3,11 @@ package com.gathering.gathering.service;
 import com.gathering.challenge.redis.ChallengeRedisService;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringUpdate;
+import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
+import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.util.GatheringActions;
 import com.gathering.image.service.gathering.GatheringImageService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -63,6 +66,17 @@ public class GatheringServiceImpl implements GatheringService {
     @Override
     public void update(GatheringUpdate gatheringUpdate, String username) {
 
+    }
+
+    @Override
+    public LocalDate calculateEndDate(LocalDate startDate, GatheringWeek gatheringWeek) {
+        return startDate.plusDays(gatheringWeek.getWeek());
+    }
+
+    @Override
+    public MyPageGatheringsCountResponse getMyPageGatheringsCount(String username) {
+        User user = userRepository.findByUsername(username);
+        return gatheringActions.getMyPageGatheringsCount(user);
     }
 
     @Override

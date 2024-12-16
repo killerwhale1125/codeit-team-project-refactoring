@@ -46,7 +46,7 @@ public class GatheringSearchController {
     }
 
     @GetMapping("/participating")
-    @Operation(summary = "내가 참여한 모임 리스트", description = "상세 조건 Notion 참고")
+    @Operation(summary = "내가 참여중인 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findMyGatherings(@AuthenticationPrincipal UserDetails userDetails,
                                                                   @RequestParam(required = false) GatheringUserStatus gatheringUserStatus,
                                                                   @RequestParam(required = false) GatheringStatus gatheringStatus,
@@ -92,4 +92,15 @@ public class GatheringSearchController {
         return new BaseResponse<>(gatheringSearchService.review(gatheringId, sort, pageable));
     }
 
+    @GetMapping("/title-search")
+    @Operation(summary = "검색 기능 구현 중 (미완성)", description = "상세 조건 Notion 참고")
+    public BaseResponse<GatheringSearchResponse> search(@RequestParam String searchWord,
+                                                        @PageableDefault(page = 0, size = 5) Pageable pageable) {
+        return new BaseResponse<>(gatheringSearchService.searchByTitle(searchWord, pageable));
+    }
+
+//    @GetMapping("/")
+//    public BaseResponse<GatheringSearchResponse> searchByBook() {
+//
+//    }
 }

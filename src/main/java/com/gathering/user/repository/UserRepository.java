@@ -31,4 +31,6 @@ public interface UserRepository {
     UserDto selectUserByEmail(String email);
 
     Set<Long> findWishGatheringIdsByUserName(String username);
+
+    boolean existsByUserName(String username);
 }

@@ -6,6 +6,7 @@ import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challenge.model.entity.ChallengeUser;
 import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,5 +77,17 @@ public class GatheringActions {
         return gatheringUsers.stream()
                 .map(gatheringUser -> UserResponseDto.fromEntity(gatheringUser.getUser()))
                 .collect(Collectors.toList());
+    }
+
+    public MyPageGatheringsCountResponse getMyPageGatheringsCount(User user) {
+
+        long participatingCount = gatheringRepository.getActiveAndParticipatingCount(user.getId());
+        long completedCount = gatheringRepository.getCompletedCount(user.getId());
+        long myCreatedCount = gatheringRepository.getMyCreatedCount(user.getUserName());
+
+        Set<Long> wishGatheringIds = userRepository.findWishGatheringIdsByUserName(user.getUserName());
+        long myWishedCount = gatheringRepository.getMyWishedCountByGatheringIds(wishGatheringIds);
+
+        return MyPageGatheringsCountResponse.fromEntity(participatingCount, completedCount, myCreatedCount, myWishedCount);
     }
 }

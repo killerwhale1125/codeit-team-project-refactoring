@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.ReadingTimeGoal;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,20 +16,19 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class GatheringResponse {
 
-    private Long id;
+    private long id;
     private String name;
     private String content;
-    private Long goalDays;
-    private Integer readingTimeGoal;
+    private int readingTimeGoal;
     private LocalDate startDate;
     private LocalDate endDate;
     private String owner;
-    private Integer minCapacity;
-    private Integer maxCapacity;
-    private Integer currentCapacity;
+    private int minCapacity;
+    private int maxCapacity;
+    private int currentCapacity;
     private GatheringStatus gatheringStatus;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
@@ -34,11 +36,12 @@ public class GatheringResponse {
     private String bookImage;
     private String publisher;
     private String publishDate;
-    private Double star;
+    private double star;
     private String author;
-    private Double completeRate;
+    private double completeRate;
     private String introduce;
     private String thumbnail;
+    private int gatheringWeek;
 
     public static GatheringResponse fromEntity(Gathering gathering) {
         return GatheringResponse.builder()
@@ -46,7 +49,7 @@ public class GatheringResponse {
                 .owner(gathering.getOwner())
                 .name(gathering.getName())
                 .content(gathering.getContent())
-                .goalDays(gathering.getGoalDays())
+                .gatheringWeek(gathering.getGatheringWeek().getWeek())
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
                 .startDate(gathering.getStartDate())
                 .endDate(gathering.getEndDate())
@@ -101,6 +104,20 @@ public class GatheringResponse {
                 .introduce(gathering.getBook().getIntroduce())
                 .build();
     }
+
+    public static GatheringResponse searchResultsFromEntity(Gathering gathering) {
+        return GatheringResponse.builder()
+                .id(gathering.getId())
+                .name(gathering.getName())
+                .currentCapacity(gathering.getCurrentCapacity())
+                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .gatheringWeek(gathering.getGatheringWeek().getWeek())
+                .thumbnail(gathering.getThumbnail())
+                .bookTitle(gathering.getBook().getTitle())
+                .bookImage(gathering.getBook().getImage())
+                .build();
+    }
+
 
     /**
      * 나의 리뷰 - 작성 가능한 모임 목록 생성자

@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+import static com.gathering.gathering.redis.GatheringRedisKey.TRUE;
+
 @Service
 @RequiredArgsConstructor
 public class ChallengeRedisService {
@@ -18,6 +20,6 @@ public class ChallengeRedisService {
     public void scheduleChallengeStateChange(Challenge challenge, LocalDate startDate) {
         long secondsUntilStart = dateCalculateHolder.calculateSecondsUntilStart(startDate, LocalDateTime.now());
         String challengeWaitingKey = ChallengeRedisKey.generateWaitingKey(challenge.getId());
-        challengeRedisTemplate.saveKeyWithExpire(challengeWaitingKey, "1", secondsUntilStart, TimeUnit.SECONDS);
+        challengeRedisTemplate.saveKeyWithExpire(challengeWaitingKey, TRUE, secondsUntilStart, TimeUnit.SECONDS);
     }
 }

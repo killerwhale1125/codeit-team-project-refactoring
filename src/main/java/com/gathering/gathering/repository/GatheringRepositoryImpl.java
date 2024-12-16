@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 
@@ -52,6 +53,26 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     @Override
     public Long findIdById(Long gatheringId) {
         return gatheringJpaRepository.findIdById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+    }
+
+    @Override
+    public long getActiveAndParticipatingCount(long userId) {
+        return gatheringJpaRepository.getActiveAndParticipatingCountByUserId(userId);
+    }
+
+    @Override
+    public long getCompletedCount(long userId) {
+        return gatheringJpaRepository.getCompletedCountByUserId(userId);
+    }
+
+    @Override
+    public long getMyCreatedCount(String userName) {
+        return gatheringJpaRepository.getMyCreatedCountByUserName(userName);
+    }
+
+    @Override
+    public long getMyWishedCountByGatheringIds(Set<Long> wishGatheringIds) {
+        return gatheringJpaRepository.getMyWishedCountByGatheringIds(wishGatheringIds);
     }
 
 }

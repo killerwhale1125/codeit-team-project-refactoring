@@ -2,6 +2,7 @@ package com.gathering.gathering.service.search;
 
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringResponse;
+import com.gathering.gathering.model.dto.GatheringResultPage;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.Gathering;
@@ -14,6 +15,9 @@ import com.gathering.gathering.util.GatheringSearchActions;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
+import com.gathering.util.string.FullTextIndexParser;
+import com.gathering.util.string.StringUtil;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
+import static com.gathering.common.base.response.BaseResponseStatus.INVALID_SEARCH_WORD;
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 
 @Service
@@ -53,14 +58,14 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public GatheringSearchResponse findMyGatherings(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
         Page<Gathering> result = gatheringSearchJpaRepository.findGatheringsForUserByUsername(username, pageable, gatheringStatus, gatheringUserStatus);
-        return gatheringSearchActions.getMyGatheringPage(result);
+        return gatheringSearchActions.convertToMyGatheringPage(result);
     }
 
     @Override
     public GatheringSearchResponse findMyCreated(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username);
         Page<Gathering> result = gatheringSearchJpaRepository.findMyCreated(user.getUserName(), pageable);
-        return gatheringSearchActions.getMyGatheringPage(result);
+        return gatheringSearchActions.convertToMyGatheringPage(result);
     }
 
     @Override
@@ -72,7 +77,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         }
 
         Page<Gathering> result = gatheringSearchJpaRepository.findMyWishes(wishGatheringIds, pageable);
-        return gatheringSearchActions.getMyGatheringPage(result);
+        return gatheringSearchActions.convertToMyGatheringPage(result);
     }
 
     @Override
@@ -85,5 +90,16 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, Pageable pageable) {
         return gatheringSearchJpaRepository.getGatheringReviewList(gatheringId, sort, pageable);
+    }
+
+    @Override
+    public GatheringSearchResponse searchByTitle(String searchWord, Pageable pageable) {
+        if (!StringUtil.isValidLength(searchWord, 3)) {
+            throw new BaseException(INVALID_SEARCH_WORD);
+        }
+        Page<Tuple> tuples
+                = gatheringSearchJpaRepository.findGatheringsBySearchWord(FullTextIndexParser.formatForFullTextQuery(searchWord), pageable);
+        Page<GatheringResultPage> result = gatheringSearchActions.convertToResultPage(tuples, pageable);
+        return GatheringSearchResponse.resultPages(result.getContent(), result.getTotalElements());
     }
 }

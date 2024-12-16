@@ -16,15 +16,15 @@ import static com.gathering.common.base.response.BaseResponseStatus.INVALID_GOAL
 @Component
 public class DateCalculateUtil implements DateCalculateHolder {
 
-    @Override
-    public long calculateGoalDays(LocalDate startDate, LocalDate endDate) {
-        if (startDate.isAfter(endDate) || startDate.isEqual(endDate)) {
-            throw new BaseException(INVALID_GOAL_PERIOD);
-        }
-
-        // LocalDate 객체 간 차이를 ChronoUnit.DAYS.between()을 사용하여 계산
-        return ChronoUnit.DAYS.between(startDate, endDate);
-    }
+//    @Override
+//    public long calculateGoalDays(LocalDate startDate, LocalDate endDate) {
+//        if (startDate.isAfter(endDate) || startDate.isEqual(endDate)) {
+//            throw new BaseException(INVALID_GOAL_PERIOD);
+//        }
+//
+//        // LocalDate 객체 간 차이를 ChronoUnit.DAYS.between()을 사용하여 계산
+//        return ChronoUnit.DAYS.between(startDate, endDate);
+//    }
 
     @Override
     public long calculateSecondsUntilStart(LocalDate startDate, LocalDateTime now) {

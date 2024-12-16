@@ -26,4 +26,6 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.wishGatheringIds FROM User u WHERE u.userName = :userName")
     Set<Long> findWishGatheringIdsByUserName(@Param("userName") String username);
+
+    boolean existsByUserName(String username);
 }

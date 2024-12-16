@@ -4,7 +4,9 @@ import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringRequest;
 import com.gathering.gathering.model.dto.GatheringUpdate;
+import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
+import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.service.GatheringService;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -95,5 +98,17 @@ public class GatheringController {
                                        @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.wish(gatheringId, userDetails.getUsername());
         return new BaseResponse<>();
+    }
+
+    @GetMapping("/calculate-end-date")
+    @Operation(summary = "모임 생성 전 종료일 계산 API", description = "Notion 참고")
+    public BaseResponse<LocalDate> endDate(@RequestParam LocalDate startDate, GatheringWeek gatheringWeek) {
+        return new BaseResponse<>(gatheringService.calculateEndDate(startDate, gatheringWeek));
+    }
+
+    @GetMapping("/mypage-count")
+    @Operation(summary = "마이페이지 총 모임 갯수", description = "Notion 참고")
+    public BaseResponse<MyPageGatheringsCountResponse> getMyPageGatheringsCount(@AuthenticationPrincipal UserDetails userDetails) {
+        return new BaseResponse<>(gatheringService.getMyPageGatheringsCount(userDetails.getUsername()));
     }
 }

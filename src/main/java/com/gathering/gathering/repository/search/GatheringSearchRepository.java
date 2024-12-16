@@ -22,4 +22,5 @@ public interface GatheringSearchRepository {
     Page<Gathering> findMyWishes(Set<Long> wishGatheringIds, Pageable pageable);
 
     ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, Pageable pageable);
+
 }

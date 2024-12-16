@@ -13,6 +13,7 @@ import java.util.List;
 public class GatheringSearchResponse {
 
     private List<GatheringResponse> gatheringResponses;
+    private List<GatheringResultPage> gatheringResultPageResponses;
     private Boolean hasNext;    // 다음 페이지 데이터 존재 여부
     private Long totalCount;
 
@@ -24,7 +25,7 @@ public class GatheringSearchResponse {
                 .build();
     }
 
-    public static GatheringSearchResponse myGatheringsFromEntity(List<GatheringResponse> gatheringResponses, long totalCount) {
+    public static GatheringSearchResponse fromEntity(List<GatheringResponse> gatheringResponses, long totalCount) {
         return GatheringSearchResponse.builder()
                 .gatheringResponses(gatheringResponses)
                 .totalCount(totalCount)
@@ -35,6 +36,13 @@ public class GatheringSearchResponse {
         return GatheringSearchResponse.builder()
                 .gatheringResponses(new ArrayList<>())
                 .totalCount(0L)
+                .build();
+    }
+
+    public static GatheringSearchResponse resultPages(List<GatheringResultPage> gatheringResultPageResponses, long totalCount) {
+        return GatheringSearchResponse.builder()
+                .gatheringResultPageResponses(gatheringResultPageResponses)
+                .totalCount(totalCount)
                 .build();
     }
 }

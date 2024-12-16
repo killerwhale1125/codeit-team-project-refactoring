@@ -35,7 +35,6 @@ public class Gathering extends BaseTimeEntity {
     private String content;
     private LocalDate startDate;
     private LocalDate endDate;
-    private long goalDays;
     private int maxCapacity;
     private int minCapacity;
     private int currentCapacity = 0;
@@ -63,6 +62,9 @@ public class Gathering extends BaseTimeEntity {
     @JoinColumn(name = "book_Id")
     private Book book;
 
+    @Enumerated(EnumType.STRING)
+    private GatheringWeek gatheringWeek;
+
     public static Gathering createGathering(GatheringCreate gatheringCreate,
                                             Challenge challenge,
                                             Book book,
@@ -74,7 +76,7 @@ public class Gathering extends BaseTimeEntity {
         gathering.content = gatheringCreate.getContent();
         gathering.startDate = gatheringCreate.getStartDate();
         gathering.endDate = gatheringCreate.getEndDate();
-        gathering.goalDays = dateCalculateHolder.calculateGoalDays(gatheringCreate.getStartDate(), gatheringCreate.getEndDate());
+        gathering.gatheringWeek = gatheringCreate.getGatheringWeek();
         // 최소 최대 인원수 검증
         validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity(), gatheringValidator);
         gathering.maxCapacity = gatheringCreate.getMaxCapacity();
