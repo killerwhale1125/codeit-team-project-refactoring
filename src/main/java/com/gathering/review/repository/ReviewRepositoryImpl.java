@@ -3,6 +3,7 @@ package com.gathering.review.repository;
 import com.gathering.book.model.dto.BookResponse;
 import com.gathering.book.model.entity.Book;
 import com.gathering.book.repository.BookJpaRepository;
+import com.gathering.challenge.model.entity.ChallengeStatus;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.dto.GatheringResponse;
@@ -12,9 +13,11 @@ import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.repository.GatheringJpaRepository;
 import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.constant.ReviewType;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.GatheringReview;
+import com.gathering.review.model.entitiy.QBookReview;
 import com.gathering.review.model.entitiy.ReviewComment;
 import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
@@ -23,7 +26,9 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
@@ -134,10 +139,10 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         if(type.equalsIgnoreCase(ReviewType.BOOK.getValue())) {
             List<BookReviewDto> reviews = jpaQueryFactory
                     .select(Projections.constructor(BookReviewDto.class,
-                                    bookReview.id,
-                                    bookReview.title,
-                                    Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime),
-                                    bookReview.content))
+                            bookReview.id,
+                            bookReview.title,
+                            Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime),
+                            bookReview.content))
                     .from(bookReview)
                     .where(bookReview.user.id.eq(user.getId()))
                     .fetch();
@@ -205,10 +210,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                         ,bookReview.title
                         ,bookReview.content
                         ,bookReview.likes
-                        ,JPAExpressions
-                                .select(reviewComment.count())
-                                .from(reviewComment)
-                                .where(reviewComment.review.id.eq(bookReview.id))
+                        ,reviewCommnetCnt(bookReview.id)
                         ,JPAExpressions
                                 .select(bookReview.count())
                                 .from(bookReview)
@@ -218,7 +220,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 ))
                 .from(bookReview)
                 .leftJoin(QUser.user).on(bookReview.user.id.eq(QUser.user.id))
-                .where(bookReview.user.id.eq(QUser.user.id).and(bookReview.status.eq("Y")))
+                .where(bookReview.user.id.eq(QUser.user.id).and(bookReview.status.eq(StatusType.Y)))
                 .orderBy(bookReview.likes.desc())
                 .limit(5)
                 .fetch();
@@ -232,7 +234,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         BooleanBuilder builder = new BooleanBuilder();
         if (!BookReviewTagType.ALL.getType().equals(tag.getType())) {
             builder.and(bookReview.tagCd.like("%" + tag + "%"));
-            builder.and(bookReview.status.eq("Y"));
+            builder.and(bookReview.status.eq(StatusType.Y));
         }
 
         // Query 생성
@@ -244,10 +246,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                         ,bookReview.book.image
                         ,bookReview.content
                         ,bookReview.likes
-                        ,JPAExpressions
-                                .select(reviewComment.count())
-                                .from(reviewComment)
-                                .where(reviewComment.review.id.eq(bookReview.id))
+                        ,reviewCommnetCnt(bookReview.id)
                         ,bookReview.user.id
                         ,bookReview.user.profile
                         ,bookReview.user.userName
@@ -273,6 +272,78 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         return ReviewListDto.fromGatheringReviews(reviews, hasNext);
     }
 
+    @Override
+    public ReviewDto selectBookReviewDetail(long reviewId) {
+
+        QBookReview subBookReview = new QBookReview("subBookReview");
+
+        // 독서 리뷰 상세 정보
+        BookReviewDto reviewDto = jpaQueryFactory
+                .select(Projections.constructor(BookReviewDto.class,
+                        bookReview.id
+                        ,bookReview.title
+                        ,bookReview.apprCd
+                        ,bookReview.tagCd
+                        ,bookReview.content
+                        ,bookReview.likes
+                        ,reviewCommnetCnt(bookReview.id)
+                        ,bookReview.user.id
+                        ,bookReview.user.profile
+                        ,bookReview.user.userName
+                        ,JPAExpressions
+                                .select(subBookReview.count())
+                                .from(subBookReview)
+                                .where(subBookReview.user.id.eq(bookReview.user.id).and(subBookReview.status.eq(StatusType.Y)))
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime))
+                )
+                .from(bookReview)
+                .leftJoin(bookReview.user, user)
+                .leftJoin(bookReview.book, book)
+                .leftJoin(bookReview.reviewComments, reviewComment)
+                .where(bookReview.id.eq(reviewId)
+                        .and(bookReview.status.eq(StatusType.Y)))
+                .fetchOne();
+
+        // 독서 리뷰에 대한 책 정보
+        BookResponse bookResponse = jpaQueryFactory
+                .select(Projections.constructor(BookResponse.class,
+                        book.id
+                        ,book.title
+                        ,book.author
+                        ,book.publisher
+                        ,book.publishDate
+                        ,book.star
+                        ,book.image
+                        ,JPAExpressions
+                                .select(challenge.count())
+                                .from(gathering)
+                                .leftJoin(challenge).on(challenge.id.eq(gathering.challenge.id))
+                                .where(gathering.book.id.eq(book.id)
+                                        .and(challenge.challengeStatus.eq(ChallengeStatus.INACTIVE)))
+                                .goe(1L)
+                ))
+                .from(book)
+                .where(book.id.eq(reviewDto.getBookId()))
+                .fetchOne();
+
+        // 댓글 목록
+        List<ReviewCommentDto> reviewCommentDto = jpaQueryFactory
+                .select(Projections.constructor(ReviewCommentDto.class,
+                        book.id
+                        ,book.title
+                        ,book.author
+                        ,book.publisher
+                        ,book.publishDate
+                        ,book.star
+                        ,book.image
+                ))
+                .from(reviewComment)
+                .where(reviewComment.review.id.eq(reviewDto.getId()))
+                .fetch();
+
+        return null;
+    }
+
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록
     private List<Long> findUnreviewedCompletedGatherings(long userId) {
 
@@ -292,14 +363,14 @@ public class ReviewRepositoryImpl implements ReviewRepository{
 
         return jpaQueryFactory
                 .select(Projections.constructor(BookResponse.class,
-                                gathering.book.id
-                                ,gathering.book.title
-                                ,gathering.book.author
-                                ,gathering.book.publisher
-                                ,gathering.book.publishDate
-                                ,gathering.book.star
-                                ,gathering.book.image
-                                ,gathering.id))
+                        gathering.book.id
+                        ,gathering.book.title
+                        ,gathering.book.author
+                        ,gathering.book.publisher
+                        ,gathering.book.publishDate
+                        ,gathering.book.star
+                        ,gathering.book.image
+                        ,gathering.id))
                 .from(gathering)
                 .leftJoin(gathering.gatheringUsers, gatheringUser)
                 .leftJoin(gathering.gatheringBookReviews, gatheringBookReview)
@@ -314,5 +385,13 @@ public class ReviewRepositoryImpl implements ReviewRepository{
 
     private BooleanExpression gatheringStatusEq(GatheringStatus gatheringStatus) {
         return isEmpty(gatheringStatus) ? null : gathering.gatheringStatus.eq(gatheringStatus);
+    }
+
+    // 리뷰 댓글 갯수 서브 쿼리
+    public JPQLQuery<Long> reviewCommnetCnt(NumberPath<Long> reviewId) {
+        return JPAExpressions
+                .select(reviewComment.count())
+                .from(reviewComment)
+                .where(reviewComment.review.id.eq(reviewId));
     }
 }

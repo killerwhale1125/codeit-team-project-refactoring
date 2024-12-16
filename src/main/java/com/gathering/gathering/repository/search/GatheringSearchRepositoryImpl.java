@@ -7,6 +7,7 @@ import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.search.util.GatheringSearchConditionBuilder;
 import com.gathering.gathering.repository.search.util.GatheringSortUtil;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.querydsl.core.BooleanBuilder;
@@ -153,7 +154,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                         Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", gatheringReview.createdTime)))
                 .from(gatheringReview)
                 .leftJoin(user).on(user.id.eq(gatheringReview.user.id))
-                .where(gatheringReview.gathering.id.eq(gatheringId).and(gatheringReview.status.eq("Y")))
+                .where(gatheringReview.gathering.id.eq(gatheringId).and(gatheringReview.status.eq(StatusType.Y)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1);
 
@@ -177,7 +178,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .from(gatheringReview)
                 .where(
                         gatheringReview.gathering.id.eq(gatheringId)
-                                .and(gatheringReview.status.eq("Y"))
+                                .and(gatheringReview.status.eq(StatusType.Y))
                 )
                 .fetchOne();
 

@@ -2,6 +2,7 @@ package com.gathering.review.model.entitiy;
 
 import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.jpa.BaseTimeEntity;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.CreateReviewDto;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
@@ -50,7 +51,8 @@ public class BookReview extends BaseTimeEntity {
     private int likes;
 
     @Comment("상태")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewComment> reviewComments = new ArrayList<>();
@@ -64,7 +66,7 @@ public class BookReview extends BaseTimeEntity {
                 .tagCd(createReviewDto.getTag())
                 .content(createReviewDto.getContent())
                 .likes(0)
-                .status(createReviewDto.getTmprStrgYN().equals("Y") ? "T" : "Y") // T = 임시저장, Y= '저장' , N = 삭제'
+                .status(createReviewDto.getTmprStrgYN().equals("Y") ? StatusType.T : StatusType.Y) // T = 임시저장, Y= '저장' , N = 삭제'
                 .build();
     }
 }

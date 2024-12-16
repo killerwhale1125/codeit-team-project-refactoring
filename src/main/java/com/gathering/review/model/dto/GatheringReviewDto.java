@@ -1,7 +1,10 @@
 package com.gathering.review.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.entitiy.GatheringReview;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +22,9 @@ public class GatheringReviewDto extends ReviewDto {
     private long gatheringId;
     private String content;
     private int score;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
     private String createDate;
     private String userName;
     private String profile;

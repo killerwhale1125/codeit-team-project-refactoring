@@ -1,7 +1,10 @@
 package com.gathering.review.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.entitiy.BookReview;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +35,8 @@ public class BookReviewDto extends ReviewDto {
 
     private int likes;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
 
     private String createTime;
 

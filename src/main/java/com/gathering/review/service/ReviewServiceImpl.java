@@ -1,5 +1,6 @@
 package com.gathering.review.service;
 
+import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.repository.ReviewRepository;
@@ -36,5 +37,10 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable) {
         return reviewRepository.findReviews(tag, pageable);
+    }
+
+    @Override
+    public ReviewDto selectBookReviewDetail(long reviewId) {
+        return reviewRepository.selectBookReviewDetail(reviewId);
     }
 }

@@ -3,6 +3,7 @@ package com.gathering.review.model.entitiy;
 import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.CreateReviewDto;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
@@ -42,7 +43,8 @@ public class GatheringReview extends BaseTimeEntity {
     private int score;
 
     @Comment("상태")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
 
     public static GatheringReview createEntity(Gathering gathering, User user, CreateReviewDto createReviewDto) {
         return GatheringReview.builder()
@@ -50,7 +52,7 @@ public class GatheringReview extends BaseTimeEntity {
                 .gathering(gathering)
                 .content(createReviewDto.getContent())
                 .score(createReviewDto.getScore())
-                .status("Y")
+                .status(StatusType.Y)
                 .build();
     }
 }

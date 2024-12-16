@@ -1,6 +1,9 @@
 package com.gathering.book.repository;
 
 import com.gathering.book.model.entity.Book;
+import com.gathering.common.base.exception.BaseException;
+import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.user.model.entitiy.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +22,9 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
      */
     @Query(value = "SELECT * FROM BOOK b WHERE MATCH(b.title) AGAINST(:searchWord IN BOOLEAN MODE)", nativeQuery = true)
     List<Book> searchBooksBySearchWord(@Param("searchWord") String searchWord);
+
+
+    default Book findByIdOrThrow(long id) {
+        return  findById(id).orElseThrow(() -> new BaseException(BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND));
+    }
 }

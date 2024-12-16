@@ -84,4 +84,11 @@ public class ReviewConroller {
             @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
         return new BaseResponse<>(reviewService.findReviews(tag, pageable));
     }
+
+    @GetMapping("/{reviewId}/detail")
+    @Operation(summary = "독서 리뷰 상세 조회", description = "상세 조건 Notion 참고")
+    public BaseResponse<ReviewDto> selectBookReviewDetail(
+            @PathVariable long reviewId) {
+        return new BaseResponse<>(reviewService.selectBookReviewDetail(reviewId));
+    }
 }

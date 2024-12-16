@@ -10,12 +10,10 @@ public class EditUserRequestDto {
 
 
     @NotEmpty
+    @Pattern(regexp = "^[a-zA-Z0-9가-힣]{1,10}$")
     private String userName;
 
-    @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[a-z\\d@$!%*?&]{8,}$",
-            message = "Password must contain at least one lowercase letter, one digit, one special character, and be at least 8 characters long"
-    )
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]{8,}$")
     private String password;
 
     @NotEmpty

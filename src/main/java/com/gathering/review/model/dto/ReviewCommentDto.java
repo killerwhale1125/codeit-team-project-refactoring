@@ -1,6 +1,7 @@
 package com.gathering.review.model.dto;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewComment;
 import com.gathering.user.model.entitiy.User;
@@ -20,7 +21,11 @@ public class ReviewCommentDto{
     private String content;
     private long parent;
     private int orders;
-    private String status;
+    private StatusType status;
+    private String userName;
+
+
+
 
     public static ReviewCommentDto formEntity(ReviewComment comment) {
         return ReviewCommentDto.builder()
