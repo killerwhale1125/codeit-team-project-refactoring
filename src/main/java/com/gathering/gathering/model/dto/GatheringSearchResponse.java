@@ -1,6 +1,7 @@
 package com.gathering.gathering.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.review.model.dto.ReviewListDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,13 +10,14 @@ import java.util.List;
 
 @Getter
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class GatheringSearchResponse {
-
     private List<GatheringResponse> gatheringResponses;
-    private List<GatheringResultPage> gatheringResultPageResponses;
-    private Boolean hasNext;    // 다음 페이지 데이터 존재 여부
-    private Long totalCount;
+    private List<GatheringResultPageResponse> gatheringResultPageResponses;
+    private List<ReviewListDto> reviewResultPageResponses;
+    private boolean hasNext;    // 다음 페이지 데이터 존재 여부
+    private long totalCount;
+    private long reviewTotalCount;
 
     // 무한 스크롤 전용
     public static GatheringSearchResponse fromEntity(List<GatheringResponse> gatheringResponses, boolean hasNext) {
@@ -39,10 +41,12 @@ public class GatheringSearchResponse {
                 .build();
     }
 
-    public static GatheringSearchResponse resultPages(List<GatheringResultPage> gatheringResultPageResponses, long totalCount) {
+    public static GatheringSearchResponse resultPages(List<GatheringResultPageResponse> gatherings, long gatheringCount, List<ReviewListDto> reviews, long reviewCount) {
         return GatheringSearchResponse.builder()
-                .gatheringResultPageResponses(gatheringResultPageResponses)
-                .totalCount(totalCount)
+                .gatheringResultPageResponses(gatherings)
+                .totalCount(gatheringCount)
+                .reviewResultPageResponses(reviews)
+                .reviewTotalCount(reviewCount)
                 .build();
     }
 }

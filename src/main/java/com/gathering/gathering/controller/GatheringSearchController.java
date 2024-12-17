@@ -7,6 +7,7 @@ import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
+import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.gathering.service.search.GatheringSearchService;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.util.web.UserSessionKeyGenerator;
@@ -92,15 +93,12 @@ public class GatheringSearchController {
         return new BaseResponse<>(gatheringSearchService.review(gatheringId, sort, pageable));
     }
 
-    @GetMapping("/title-search")
+    @GetMapping("/integrated-search")
     @Operation(summary = "검색 기능 구현 중 (미완성)", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> search(@RequestParam String searchWord,
+                                                        @RequestParam SearchType searchType,
                                                         @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.searchByTitle(searchWord, pageable));
+        return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, pageable));
     }
 
-//    @GetMapping("/")
-//    public BaseResponse<GatheringSearchResponse> searchByBook() {
-//
-//    }
 }

@@ -6,6 +6,7 @@ import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.GatheringReviewSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
+import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.dto.ReviewListDto;
 import org.springframework.data.domain.Pageable;
 
@@ -24,5 +25,5 @@ public interface GatheringSearchService {
 
     ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, Pageable pageable);
 
-    GatheringSearchResponse searchByTitle(String searchWord, Pageable pageable);
+    GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable);
 }

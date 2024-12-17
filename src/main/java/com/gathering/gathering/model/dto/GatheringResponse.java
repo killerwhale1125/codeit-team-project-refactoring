@@ -106,20 +106,6 @@ public class GatheringResponse {
                 .build();
     }
 
-    public static GatheringResponse searchResultsFromEntity(Gathering gathering) {
-        return GatheringResponse.builder()
-                .id(gathering.getId())
-                .name(gathering.getName())
-                .currentCapacity(gathering.getCurrentCapacity())
-                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
-                .gatheringWeek(gathering.getGatheringWeek().getWeek())
-                .thumbnail(gathering.getImage().getUrl())
-                .bookTitle(gathering.getBook().getTitle())
-                .bookImage(gathering.getBook().getImage())
-                .build();
-    }
-
-
     /**
      * 나의 리뷰 - 작성 가능한 모임 목록 생성자
      */

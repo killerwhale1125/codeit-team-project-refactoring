@@ -1,7 +1,6 @@
 package com.gathering.gathering.repository.search;
 
 import com.gathering.gathering.model.entity.Gathering;
-import com.querydsl.core.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -17,16 +16,48 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
     @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
     Optional<Gathering> getGatheringWithChallengeAndBook(@Param("gatheringId") Long gatheringId);
 
-    @Query(value = "SELECT g.GATHERING_ID, g.NAME, g.THUMBNAIL, g.GOAL_DAYS, g.MAX_CAPACITY, g.CURRENT_CAPACITY, " +
-            "c.READING_TIME_GOAL, b.TITLE, b.IMAGE " +
+    @Query(value = "SELECT " +
+            "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.BOOK_ID, b.TITLE, b.IMAGE " +
             "FROM GATHERING g " +
             "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
+            "LEFT JOIN IMAGE i ON g.IMAGE_ID = i.IMAGE_ID " +
             "LEFT JOIN CHALLENGE c ON g.CHALLENGE_ID = c.CHALLENGE_ID " +
-            "WHERE MATCH(g.name, b.title) AGAINST(:searchWord IN BOOLEAN MODE) > 0",
-            countQuery = "SELECT COUNT(DISTINCT g.GATHERING_ID) FROM GATHERING g " +
+            "WHERE MATCH(g.name) AGAINST (:searchWord IN BOOLEAN MODE)",
+            nativeQuery = true,
+            countQuery = "SELECT " +
+                    "COUNT(g.GATHERING_ID) " +
+                    "FROM GATHERING g " +
+                    "WHERE MATCH(g.name) AGAINST (:searchWord IN BOOLEAN MODE)")
+    Page<Object[]> findGatheringsBySearchWordAndTypeTitle(@Param("searchWord") String searchWord, Pageable pageable);
+
+    @Query(value = "SELECT " +
+            "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.TITLE, b.IMAGE " +
+            "FROM Gathering g " +
+            "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
+            "LEFT JOIN IMAGE i ON g.IMAGE_ID = i.IMAGE_ID " +
+            "LEFT JOIN CHALLENGE c ON g.CHALLENGE_ID = c.CHALLENGE_ID " +
+            "WHERE MATCH(b.introduce) AGAINST (?1 IN BOOLEAN MODE)",
+            nativeQuery = true,
+            countQuery = "SELECT " +
+                    "COUNT(g.GATHERING_ID) " +
+                    "FROM Gathering g " +
                     "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
-                    "WHERE MATCH(g.name, b.title) AGAINST(:searchWord IN BOOLEAN MODE) > 0",
-            nativeQuery = true)
-    Page<Tuple> findGatheringsBySearchWord(@Param("searchWord") String searchWord, Pageable pageable);
+                    "WHERE MATCH(b.introduce) AGAINST (:searchWord IN BOOLEAN MODE)")
+    Page<Object[]> findGatheringsBySearchWordAndTypeContent(@Param("searchWord") String searchWord, Pageable pageable);
+
+    @Query(value = "SELECT " +
+            "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.TITLE, b.IMAGE " +
+            "FROM Gathering g " +
+            "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
+            "LEFT JOIN IMAGE i ON g.IMAGE_ID = i.IMAGE_ID " +
+            "LEFT JOIN CHALLENGE c ON g.CHALLENGE_ID = c.CHALLENGE_ID " +
+            "WHERE MATCH(b.title) AGAINST (?1 IN BOOLEAN MODE)",
+            nativeQuery = true,
+            countQuery = "SELECT " +
+                    "COUNT(g.GATHERING_ID) " +
+                    "FROM Gathering g " +
+                    "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
+                    "WHERE MATCH(b.title) AGAINST (:searchWord IN BOOLEAN MODE)")
+    Page<Object[]> findGatheringsBySearchWordAndTypeBookName(@Param("searchWord") String searchWord, Pageable pageable);
 
 }

@@ -16,6 +16,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
     private final JPAQueryFactory queryFactory;
     private final GatheringSearchConditionBuilder gatheringSearchConditionBuilder;
+    private final EntityManager entityManager;
 
     // 무한스크롤 전용
     @Override
@@ -192,4 +194,5 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
         return ReviewListDto.fromGatheringReviews(reviews, total, averageScore, hasNext);
     }
+
 }
