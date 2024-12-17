@@ -15,6 +15,7 @@ public class GatheringResultPageResponse {
     private GatheringWeek gatheringWeek;
     private ReadingTimeGoal readingTimeGoal;
     private String thumbnail;
+    private Long bookId;
     private String bookTitle;
     private String bookImage;
 }

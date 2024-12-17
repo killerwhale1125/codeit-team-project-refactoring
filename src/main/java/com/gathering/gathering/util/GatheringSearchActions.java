@@ -59,8 +59,9 @@ public class GatheringSearchActions {
                         GatheringWeek.valueOf((String) row[4]), // GATHERING_WEEK
                         ReadingTimeGoal.valueOf((String) row[5]), // READING_TIME_GOAL
                         (String) row[6], // IMAGE_URL
-                        (String) row[7], // TITLE
-                        (String) row[8]  // IMAGE
+                        (Long) row[7], // BOOK_ID
+                        (String) row[8],  // BOOK TITLE
+                        (String) row[9]  // BOOK IMAGE
                 ))
                 .collect(Collectors.toList());
 
