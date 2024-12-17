@@ -4,7 +4,6 @@ import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -43,7 +42,7 @@ public class Challenge extends BaseTimeEntity {
 
     // Enum Type 변경
     @Enumerated(EnumType.STRING)
-    private ReadingTimeGoal readingTimeGoal;
+    private ReadingGoalTime readingGoalTime;
 
     public static Challenge createChallenge(GatheringCreate gatheringCreate, ChallengeUser challengeUsers) {
         Challenge challenge = new Challenge();
@@ -51,7 +50,7 @@ public class Challenge extends BaseTimeEntity {
         challenge.completeRate = 0.0;
         challenge.startDateTime = gatheringCreate.getStartDate();
         challenge.endDateTime = gatheringCreate.getEndDate();
-        challenge.readingTimeGoal = gatheringCreate.getReadingTimeGoal();
+        challenge.readingGoalTime = gatheringCreate.getReadingGoalTime();
         challenge.addChallengeUser(challengeUsers);
         return challenge;
     }

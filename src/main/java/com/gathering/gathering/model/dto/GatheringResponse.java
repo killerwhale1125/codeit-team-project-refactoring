@@ -1,9 +1,9 @@
 package com.gathering.gathering.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.challenge.model.entity.ReadingGoalTime;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,7 +51,7 @@ public class GatheringResponse {
                 .content(gathering.getContent())
                 .thumbnail(gathering.getImage().getUrl())
                 .gatheringWeek(gathering.getGatheringWeek().getWeek())
-                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .readingTimeGoal(gathering.getChallenge().getReadingGoalTime().getMinutes())
                 .startDate(gathering.getStartDate())
                 .endDate(gathering.getEndDate())
                 .minCapacity(gathering.getMinCapacity())
@@ -80,7 +80,7 @@ public class GatheringResponse {
                 .endDate(gathering.getEndDate())
                 .currentCapacity(gathering.getCurrentCapacity())
                 .completeRate(gathering.getChallenge().getCompleteRate())
-                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .readingTimeGoal(gathering.getChallenge().getReadingGoalTime().getMinutes())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
                 .build();
@@ -95,7 +95,7 @@ public class GatheringResponse {
                 .owner(gathering.getOwner())
                 .name(gathering.getName())
                 .content(gathering.getContent())
-                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .readingTimeGoal(gathering.getChallenge().getReadingGoalTime().getMinutes())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
                 .publisher(gathering.getBook().getPublisher())
@@ -110,12 +110,12 @@ public class GatheringResponse {
      * 나의 리뷰 - 작성 가능한 모임 목록 생성자
      */
     public GatheringResponse(Long id, String name, LocalDate startDate, LocalDate endDate
-            , ReadingTimeGoal readingTimeGoal, String thumbnail) {
+            , ReadingGoalTime readingGoalTime, String thumbnail) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.readingTimeGoal = readingTimeGoal.getMinutes();
+        this.readingTimeGoal = readingGoalTime.getMinutes();
         this.thumbnail = thumbnail;
     }
 }

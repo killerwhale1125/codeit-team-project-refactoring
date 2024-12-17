@@ -2,7 +2,7 @@ package com.gathering.gathering.model.dto;
 
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
+import com.gathering.challenge.model.entity.ReadingGoalTime;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +34,7 @@ public class GatheringCreate {
     @NotNull
     private GatheringStatus gatheringStatus;
     @NotNull
-    private ReadingTimeGoal readingTimeGoal;
+    private ReadingGoalTime readingGoalTime;
     @NotNull
     private GatheringWeek gatheringWeek;
 }

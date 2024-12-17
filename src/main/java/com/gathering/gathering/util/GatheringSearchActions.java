@@ -1,12 +1,12 @@
 package com.gathering.gathering.util;
 
+import com.gathering.challenge.model.entity.ReadingGoalTime;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringResultPageResponse;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.review.model.dto.ReviewListDto;
@@ -57,7 +57,7 @@ public class GatheringSearchActions {
                         (Integer) row[2], // CURRENT_CAPACITY
                         (Integer) row[3], // MAX_CAPACITY
                         GatheringWeek.valueOf((String) row[4]), // GATHERING_WEEK
-                        ReadingTimeGoal.valueOf((String) row[5]), // READING_TIME_GOAL
+                        ReadingGoalTime.valueOf((String) row[5]), // READING_TIME_GOAL
                         (String) row[6], // IMAGE_URL
                         (Long) row[7], // BOOK_ID
                         (String) row[8],  // BOOK TITLE

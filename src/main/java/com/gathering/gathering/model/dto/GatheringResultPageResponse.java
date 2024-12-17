@@ -1,7 +1,7 @@
 package com.gathering.gathering.model.dto;
 
 import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
+import com.gathering.challenge.model.entity.ReadingGoalTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,7 +13,7 @@ public class GatheringResultPageResponse {
     private int currentCapacity;
     private int maxCapacity;
     private GatheringWeek gatheringWeek;
-    private ReadingTimeGoal readingTimeGoal;
+    private ReadingGoalTime readingGoalTime;
     private String thumbnail;
     private Long bookId;
     private String bookTitle;
