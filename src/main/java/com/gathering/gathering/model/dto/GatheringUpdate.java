@@ -1,7 +1,7 @@
 package com.gathering.gathering.model.dto;
 
 import com.gathering.gathering.model.entity.GatheringStatus;
-import com.gathering.challenge.model.entity.ReadingGoalTime;
+import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -20,5 +20,5 @@ public class GatheringUpdate {
     private Long bookId;
     private Long categoryId;
     private GatheringStatus gatheringStatus;
-    private ReadingGoalTime readingGoalTime;
+    private ReadingTimeGoal readingTimeGoal;
 }

@@ -2,7 +2,7 @@ package com.gathering.gathering.model.dto;
 
 import com.gathering.gathering.model.entity.GatheringSortType;
 import com.gathering.gathering.model.entity.GatheringStatus;
-import com.gathering.challenge.model.entity.ReadingGoalTime;
+import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,5 +18,5 @@ public class GatheringSearch {
     private LocalDate startDate;
     private LocalDate endDate;
     private GatheringStatus gatheringStatus;
-    private List<ReadingGoalTime> readingGoalTimes;
+    private List<ReadingTimeGoal> readingTimeGoals;
 }

@@ -43,14 +43,7 @@ public class GatheringController {
     @Operation(summary = "모임 생성", description = "gatheringStatus는 RECRUITING, 최소 인원 5 이상 최대인원 6 이상")
     public BaseResponse<Void> create(@RequestPart("gatheringCreate") @Valid GatheringCreate gatheringCreate,
                                      @RequestPart(value = "file", required = false) List<MultipartFile> files,
-                                     @AuthenticationPrincipal UserDetails userDetails,
-                                     BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            bindingResult.getAllErrors().forEach(error -> {
-                System.out.println("Error: " + error.getDefaultMessage());
-            });
-            return new BaseResponse<>(BaseResponseStatus.INVALID_REQUEST);
-        }
+                                     @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.create(gatheringCreate, files, userDetails.getUsername());
         return new BaseResponse<>();
     }
