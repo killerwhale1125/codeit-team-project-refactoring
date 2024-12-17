@@ -12,6 +12,7 @@ import com.gathering.gathering.model.entity.GatheringBookReview;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.repository.GatheringJpaRepository;
 import com.gathering.review.model.constant.BookReviewTagType;
+import com.gathering.review.model.constant.ReviewSearchType;
 import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.*;
@@ -19,6 +20,7 @@ import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.GatheringReview;
 import com.gathering.review.model.entitiy.QBookReview;
 import com.gathering.review.model.entitiy.ReviewComment;
+import com.gathering.review.util.ReviewQueryBuilder;
 import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserJpaRepository;
@@ -63,6 +65,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
     private final ReviewCommentJpaRepository reviewCommentJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final GatheringReviewJpaRepository gatheringReviewJpaRepository;
+    private final ReviewQueryBuilder queryBuilder;
+
     @Override
     public ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type) {
 
@@ -264,12 +268,11 @@ public class ReviewRepositoryImpl implements ReviewRepository{
 
         boolean hasNext = reviews.size() > pageable.getPageSize();
 
-        // Remove the extra record from the content (if it exists)
         if (hasNext) {
             reviews.remove(reviews.size() - 1);
         }
 
-        return ReviewListDto.fromGatheringReviews(reviews, hasNext);
+        return ReviewListDto.fromBookReviews(reviews, hasNext);
     }
 
     @Override
@@ -278,15 +281,15 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         QBookReview subBookReview = new QBookReview("subBookReview");
 
         // 독서 리뷰 상세 정보
-        BookReviewDto reviewDto = jpaQueryFactory
+        BookReviewDto bookReviewDto = jpaQueryFactory
                 .select(Projections.constructor(BookReviewDto.class,
                         bookReview.id
+                        ,bookReview.book.id
                         ,bookReview.title
                         ,bookReview.apprCd
                         ,bookReview.tagCd
                         ,bookReview.content
                         ,bookReview.likes
-                        ,reviewCommnetCnt(bookReview.id)
                         ,bookReview.user.id
                         ,bookReview.user.profile
                         ,bookReview.user.userName
@@ -302,7 +305,12 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .leftJoin(bookReview.reviewComments, reviewComment)
                 .where(bookReview.id.eq(reviewId)
                         .and(bookReview.status.eq(StatusType.Y)))
+                .distinct()
                 .fetchOne();
+
+        if(bookReviewDto == null) {
+            throw new BaseException(BaseResponseStatus.NON_EXISTED_REVIEW);
+        }
 
         // 독서 리뷰에 대한 책 정보
         BookResponse bookResponse = jpaQueryFactory
@@ -323,25 +331,76 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                                 .goe(1L)
                 ))
                 .from(book)
-                .where(book.id.eq(reviewDto.getBookId()))
+                .where(book.id.eq(bookReviewDto.getBookId()))
                 .fetchOne();
 
         // 댓글 목록
         List<ReviewCommentDto> reviewCommentDto = jpaQueryFactory
                 .select(Projections.constructor(ReviewCommentDto.class,
-                        book.id
-                        ,book.title
-                        ,book.author
-                        ,book.publisher
-                        ,book.publishDate
-                        ,book.star
-                        ,book.image
-                ))
+                        reviewComment.id
+                        ,user.id
+                        ,reviewComment.content
+                        ,reviewComment.orders
+                        ,user.profile
+                        ,user.userName
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", reviewComment.createdTime)
+                        ))
                 .from(reviewComment)
-                .where(reviewComment.review.id.eq(reviewDto.getId()))
+                .leftJoin(user).on(user.id.eq(reviewComment.user.id))
+                .where(reviewComment.review.id.eq(bookReviewDto.getId())
+                        .and(reviewComment.status.eq(StatusType.Y)))
+                .orderBy(reviewComment.orders.asc())
                 .fetch();
 
-        return null;
+        return new ReviewDto(bookReviewDto, bookResponse, reviewCommentDto);
+    }
+
+    /**
+     * 리뷰 통합 검색 및 특정 리뷰 조회
+     * @param type 검색 조건으로 리뷰 상세 페이지에서는 특정 책의 리뷰 목록을 조회
+     * @param param 리뷰 상세 페이지에서는 첵 제목을 넘김
+     * @return
+     */
+    @Override
+    public ReviewListDto searchReviews(ReviewSearchType type, String param, Pageable pageable) {
+
+        BooleanBuilder builder = queryBuilder.buildReviewSearch(type, param);
+        // Query 생성
+        JPAQuery<BookReviewDto> query = jpaQueryFactory
+                .select(Projections.constructor(BookReviewDto.class,
+                        bookReview.id
+                        ,bookReview.title
+                        ,bookReview.content
+                        ,bookReview.likes
+                        ,reviewCommnetCnt(bookReview.id)
+                        ,bookReview.user.id
+                        ,bookReview.user.profile
+                        ,bookReview.user.userName
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime))
+                )
+                .from(bookReview)
+                .leftJoin(bookReview.user, user)
+                .leftJoin(bookReview.book, book)
+                .leftJoin(bookReview.reviewComments, reviewComment)
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        List<BookReviewDto> reviews = query.fetch();
+        Long total = 0L;
+
+        // 전체 데이터 개수 조회
+        if(!reviews.isEmpty()) {
+            total = jpaQueryFactory
+                    .select(bookReview.count())
+                    .from(bookReview)
+                    .leftJoin(bookReview.user, user)
+                    .leftJoin(bookReview.book, book)
+                    .leftJoin(bookReview.reviewComments, reviewComment)
+                    .where(builder)
+                    .fetchOne();
+        }
+        return ReviewListDto.fromBookReviews(reviews, total);
     }
 
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록

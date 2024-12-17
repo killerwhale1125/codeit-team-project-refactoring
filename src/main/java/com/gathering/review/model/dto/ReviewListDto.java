@@ -32,7 +32,6 @@ public class ReviewListDto {
 
     private long total;
     private double scoreAvg;
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     private boolean hasNext;
 
     public static ReviewListDto fromBookReviews(List<BookReviewDto> bookReview) {
@@ -49,10 +48,18 @@ public class ReviewListDto {
 
 
     // 리뷰 조회 무한 스크롤
-    public static ReviewListDto fromGatheringReviews(List<BookReviewDto> bookReviews, boolean hasNext) {
+    public static ReviewListDto fromBookReviews(List<BookReviewDto> bookReviews, boolean hasNext) {
         return ReviewListDto.builder()
                 .bookReviews(bookReviews)
                 .hasNext(hasNext)
+                .build();
+    }
+
+    // 리뷰 상세의 특정 책 리뷰 목록 및 통합 검색 리뷰 결과 목록
+    public static ReviewListDto fromBookReviews(List<BookReviewDto> bookReviews, long total) {
+        return ReviewListDto.builder()
+                .bookReviews(bookReviews)
+                .total(total)
                 .build();
     }
 

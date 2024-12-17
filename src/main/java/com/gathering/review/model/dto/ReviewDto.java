@@ -9,15 +9,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class ReviewDto {
 
-    private BookReviewDto bookReviewDto;
+    private BookReviewDto bookReview;
     private GatheringReviewDto gatheringReviewDto;
     private BookResponse bookResponse;
+    private List<ReviewCommentDto> commentList;
 
-
+    public ReviewDto(BookReviewDto bookReviewDto, BookResponse bookResponse, List<ReviewCommentDto> commentDtoList) {
+        this.bookReview = bookReviewDto;
+        this.bookResponse = bookResponse;
+        this.commentList = commentDtoList;
+    }
 }

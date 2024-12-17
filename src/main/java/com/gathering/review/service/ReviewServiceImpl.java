@@ -2,6 +2,7 @@ package com.gathering.review.service;
 
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.review.model.constant.BookReviewTagType;
+import com.gathering.review.model.constant.ReviewSearchType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +43,10 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public ReviewDto selectBookReviewDetail(long reviewId) {
         return reviewRepository.selectBookReviewDetail(reviewId);
+    }
+
+    @Override
+    public ReviewListDto searchReviews(ReviewSearchType type, String searchParam, Pageable pageable) {
+        return reviewRepository.searchReviews(type, searchParam, pageable);
     }
 }

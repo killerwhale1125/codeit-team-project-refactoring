@@ -33,6 +33,7 @@ public class BookReviewDto extends ReviewDto {
 
     private String content;
 
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private int likes;
 
     @Enumerated(EnumType.STRING)
@@ -83,7 +84,19 @@ public class BookReviewDto extends ReviewDto {
         this.userName = userName;
         this.createTime = createTime;
     }
-
+    // 리뷰 상세페이지 사이드에 특정 책에 대한 리뷰 목록 or 통합 검색 결과 생성자
+    public BookReviewDto(long id, String title,String content, int likes,long commentCnt,
+                         long userId, String profile, String userName, String createTime) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.likes = likes;
+        this.commentCnt = commentCnt;
+        this.userId = userId;
+        this.profile = profile;
+        this.userName = userName;
+        this.createTime = createTime;
+    }
     public static BookReviewDto fromEntity(BookReview review) {
         return BookReviewDto.builder()
                 .id(review.getId())
