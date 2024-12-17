@@ -30,8 +30,6 @@ public class GatheringCreate {
     @NotNull
     private Long bookId;
     @NotNull
-    private Long categoryId;
-    @NotNull
     private GatheringStatus gatheringStatus;
     @NotNull
     private ReadingTimeGoal readingTimeGoal;

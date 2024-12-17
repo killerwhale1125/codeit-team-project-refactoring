@@ -50,6 +50,7 @@ public class BookResponse {
         this.image = image;
         this.gatheringExists = gatheringExists;
     }
+
     public static BookResponse fromEntity(Book book) {
         return BookResponse.builder()
                 .id(book.getId())

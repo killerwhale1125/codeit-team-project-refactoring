@@ -41,7 +41,7 @@ public class GatheringActions {
     public Gathering createGathering(GatheringCreate gatheringCreate, String username, List<MultipartFile> files) {
         List<Image> images = gatheringImageService.uploadGatheringImage(files);
         User user = userRepository.findByUsername(username);
-        Book book = bookRepository.findBookByBookIdAndCategoryId(gatheringCreate.getBookId(), gatheringCreate.getCategoryId());
+        Book book = bookRepository.findById(gatheringCreate.getBookId());
         book.incrementSelectedCount();
 
         return Gathering.createGathering(

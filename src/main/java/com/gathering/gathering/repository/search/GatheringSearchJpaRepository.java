@@ -32,7 +32,7 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
 
     @Query(value = "SELECT " +
             "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.TITLE, b.IMAGE " +
-            "FROM Gathering g " +
+            "FROM GATHERING g " +
             "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
             "LEFT JOIN IMAGE i ON g.IMAGE_ID = i.IMAGE_ID " +
             "LEFT JOIN CHALLENGE c ON g.CHALLENGE_ID = c.CHALLENGE_ID " +
@@ -40,14 +40,14 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
             nativeQuery = true,
             countQuery = "SELECT " +
                     "COUNT(g.GATHERING_ID) " +
-                    "FROM Gathering g " +
+                    "FROM GATHERING g " +
                     "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
                     "WHERE MATCH(b.introduce) AGAINST (:searchWord IN BOOLEAN MODE)")
     Page<Object[]> findGatheringsBySearchWordAndTypeContent(@Param("searchWord") String searchWord, Pageable pageable);
 
     @Query(value = "SELECT " +
             "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.TITLE, b.IMAGE " +
-            "FROM Gathering g " +
+            "FROM GATHERING g " +
             "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
             "LEFT JOIN IMAGE i ON g.IMAGE_ID = i.IMAGE_ID " +
             "LEFT JOIN CHALLENGE c ON g.CHALLENGE_ID = c.CHALLENGE_ID " +
@@ -55,7 +55,7 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
             nativeQuery = true,
             countQuery = "SELECT " +
                     "COUNT(g.GATHERING_ID) " +
-                    "FROM Gathering g " +
+                    "FROM GATHERING g " +
                     "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
                     "WHERE MATCH(b.title) AGAINST (:searchWord IN BOOLEAN MODE)")
     Page<Object[]> findGatheringsBySearchWordAndTypeBookName(@Param("searchWord") String searchWord, Pageable pageable);
