@@ -1,6 +1,7 @@
 package com.gathering.gathering.controller;
 
 import com.gathering.common.base.response.BaseResponse;
+import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringRequest;
 import com.gathering.gathering.model.dto.GatheringUpdate;
@@ -16,8 +17,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +43,14 @@ public class GatheringController {
     @Operation(summary = "모임 생성", description = "gatheringStatus는 RECRUITING, 최소 인원 5 이상 최대인원 6 이상")
     public BaseResponse<Void> create(@RequestPart("gatheringCreate") @Valid GatheringCreate gatheringCreate,
                                      @RequestPart(value = "file", required = false) List<MultipartFile> files,
-                                     @AuthenticationPrincipal UserDetails userDetails) {
+                                     @AuthenticationPrincipal UserDetails userDetails,
+                                     BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(error -> {
+                System.out.println("Error: " + error.getDefaultMessage());
+            });
+            return new BaseResponse<>(BaseResponseStatus.INVALID_REQUEST);
+        }
         gatheringService.create(gatheringCreate, files, userDetails.getUsername());
         return new BaseResponse<>();
     }
