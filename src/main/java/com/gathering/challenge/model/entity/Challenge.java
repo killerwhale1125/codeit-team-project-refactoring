@@ -41,6 +41,7 @@ public class Challenge extends BaseTimeEntity {
     private LocalDate startDateTime;
     private LocalDate endDateTime;  // 챌린지 종료일
 
+    // Enum Type 변경
     @Enumerated(EnumType.STRING)
     private ReadingTimeGoal readingTimeGoal;
 
