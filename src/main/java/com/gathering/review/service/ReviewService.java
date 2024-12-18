@@ -2,19 +2,20 @@ package com.gathering.review.service;
 
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
+import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.dto.*;
 import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
     
     // 리뷰 생성
-    ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type);
+    ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type);
 
     // 리뷰 댓글 생성
     ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
 
     // 나의 리뷰 목록 조회
-    ReviewListDto selectUserReviewList(String username, String type);
+    ReviewListDto selectUserReviewList(String username, ReviewType type, Pageable pageable);
 
     // 독서 리뷰 페이지 정보 조회
     ReviewListDto selectBookReviewList(String username);

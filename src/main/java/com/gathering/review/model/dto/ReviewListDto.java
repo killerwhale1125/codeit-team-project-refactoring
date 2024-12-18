@@ -34,6 +34,10 @@ public class ReviewListDto {
     private double scoreAvg;
     private boolean hasNext;
 
+    //나의 리뷰 -> 모임 후기에 필요한 데이터
+    private long writableReviewCount;
+    private long writedReviewCount;
+
     public static ReviewListDto fromBookReviews(List<BookReviewDto> bookReview) {
         return ReviewListDto.builder()
                 .bookReviews(bookReview)
@@ -71,11 +75,15 @@ public class ReviewListDto {
                 .total(total)
                 .build();
     }
+    // 나의 리뷰 -> 모임 후기
     
-    public static ReviewListDto fromGatheringReviews(List<GatheringResponse> gatheringResponses, List<GatheringReviewDto> gatheringReviews) {
+    public static ReviewListDto fromGatheringReviews(List<GatheringResponse> gatheringResponses, long writableReviewCount
+                                                     ,List<GatheringReviewDto> gatheringReviews, long writedReviewCount) {
         return ReviewListDto.builder()
                 .gatheringResponses(gatheringResponses)
+                .writableReviewCount(writableReviewCount)
                 .gatheringReviews(gatheringReviews)
+                .writedReviewCount(writedReviewCount)
                 .build();
     }
 

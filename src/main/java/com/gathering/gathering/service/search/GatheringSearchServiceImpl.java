@@ -113,9 +113,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         //List<Long> gatheringIds = gatheringSearchActions.convertToGatheringIds(gatherings);
 
         /**
-         * TODO - 리뷰 리스트 및 정보 조회
-         *        임시로 작성하였습니다. 위 gatheringIds도 임시로 생성하였습니다.
-         *        리뷰 리스트 정보 조회 시 쿼리 IN 조건으로 gatheringIds 필요 시 사용 부탁드립니다.
+         * 리뷰 목록 및 카운트 조회
          */
         ReviewListDto tempReviews = reviewRepository.searchReviews(searchType, searchWord, pageable);
         Page<BookReviewDto> reviews = new PageImpl<>(tempReviews.getBookReviews(), pageable, tempReviews.getTotal());

@@ -4,6 +4,7 @@ import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
+import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +30,7 @@ public class ReviewConroller {
     @Operation(summary = "리뷰 생성", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewDto> createReview(
             @RequestBody @Valid CreateReviewDto createReviewDto,
-            @PathVariable String type,
+            @PathVariable ReviewType type,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         ReviewDto reviewDto = reviewService.createReview(createReviewDto, userDetails.getUsername(), type);
@@ -55,10 +56,12 @@ public class ReviewConroller {
     @GetMapping("/user/{type}")
     @Operation(summary = "나의 리뷰", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewListDto> selectUserReviewList(
-            @PathVariable String type,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable ReviewType type,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PageableDefault(page = 0, size = 5, sort = "id,desc") Pageable pageable) {
 
-        ReviewListDto result = reviewService.selectUserReviewList(userDetails.getUsername(), type);
+
+        ReviewListDto result = reviewService.selectUserReviewList(userDetails.getUsername(), type, pageable);
 
         return new BaseResponse<>(result);
 

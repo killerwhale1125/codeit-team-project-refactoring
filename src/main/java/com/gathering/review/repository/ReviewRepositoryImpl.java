@@ -68,7 +68,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
     private final ReviewQueryBuilder queryBuilder;
 
     @Override
-    public ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type) {
+    public ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type) {
 
         User user = userJpaRepository.findByUserNameOrThrow(username);
         Gathering gathering = null;
@@ -78,7 +78,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         }
 
         // 모임 리뷰
-        if(type.equalsIgnoreCase(ReviewType.GATHERING.getValue())) {
+        if(type.equals(ReviewType.GATHERING)) {
             GatheringReview review = GatheringReview.createEntity(gathering, user, createReviewDto);
 
             review = gatheringReviewJpaRepository.save(review);
@@ -136,11 +136,11 @@ public class ReviewRepositoryImpl implements ReviewRepository{
     }
 
     @Override
-    public ReviewListDto selectUserReviewList(String username, String type) {
+    public ReviewListDto selectUserReviewList(String username, ReviewType type, Pageable pageable) {
 
         User user = userJpaRepository.findByUserNameOrThrow(username);
         ReviewListDto result = null;
-        if(type.equalsIgnoreCase(ReviewType.BOOK.getValue())) {
+        if(type.equals(ReviewType.BOOK)) {
             List<BookReviewDto> reviews = jpaQueryFactory
                     .select(Projections.constructor(BookReviewDto.class,
                             bookReview.id,
@@ -148,10 +148,20 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                             Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime),
                             bookReview.content))
                     .from(bookReview)
-                    .where(bookReview.user.id.eq(user.getId()))
+                    .where(bookReview.user.id.eq(user.getId())
+                            .and(bookReview.status.eq(StatusType.Y)))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
                     .fetch();
 
-            result = ReviewListDto.fromBookReviews(reviews);
+            Long total = jpaQueryFactory
+                    .select(bookReview.count())
+                    .from(bookReview)
+                    .where(bookReview.user.id.eq(user.getId())
+                            .and(bookReview.status.eq(StatusType.Y)))
+                    .fetchOne();
+
+            result = ReviewListDto.fromBookReviews(reviews,total);
 
             return result;
         } else {
@@ -173,6 +183,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                     .from(gathering)
                     .leftJoin(gathering.challenge, challenge)
                     .where(gathering.id.in(list))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
                     .fetch();
 
             //작성한 리뷰 조회
@@ -184,9 +196,17 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                             gatheringReview.content))
                     .from(gatheringReview)
                     .where(gatheringReview.user.id.eq(user.getId()))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
                     .fetch();
 
-            result = fromGatheringReviews(gatheringResponses, reviews);
+            Long total = jpaQueryFactory
+                    .select(gatheringReview.count())
+                    .from(gatheringReview)
+                    .where(gatheringReview.user.id.eq(user.getId()))
+                    .fetchOne();
+
+            result = fromGatheringReviews(gatheringResponses, list.size(), reviews, total);
 
             return result;
         }

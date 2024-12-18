@@ -2,15 +2,16 @@ package com.gathering.review.repository;
 
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
+import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.dto.*;
 import org.springframework.data.domain.Pageable;
 
 public interface ReviewRepository {
-    ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type);
+    ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type);
 
     ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username);
 
-    ReviewListDto selectUserReviewList(String username, String type);
+    ReviewListDto selectUserReviewList(String username, ReviewType type, Pageable pageable);
 
     ReviewListDto selectBookReviewList(String username);
 

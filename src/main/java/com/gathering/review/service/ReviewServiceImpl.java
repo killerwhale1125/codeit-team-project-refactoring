@@ -2,6 +2,7 @@ package com.gathering.review.service;
 
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
+import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class ReviewServiceImpl implements ReviewService{
     private final ReviewRepository reviewRepository;
 
     @Override
-    public ReviewDto createReview(CreateReviewDto createReviewDto, String username, String type) {
+    public ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type) {
         return reviewRepository.createReview(createReviewDto, username, type);
     }
 
@@ -25,8 +26,8 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewListDto selectUserReviewList(String username, String type) {
-        return reviewRepository.selectUserReviewList(username, type);
+    public ReviewListDto selectUserReviewList(String username, ReviewType type, Pageable pageable) {
+        return reviewRepository.selectUserReviewList(username, type, pageable);
     }
 
     @Override
