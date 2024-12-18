@@ -9,6 +9,7 @@ import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
+import com.gathering.review.model.dto.BookReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,7 @@ public class GatheringSearchActions {
         return GatheringSearchResponse.fromEntity(gatheringResponses, result.getTotalElements());
     }
 
-    public GatheringSearchResponse convertToResultPages(Page<Object[]> gatherings, Page<ReviewListDto> reviews) {
+    public GatheringSearchResponse convertToResultPages(Page<Object[]> gatherings, Page<BookReviewDto> reviews) {
         /**
          * 검색한 모임 리스트 DTO 변환
          */

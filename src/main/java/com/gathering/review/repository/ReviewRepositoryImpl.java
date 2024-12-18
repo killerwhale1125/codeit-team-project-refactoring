@@ -10,9 +10,9 @@ import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringBookReview;
 import com.gathering.gathering.model.entity.GatheringStatus;
+import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.gathering.repository.GatheringJpaRepository;
 import com.gathering.review.model.constant.BookReviewTagType;
-import com.gathering.review.model.constant.ReviewSearchType;
 import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.*;
@@ -362,7 +362,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
      * @return
      */
     @Override
-    public ReviewListDto searchReviews(ReviewSearchType type, String param, Pageable pageable) {
+    public ReviewListDto searchReviews(SearchType type, String param, Pageable pageable) {
 
         BooleanBuilder builder = queryBuilder.buildReviewSearch(type, param);
         // Query 생성

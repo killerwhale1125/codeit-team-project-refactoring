@@ -1,6 +1,6 @@
 package com.gathering.review.util;
 
-import com.gathering.review.model.constant.ReviewSearchType;
+import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.StatusType;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.stereotype.Component;
@@ -10,14 +10,14 @@ import static com.gathering.review.model.entitiy.QBookReview.bookReview;
 @Component
 public class ReviewQueryBuilder {
 
-    public BooleanBuilder buildReviewSearch(ReviewSearchType type, String param) {
+    public BooleanBuilder buildReviewSearch(SearchType type, String param) {
         BooleanBuilder builder = new BooleanBuilder();
 
-        if(type.equals(ReviewSearchType.BOOK)) {
+        if(type.equals(SearchType.BOOK_NAME)) {
             if(param != null && !param.isEmpty()) {
                 builder.and(bookReview.book.title.like("%"+ param + "%"));
             }
-        } else if(type.equals(ReviewSearchType.TITLE)) {
+        } else if(type.equals(SearchType.TITLE)) {
             if(param != null && !param.isEmpty()) {
                 builder.and(bookReview.title.like("%"+ param + "%"));
             }

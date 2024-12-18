@@ -2,8 +2,8 @@ package com.gathering.review.controller;
 
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
-import com.gathering.review.model.constant.ReviewSearchType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -96,7 +96,7 @@ public class ReviewConroller {
     @GetMapping("/search")
     @Operation(summary = "리뷰 검색", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewListDto> searchReviews(
-            @RequestParam ReviewSearchType type,
+            @RequestParam @Valid SearchType type,
             @RequestParam String searchParam,
             @PageableDefault(page = 0, size = 5, sort = "id,desc") Pageable pageable) {
         return new BaseResponse<>(reviewService.searchReviews(type, searchParam, pageable));

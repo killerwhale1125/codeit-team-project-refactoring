@@ -8,7 +8,9 @@ import com.gathering.gathering.model.entity.*;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.gathering.service.GatheringSearchAsync;
 import com.gathering.gathering.util.GatheringSearchActions;
+import com.gathering.review.model.dto.BookReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
+import com.gathering.review.repository.ReviewRepository;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.string.FullTextIndexParser;
@@ -35,6 +37,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     private final GatheringSearchAsync gatheringSearchAsync;
     private final GatheringSearchActions gatheringSearchActions;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     @Override
     public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
@@ -106,15 +109,16 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         Page<Object[]> gatherings = gatheringSearchActions
                 .findGatheringsBySearchWordAndType(formatSearchWord, searchType, pageable);
 
-        // 조회한 모임 리스트의 모임 ID 리스트
-        List<Long> gatheringIds = gatheringSearchActions.convertToGatheringIds(gatherings);
+        // 조회한 모임 리스트의 모임 ID 리스트  -> 미사용으로 주석처리
+        //List<Long> gatheringIds = gatheringSearchActions.convertToGatheringIds(gatherings);
 
         /**
          * TODO - 리뷰 리스트 및 정보 조회
          *        임시로 작성하였습니다. 위 gatheringIds도 임시로 생성하였습니다.
          *        리뷰 리스트 정보 조회 시 쿼리 IN 조건으로 gatheringIds 필요 시 사용 부탁드립니다.
          */
-        Page<ReviewListDto> reviews = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        ReviewListDto tempReviews = reviewRepository.searchReviews(searchType, searchWord, pageable);
+        Page<BookReviewDto> reviews = new PageImpl<>(tempReviews.getBookReviews(), pageable, tempReviews.getTotal());
 
         return gatheringSearchActions.convertToResultPages(gatherings, reviews);
     }

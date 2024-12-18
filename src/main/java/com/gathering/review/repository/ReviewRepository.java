@@ -1,8 +1,7 @@
 package com.gathering.review.repository;
 
-import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
-import com.gathering.review.model.constant.ReviewSearchType;
 import com.gathering.review.model.dto.*;
 import org.springframework.data.domain.Pageable;
 
@@ -19,5 +18,5 @@ public interface ReviewRepository {
 
     ReviewDto selectBookReviewDetail(long reviewId);
 
-    ReviewListDto searchReviews(ReviewSearchType type, String searchParam, Pageable pageable);
+    ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable);
 }

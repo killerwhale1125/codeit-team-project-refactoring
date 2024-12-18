@@ -1,6 +1,7 @@
 package com.gathering.gathering.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.review.model.dto.BookReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.util.List;
 public class GatheringSearchResponse {
     private List<GatheringResponse> gatheringResponses;
     private List<GatheringResultPageResponse> gatheringResultPageResponses;
-    private List<ReviewListDto> reviewResultPageResponses;
+    private List<BookReviewDto> reviewResultPageResponses;
     private boolean hasNext;    // 다음 페이지 데이터 존재 여부
     private long totalCount;
     private long reviewTotalCount;
@@ -41,7 +42,7 @@ public class GatheringSearchResponse {
                 .build();
     }
 
-    public static GatheringSearchResponse resultPages(List<GatheringResultPageResponse> gatherings, long gatheringCount, List<ReviewListDto> reviews, long reviewCount) {
+    public static GatheringSearchResponse resultPages(List<GatheringResultPageResponse> gatherings, long gatheringCount, List<BookReviewDto> reviews, long reviewCount) {
         return GatheringSearchResponse.builder()
                 .gatheringResultPageResponses(gatherings)
                 .totalCount(gatheringCount)
