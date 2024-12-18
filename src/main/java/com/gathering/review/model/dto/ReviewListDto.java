@@ -3,6 +3,7 @@ package com.gathering.review.model.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.book.model.dto.BookResponse;
 import com.gathering.gathering.model.dto.GatheringResponse;
+import com.querydsl.core.Tuple;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,6 +38,12 @@ public class ReviewListDto {
     //나의 리뷰 -> 모임 후기에 필요한 데이터
     private long writableReviewCount;
     private long writedReviewCount;
+
+
+    // 모임 후기의 비율을 나타내는 데이터
+    private int good;
+    private int soso;
+    private int bad;
 
     public static ReviewListDto fromBookReviews(List<BookReviewDto> bookReview) {
         return ReviewListDto.builder()
@@ -88,11 +95,14 @@ public class ReviewListDto {
     }
 
 
-    public static ReviewListDto fromGatheringReviews(List<GatheringReviewDto> gatheringReviews, long total, double scoreAvg, boolean hasNext) {
+    public static ReviewListDto fromGatheringReviews(List<GatheringReviewDto> gatheringReviews, Tuple result, boolean hasNext) {
         return ReviewListDto.builder()
                 .gatheringReviews(gatheringReviews)
-                .total(total)
-                .scoreAvg(scoreAvg)
+                .total(result.get(0, Long.class))
+                .scoreAvg(result.get(1, Double.class))
+                .good((int) ((double) result.get(2, Long.class) / result.get(0, Long.class) * 100))
+                .soso((int) ((double) result.get(3, Long.class) / result.get(0, Long.class) * 100))
+                .bad((int) ((double) result.get(4, Long.class) / result.get(0, Long.class) * 100))
                 .hasNext(hasNext)
                 .build();
     }

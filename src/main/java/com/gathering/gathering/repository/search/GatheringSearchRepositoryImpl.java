@@ -10,10 +10,12 @@ import com.gathering.gathering.repository.search.util.GatheringSortUtil;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
+import com.gathering.user.model.entitiy.QUser;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -29,6 +31,7 @@ import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
 import static com.gathering.image.model.entity.QImage.image;
+import static com.gathering.review.model.entitiy.QBookReview.bookReview;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 import static com.gathering.user.model.entitiy.QUser.user;
 
@@ -175,7 +178,31 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         Tuple result = queryFactory
                 .select(
                         gatheringReview.id.count(), // COUNT
-                        gatheringReview.score.avg() // AVG
+                        gatheringReview.score.avg()// AVG
+                        ,JPAExpressions
+                                .select(gatheringReview.count())
+                                .from(gatheringReview)
+                                .where(
+                                        gatheringReview.gathering.id.eq(gatheringId)
+                                                .and(gatheringReview.score.between(4,5))
+                                                .and(gatheringReview.status.eq(StatusType.Y))
+                                )
+                        ,JPAExpressions
+                                .select(gatheringReview.count())
+                                .from(gatheringReview)
+                                .where(
+                                        gatheringReview.gathering.id.eq(gatheringId)
+                                                .and(gatheringReview.score.eq(3))
+                                                .and(gatheringReview.status.eq(StatusType.Y))
+                                )
+                        ,JPAExpressions
+                                .select(gatheringReview.count())
+                                .from(gatheringReview)
+                                .where(
+                                        gatheringReview.gathering.id.eq(gatheringId)
+                                                .and(gatheringReview.score.between(1,2))
+                                                .and(gatheringReview.status.eq(StatusType.Y))
+                                )
                 )
                 .from(gatheringReview)
                 .where(
@@ -184,15 +211,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 )
                 .fetchOne();
 
-        long total = (result != null && result.get(gatheringReview.id.count()) != null)
-                ? result.get(gatheringReview.id.count())
-                : 0L;
-
-        Double averageScore = (result != null && result.get(gatheringReview.score.avg()) != null)
-                ? result.get(gatheringReview.score.avg())
-                : 0.0;
-
-        return ReviewListDto.fromGatheringReviews(reviews, total, averageScore, hasNext);
+        return ReviewListDto.fromGatheringReviews(reviews, result, hasNext);
     }
 
 }
