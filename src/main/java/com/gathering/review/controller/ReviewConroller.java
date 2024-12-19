@@ -1,5 +1,6 @@
 package com.gathering.review.controller;
 
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.entity.SearchType;
@@ -106,11 +107,18 @@ public class ReviewConroller {
     }
 
 
-//    @DeleteMapping("/{reviewId}")
-//    @Operation(summary = "독서 리뷰 삭제", description = "상세 조건 Notion 참고")
-//    public BaseResponse<ReviewDto> selectBookReviewDetail(
-//            @PathVariable long reviewId) {
-//        return new BaseResponse<>(reviewService.selectBookReviewDetail(reviewId));
-//    }
+    @DeleteMapping("/{reviewId}")
+    @Operation(summary = "리뷰 삭제", description = "상세 조건 Notion 참고")
+    public BaseResponse<Void> DeleteBookReview(
+            @PathVariable long reviewId,
+            @RequestParam ReviewType type,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        int result = reviewService.DeleteBookReview(reviewId, type, userDetails.getUsername());
+
+        if(result != 1) {
+            throw new BaseException(BaseResponseStatus.REVIEW_DELETED_FAILED);
+        }
+        return new BaseResponse<>();
+    }
 
 }
