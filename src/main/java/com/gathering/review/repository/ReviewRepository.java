@@ -20,4 +20,6 @@ public interface ReviewRepository {
     ReviewDto selectBookReviewDetail(long reviewId);
 
     ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable);
+
+    int DeleteBookReview(long reviewId,ReviewType type, String username);
 }

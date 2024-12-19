@@ -423,6 +423,34 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         return ReviewListDto.fromBookReviews(reviews, total);
     }
 
+    @Transactional
+    @Override
+    public int DeleteBookReview(long reviewId,ReviewType type, String username) {
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+        int result = 0;
+
+        if(type.equals(ReviewType.BOOK)) {
+            BookReview bookReview = bookReviewJpaRepository.findByIdOrThrow(reviewId);
+
+            if(!bookReview.getUser().equals(user)) {
+                throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+            }
+
+            result = bookReviewJpaRepository.deleteReview(bookReview.getId(), StatusType.N);
+
+        } else {
+            GatheringReview gatheringReview = gatheringReviewJpaRepository.findByIdOrThrow(reviewId);
+
+            if(!gatheringReview.getUser().equals(user)) {
+                throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+            }
+
+            result = gatheringReviewJpaRepository.deleteReview(gatheringReview.getId(), StatusType.N);
+        }
+
+        return result;
+    }
+
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록
     private List<Long> findUnreviewedCompletedGatherings(long userId) {
 

@@ -48,4 +48,5 @@ public interface GatheringJpaRepository extends JpaRepository<Gathering, Long> {
 
     @Query("SELECT COUNT(g.id) FROM Gathering g WHERE g.id IN :wishGatheringIds")
     long getMyWishedCountByGatheringIds(@Param("wishGatheringIds") Set<Long> wishGatheringIds);
+
 }

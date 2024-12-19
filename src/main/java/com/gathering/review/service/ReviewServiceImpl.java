@@ -49,4 +49,9 @@ public class ReviewServiceImpl implements ReviewService{
     public ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable) {
         return reviewRepository.searchReviews(type, searchParam, pageable);
     }
+
+    @Override
+    public int DeleteBookReview(long reviewId,ReviewType type, String username) {
+        return reviewRepository.DeleteBookReview(reviewId,type, username);
+    }
 }
