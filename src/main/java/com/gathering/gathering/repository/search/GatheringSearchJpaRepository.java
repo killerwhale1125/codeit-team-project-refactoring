@@ -31,7 +31,7 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
     Page<Object[]> findGatheringsBySearchWordAndTypeTitle(@Param("searchWord") String searchWord, Pageable pageable);
 
     @Query(value = "SELECT " +
-            "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.TITLE, b.IMAGE " +
+            "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.BOOK_ID, b.TITLE, b.IMAGE " +
             "FROM GATHERING g " +
             "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
             "LEFT JOIN IMAGE i ON g.IMAGE_ID = i.IMAGE_ID " +
@@ -46,7 +46,7 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
     Page<Object[]> findGatheringsBySearchWordAndTypeContent(@Param("searchWord") String searchWord, Pageable pageable);
 
     @Query(value = "SELECT " +
-            "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.TITLE, b.IMAGE " +
+            "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, c.READING_TIME_GOAL, i.IMAGE_URL, b.BOOK_ID, b.TITLE, b.IMAGE " +
             "FROM GATHERING g " +
             "LEFT JOIN BOOK b ON g.BOOK_ID = b.BOOK_ID " +
             "LEFT JOIN IMAGE i ON g.IMAGE_ID = i.IMAGE_ID " +
