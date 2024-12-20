@@ -109,15 +109,27 @@ public class ReviewConroller {
 
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "리뷰 삭제", description = "상세 조건 Notion 참고")
-    public BaseResponse<Void> DeleteBookReview(
+    public BaseResponse<Void> DeleteReview(
             @PathVariable long reviewId,
             @RequestParam ReviewType type,
             @AuthenticationPrincipal UserDetails userDetails) {
-        int result = reviewService.DeleteBookReview(reviewId, type, userDetails.getUsername());
+        int result = reviewService.DeleteReview(reviewId, type, userDetails.getUsername());
 
         if(result != 1) {
             throw new BaseException(BaseResponseStatus.REVIEW_DELETED_FAILED);
         }
+        return new BaseResponse<>();
+    }
+
+    @PutMapping("/edit/{type}/{reviewId}")
+    @Operation(summary = "리뷰 수정", description = "상세 조건 Notion 참고")
+    public BaseResponse<Void> UpdateReview(
+            @RequestBody @Valid CreateReviewDto editReviewDto,
+            @PathVariable ReviewType type,
+            @PathVariable long reviewId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        reviewService.UpdateReview(editReviewDto, reviewId, type, userDetails.getUsername());
         return new BaseResponse<>();
     }
 

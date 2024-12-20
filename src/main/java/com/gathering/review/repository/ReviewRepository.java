@@ -21,5 +21,7 @@ public interface ReviewRepository {
 
     ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable);
 
-    int DeleteBookReview(long reviewId,ReviewType type, String username);
+    int DeleteReview(long reviewId,ReviewType type, String username);
+
+    void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username);
 }

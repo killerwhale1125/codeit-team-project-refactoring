@@ -51,7 +51,12 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public int DeleteBookReview(long reviewId,ReviewType type, String username) {
-        return reviewRepository.DeleteBookReview(reviewId,type, username);
+    public int DeleteReview(long reviewId,ReviewType type, String username) {
+        return reviewRepository.DeleteReview(reviewId,type, username);
+    }
+
+    @Override
+    public void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username) {
+        reviewRepository.UpdateReview(createReviewDto, reviewId, type, username);
     }
 }

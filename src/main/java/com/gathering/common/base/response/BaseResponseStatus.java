@@ -53,7 +53,7 @@ public enum BaseResponseStatus {
     NON_EXISTED_REVIEW(HttpStatus.NOT_FOUND, "NON_EXISTED_REVIEW", "This review does not exist"),
     REVIEW_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "REVIEW_OWNER_MISMATCH", "The review owner does not match the current user."),
     REVIEW_DELETED_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "REVIEW_DELETED_FAILED", "The review delete failed."),
-
+    REVIEW_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "REVIEW_UPDATE_FAILED", "The review update failed."),
 
     // Other
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "UNKNOWN_ERROR", "Unknown error"),

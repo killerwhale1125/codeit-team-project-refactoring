@@ -1,6 +1,5 @@
 package com.gathering.review.model.entitiy;
 
-import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.review.model.constant.StatusType;
@@ -10,8 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -45,6 +43,12 @@ public class GatheringReview extends BaseTimeEntity {
     @Comment("상태")
     @Enumerated(EnumType.STRING)
     private StatusType status;
+
+    public void updateReview(CreateReviewDto dto) {
+        this.content = dto.getContent();
+        this.score = dto.getScore();
+        this.modifiedTime = LocalDateTime.now();
+    }
 
     public static GatheringReview createEntity(Gathering gathering, User user, CreateReviewDto createReviewDto) {
         return GatheringReview.builder()

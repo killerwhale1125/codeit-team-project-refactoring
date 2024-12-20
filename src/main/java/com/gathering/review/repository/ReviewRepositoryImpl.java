@@ -425,7 +425,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
 
     @Transactional
     @Override
-    public int DeleteBookReview(long reviewId,ReviewType type, String username) {
+    public int DeleteReview(long reviewId,ReviewType type, String username) {
         User user = userJpaRepository.findByUserNameOrThrow(username);
         int result = 0;
 
@@ -449,6 +449,36 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         }
 
         return result;
+    }
+    @Transactional
+    @Override
+    public void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username) {
+
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+        try {
+            if(type.equals(ReviewType.BOOK)) {
+                BookReview bookReview = bookReviewJpaRepository.findByIdOrThrow(reviewId);
+
+                if(!bookReview.getUser().equals(user)) {
+                    throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+                }
+
+
+                Optional<Book> book = bookJpaRepository.findById(bookReview.getBook().getId());
+                bookReview.updateReview(createReviewDto, book.get());
+
+            } else {
+                GatheringReview gatheringReview = gatheringReviewJpaRepository.findByIdOrThrow(reviewId);
+
+                if(!gatheringReview.getUser().equals(user)) {
+                    throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+                }
+
+                gatheringReview.updateReview(createReviewDto);
+            }
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.REVIEW_UPDATE_FAILED);
+        }
     }
 
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록

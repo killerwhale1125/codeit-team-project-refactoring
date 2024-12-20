@@ -30,5 +30,8 @@ public interface ReviewService {
     // 리뷰 검색 (상세 페이지 사이드바 및 통합 검색)
     ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable);
 
-    int DeleteBookReview(long reviewId,ReviewType type, String username);
+    int DeleteReview(long reviewId,ReviewType type, String username);
+
+    // 리뷰 업데이트
+    void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username);
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +57,16 @@ public class BookReview extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewComment> reviewComments = new ArrayList<>();
+
+
+    public void updateReview(CreateReviewDto dto, Book book) {
+        this.book = book;
+        this.title = dto.getTitle();
+        this.apprCd = dto.getApprCd();
+        this.tagCd = dto.getTag();
+        this.content = dto.getContent();
+        this.modifiedTime = LocalDateTime.now();
+    }
 
     public static BookReview createEntity(Book book, User user, CreateReviewDto createReviewDto) {
         return BookReview.builder()
