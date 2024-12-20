@@ -5,8 +5,10 @@ import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.CreateReviewDto;
 import com.gathering.review.model.entitiy.BookReview;
+import jakarta.persistence.LockModeType;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,5 +25,11 @@ public interface BookReviewJpaRepository extends JpaRepository<BookReview, Long>
     @Modifying
     @Query("UPDATE BookReview b SET b.status = :statusType WHERE b.id = :id")
     int deleteReview(long id, StatusType statusType);
+    @Modifying
+    @Query("UPDATE BookReview p SET p.likes = p.likes + 1 WHERE p.id = :reviewId")
+    void incrementLikes(long reviewId);
 
+    @Modifying
+    @Query("UPDATE BookReview p SET p.likes = p.likes - 1 WHERE p.id = :reviewId")
+    void decrementLikes(long reviewId);
 }

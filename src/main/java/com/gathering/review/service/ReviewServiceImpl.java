@@ -36,18 +36,18 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable) {
-        return reviewRepository.findReviews(tag, pageable);
+    public ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable, String username) {
+        return reviewRepository.findReviews(tag, pageable, username);
     }
 
     @Override
-    public ReviewDto selectBookReviewDetail(long reviewId) {
-        return reviewRepository.selectBookReviewDetail(reviewId);
+    public ReviewDto selectBookReviewDetail(long reviewId, String username) {
+        return reviewRepository.selectBookReviewDetail(reviewId, username);
     }
 
     @Override
-    public ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable) {
-        return reviewRepository.searchReviews(type, searchParam, pageable);
+    public ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable, String username) {
+        return reviewRepository.searchReviews(type, searchParam, pageable, username);
     }
 
     @Override
@@ -58,5 +58,10 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username) {
         reviewRepository.UpdateReview(createReviewDto, reviewId, type, username);
+    }
+
+    @Override
+    public void UpdateReviewLike(ReviewLikeDto reviewLikeDto, String username) {
+        reviewRepository.UpdateReviewLike(reviewLikeDto, username);
     }
 }

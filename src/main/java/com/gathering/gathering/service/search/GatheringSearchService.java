@@ -25,5 +25,5 @@ public interface GatheringSearchService {
 
     ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, Pageable pageable);
 
-    GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable);
+    GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable, String username);
 }

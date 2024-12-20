@@ -97,8 +97,15 @@ public class GatheringSearchController {
     @Operation(summary = "검색 기능 구현 중 (미완성)", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> search(@RequestParam String searchWord,
                                                         @RequestParam SearchType searchType,
+                                                        @AuthenticationPrincipal UserDetails userDetails,
                                                         @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, pageable));
+
+        String username = null;
+        if(userDetails != null) {
+            username = userDetails.getUsername();
+        }
+
+        return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, pageable, username));
     }
 
 }

@@ -17,4 +17,5 @@ public interface GatheringReviewJpaRepository extends JpaRepository<GatheringRev
     @Modifying
     @Query("UPDATE GatheringReview b SET b.status = :statusType WHERE b.id = :id")
     int deleteReview(long id, StatusType statusType);
+
 }

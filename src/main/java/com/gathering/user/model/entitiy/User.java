@@ -4,6 +4,7 @@ import com.gathering.challenge.model.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
+import com.gathering.review.model.entitiy.ReviewLikes;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import jakarta.persistence.*;
@@ -47,6 +48,9 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAttendance> userAttendances;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<ReviewLikes> reviewLikes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<GatheringUser> gatheringUsers = new ArrayList<>();

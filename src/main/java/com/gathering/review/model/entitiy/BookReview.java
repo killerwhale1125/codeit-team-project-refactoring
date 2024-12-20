@@ -58,6 +58,9 @@ public class BookReview extends BaseTimeEntity {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewComment> reviewComments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "review", fetch = FetchType.LAZY)
+    private List<ReviewLikes> reviewLikes;
+
 
     public void updateReview(CreateReviewDto dto, Book book) {
         this.book = book;

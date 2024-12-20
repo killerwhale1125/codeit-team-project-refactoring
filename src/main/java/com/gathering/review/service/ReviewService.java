@@ -22,16 +22,19 @@ public interface ReviewService {
     ReviewListDto selectBookReviewList(String username);
 
     // 리뷰 목록 조회(무한 스크롤)
-    ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable);
+    ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable, String username);
 
     // 리뷰 상세 조회
-    ReviewDto selectBookReviewDetail(long reviewId);
+    ReviewDto selectBookReviewDetail(long reviewId, String username);
 
     // 리뷰 검색 (상세 페이지 사이드바 및 통합 검색)
-    ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable);
+    ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable, String username);
 
     int DeleteReview(long reviewId,ReviewType type, String username);
 
     // 리뷰 업데이트
     void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username);
+
+    // 리뷰 좋아요
+    void UpdateReviewLike(ReviewLikeDto reviewLikeDto, String username);
 }

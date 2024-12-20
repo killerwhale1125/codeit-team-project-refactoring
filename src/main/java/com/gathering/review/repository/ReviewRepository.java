@@ -15,13 +15,15 @@ public interface ReviewRepository {
 
     ReviewListDto selectBookReviewList(String username);
 
-    ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable);
+    ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable, String username);
 
-    ReviewDto selectBookReviewDetail(long reviewId);
+    ReviewDto selectBookReviewDetail(long reviewId, String username);
 
-    ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable);
+    ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable, String username);
 
     int DeleteReview(long reviewId,ReviewType type, String username);
 
     void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username);
+
+    void UpdateReviewLike(ReviewLikeDto reviewLikeDto, String username);
 }

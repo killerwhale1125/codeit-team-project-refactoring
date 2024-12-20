@@ -94,7 +94,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     }
 
     @Override
-    public GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable) {
+    public GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable, String username) {
         // 2글자 미만일 경우 X
         if (!StringUtil.isValidLength(searchWord, 2)) {
             throw new BaseException(INVALID_SEARCH_WORD);
@@ -115,7 +115,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         /**
          * 리뷰 목록 및 카운트 조회
          */
-        ReviewListDto tempReviews = reviewRepository.searchReviews(searchType, searchWord, pageable);
+        ReviewListDto tempReviews = reviewRepository.searchReviews(searchType, searchWord, pageable, username);
         Page<BookReviewDto> reviews = new PageImpl<>(tempReviews.getBookReviews(), pageable, tempReviews.getTotal());
 
         return gatheringSearchActions.convertToResultPages(gatherings, reviews);

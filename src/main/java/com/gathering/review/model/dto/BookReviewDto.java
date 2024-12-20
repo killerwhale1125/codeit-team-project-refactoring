@@ -50,14 +50,22 @@ public class BookReviewDto extends ReviewDto {
     // 리뷰 목록 무한스크롤 파라미터
     private String bookImage;
 
-    public BookReviewDto(long id, String title, String createTime,String content) {
+    // 현재 사용자가 좋아요를 눌렀는지 여부
+    private boolean userLikeCk;
+
+    
+    // 나의 리뷰 목록 조회
+    public BookReviewDto(long id, String title, String createTime,String content,int likes, long commentCnt, boolean userLikeCk ) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.createTime = createTime;
+        this.likes = likes;
+        this.commentCnt = commentCnt;
+        this.userLikeCk = userLikeCk;
     }
 
-    // best 리뷰 생성자
+    // best 리뷰 생성자 (비회원)
     public BookReviewDto(long id, String title, String content, int likes
     ,long commentCnt, long writerReviewCnt, String userName, String profile) {
         this.id = id;
@@ -70,6 +78,21 @@ public class BookReviewDto extends ReviewDto {
         this.profile = profile;
     }
 
+    // best 리뷰 생성자
+    public BookReviewDto(long id, String title, String content, int likes
+            ,long commentCnt, long writerReviewCnt, String userName, String profile, boolean userLikeCk) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.likes = likes;
+        this.commentCnt = commentCnt;
+        this.writerReviewCnt = writerReviewCnt;
+        this.userName = userName;
+        this.profile = profile;
+        this.userLikeCk = userLikeCk;
+    }
+
+    // 독서 리뷰 무한스크롤 생성자(비회원)
     public BookReviewDto(long id, String title, String apprCd, String bookImage, String content,
                          int likes, long commentCnt, long userId, String profile, String userName, String createTime) {
         this.id = id;
@@ -84,7 +107,25 @@ public class BookReviewDto extends ReviewDto {
         this.userName = userName;
         this.createTime = createTime;
     }
-    // 독서 리뷰 상세 정보
+
+    // 독서 리뷰 무한스크롤 생성자
+    public BookReviewDto(long id, String title, String apprCd, String bookImage, String content,
+                         int likes, long commentCnt, long userId, String profile, String userName, String createTime, boolean userLikeCk) {
+        this.id = id;
+        this.title = title;
+        this.apprCd = apprCd;
+        this.bookImage = bookImage;
+        this.content = content;
+        this.likes = likes;
+        this.commentCnt = commentCnt;
+        this.userId = userId;
+        this.profile = profile;
+        this.userName = userName;
+        this.createTime = createTime;
+        this.userLikeCk = userLikeCk;
+    }
+
+    // 독서 리뷰 상세 정보 (비회원)
     public BookReviewDto(long id,long bookId, String title, String apprCd,String tagCd, String content,
                          int likes, long userId, String profile, String userName,long writerReviewCnt, String createTime) {
         this.id = id;
@@ -100,7 +141,24 @@ public class BookReviewDto extends ReviewDto {
         this.writerReviewCnt = writerReviewCnt;
         this.createTime = createTime;
     }
-    // 리뷰 상세페이지 사이드에 특정 책에 대한 리뷰 목록 or 통합 검색 결과 생성자
+    // 독서 리뷰 상세 정보
+    public BookReviewDto(long id,long bookId, String title, String apprCd,String tagCd, String content,
+                         int likes, long userId, String profile, String userName,long writerReviewCnt, String createTime, boolean userLikeCk) {
+        this.id = id;
+        this.bookId = bookId;
+        this.title = title;
+        this.apprCd = apprCd;
+        this.tagCd = tagCd;
+        this.content = content;
+        this.likes = likes;
+        this.userId = userId;
+        this.profile = profile;
+        this.userName = userName;
+        this.writerReviewCnt = writerReviewCnt;
+        this.createTime = createTime;
+        this.userLikeCk = userLikeCk;
+    }
+    // 리뷰 상세페이지 사이드에 특정 책에 대한 리뷰 목록 or 통합 검색 결과 생성자 (비회원)
     public BookReviewDto(long id, String title,String content, int likes,long commentCnt,
                          long userId, String profile, String userName, String createTime) {
         this.id = id;
@@ -112,6 +170,21 @@ public class BookReviewDto extends ReviewDto {
         this.profile = profile;
         this.userName = userName;
         this.createTime = createTime;
+    }
+
+    // 리뷰 상세페이지 사이드에 특정 책에 대한 리뷰 목록 or 통합 검색 결과 생성자
+    public BookReviewDto(long id, String title,String content, int likes,long commentCnt,
+                         long userId, String profile, String userName, String createTime, boolean userLikeCk) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.likes = likes;
+        this.commentCnt = commentCnt;
+        this.userId = userId;
+        this.profile = profile;
+        this.userName = userName;
+        this.createTime = createTime;
+        this.userLikeCk = userLikeCk;
     }
     public static BookReviewDto fromEntity(BookReview review) {
         return BookReviewDto.builder()

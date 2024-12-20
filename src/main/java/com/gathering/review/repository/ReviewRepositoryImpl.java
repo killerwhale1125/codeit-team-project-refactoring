@@ -16,10 +16,7 @@ import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.*;
-import com.gathering.review.model.entitiy.BookReview;
-import com.gathering.review.model.entitiy.GatheringReview;
-import com.gathering.review.model.entitiy.QBookReview;
-import com.gathering.review.model.entitiy.ReviewComment;
+import com.gathering.review.model.entitiy.*;
 import com.gathering.review.util.ReviewQueryBuilder;
 import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
@@ -50,6 +47,7 @@ import static com.gathering.review.model.dto.ReviewListDto.fromGatheringReviews;
 import static com.gathering.review.model.entitiy.QBookReview.bookReview;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 import static com.gathering.review.model.entitiy.QReviewComment.reviewComment;
+import static com.gathering.review.model.entitiy.QReviewLikes.reviewLikes;
 import static com.gathering.user.model.entitiy.QUser.user;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -66,6 +64,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
     private final JPAQueryFactory jpaQueryFactory;
     private final GatheringReviewJpaRepository gatheringReviewJpaRepository;
     private final ReviewQueryBuilder queryBuilder;
+    private final ReviewLikesJpaRepository likesJpaRepository;
 
     @Override
     public ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type) {
@@ -145,8 +144,12 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                     .select(Projections.constructor(BookReviewDto.class,
                             bookReview.id,
                             bookReview.title,
+                            bookReview.content,
                             Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime),
-                            bookReview.content))
+                            bookReview.likes,
+                            reviewCommnetCnt(bookReview.id),
+                            likeUserCk(user)
+                    ))
                     .from(bookReview)
                     .where(bookReview.user.id.eq(user.getId())
                             .and(bookReview.status.eq(StatusType.Y)))
@@ -218,17 +221,10 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         User user = null;
         long myReviewCount = 0;
         List<BookResponse> unreviewsBookInfo = null;
-        if(username != null) {
-            user = userJpaRepository.findByUserNameOrThrow(username);
-            // 작성한 독서 리뷰 갯수
-            myReviewCount  = bookReviewJpaRepository.countByUserId(user.getId());
 
-            // 모임이 종료되었지만 독서 리뷰를 작성하지 않은 책 정보 목록
-            unreviewsBookInfo = findUnreviewedCompletedBook(user.getId());
-        }
 
         // best 리뷰 목록
-        List<BookReviewDto> bestReview = jpaQueryFactory
+        JPAQuery<BookReviewDto> query = jpaQueryFactory
                 .select(Projections.constructor(BookReviewDto.class,
                         bookReview.id
                         ,bookReview.title
@@ -246,15 +242,40 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .leftJoin(QUser.user).on(bookReview.user.id.eq(QUser.user.id))
                 .where(bookReview.user.id.eq(QUser.user.id).and(bookReview.status.eq(StatusType.Y)))
                 .orderBy(bookReview.likes.desc())
-                .limit(5)
-                .fetch();
+                .limit(5);
+
+        if(username != null) {
+            user = userJpaRepository.findByUserNameOrThrow(username);
+            // 작성한 독서 리뷰 갯수
+            myReviewCount  = bookReviewJpaRepository.countByUserId(user.getId());
+
+            // 모임이 종료되었지만 독서 리뷰를 작성하지 않은 책 정보 목록
+            unreviewsBookInfo = findUnreviewedCompletedBook(user.getId());
+
+            query = query.select(Projections.constructor(BookReviewDto.class,
+                    bookReview.id
+                    ,bookReview.title
+                    ,bookReview.content
+                    ,bookReview.likes
+                    ,reviewCommnetCnt(bookReview.id)
+                    ,JPAExpressions
+                            .select(bookReview.count())
+                            .from(bookReview)
+                            .where(bookReview.user.id.eq(QUser.user.id))
+                    ,QUser.user.userName
+                    ,QUser.user.profile
+                    ,likeUserCk(user)
+            ));
+        }
+
+        List<BookReviewDto> bestReview = query.fetch();
 
         ReviewListDto result = fromGatheringReviews(unreviewsBookInfo, bestReview, myReviewCount);
         return result;
     }
 
     @Override
-    public ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable) {
+    public ReviewListDto findReviews(BookReviewTagType tag, Pageable pageable, String username) {
         BooleanBuilder builder = new BooleanBuilder();
         if (!BookReviewTagType.ALL.getType().equals(tag.getType())) {
             builder.and(bookReview.tagCd.like("%" + tag + "%"));
@@ -284,6 +305,26 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1);
 
+        if(username != null) {
+            User user = userJpaRepository.findByUserNameOrThrow(username);
+            query = query.select(Projections.constructor(BookReviewDto.class,
+                    bookReview.id
+                    ,bookReview.title
+                    ,bookReview.apprCd
+                    ,bookReview.book.image
+                    ,bookReview.content
+                    ,bookReview.likes
+                    ,reviewCommnetCnt(bookReview.id)
+                    ,bookReview.user.id
+                    ,bookReview.user.profile
+                    ,bookReview.user.userName
+                    ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime)
+                    ,likeUserCk(user)
+                    )
+            );
+        }
+
+
         List<BookReviewDto> reviews = query.fetch();
 
         boolean hasNext = reviews.size() > pageable.getPageSize();
@@ -296,12 +337,14 @@ public class ReviewRepositoryImpl implements ReviewRepository{
     }
 
     @Override
-    public ReviewDto selectBookReviewDetail(long reviewId) {
+    public ReviewDto selectBookReviewDetail(long reviewId, String username) {
 
         QBookReview subBookReview = new QBookReview("subBookReview");
 
         // 독서 리뷰 상세 정보
-        BookReviewDto bookReviewDto = jpaQueryFactory
+        
+        // 비회원일 경우 좋아요 여부 미포함
+        JPAQuery<BookReviewDto> query = jpaQueryFactory
                 .select(Projections.constructor(BookReviewDto.class,
                         bookReview.id
                         ,bookReview.book.id
@@ -317,7 +360,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                                 .select(subBookReview.count())
                                 .from(subBookReview)
                                 .where(subBookReview.user.id.eq(bookReview.user.id).and(subBookReview.status.eq(StatusType.Y)))
-                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime))
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime)
+                        )
                 )
                 .from(bookReview)
                 .leftJoin(bookReview.user, user)
@@ -325,8 +369,35 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .leftJoin(bookReview.reviewComments, reviewComment)
                 .where(bookReview.id.eq(reviewId)
                         .and(bookReview.status.eq(StatusType.Y)))
-                .distinct()
-                .fetchOne();
+                .distinct();
+        
+        // 로그인 회원일 경우 좋아요 여부 추가
+        if(username != null) {
+            User user = userJpaRepository.findByUserNameOrThrow(username);
+
+            query = query.select(Projections.constructor(BookReviewDto.class,
+                            bookReview.id
+                            ,bookReview.book.id
+                            ,bookReview.title
+                            ,bookReview.apprCd
+                            ,bookReview.tagCd
+                            ,bookReview.content
+                            ,bookReview.likes
+                            ,bookReview.user.id
+                            ,bookReview.user.profile
+                            ,bookReview.user.userName
+                            ,JPAExpressions
+                                    .select(subBookReview.count())
+                                    .from(subBookReview)
+                                    .where(subBookReview.user.id.eq(bookReview.user.id).and(subBookReview.status.eq(StatusType.Y)))
+                            ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime)
+                            ,likeUserCk(user)
+                    )
+
+            );
+        }
+
+        BookReviewDto bookReviewDto = query.fetchOne();
 
         if(bookReviewDto == null) {
             throw new BaseException(BaseResponseStatus.NON_EXISTED_REVIEW);
@@ -382,7 +453,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
      * @return
      */
     @Override
-    public ReviewListDto searchReviews(SearchType type, String param, Pageable pageable) {
+    public ReviewListDto searchReviews(SearchType type, String param, Pageable pageable, String username) {
 
         BooleanBuilder builder = queryBuilder.buildReviewSearch(type, param);
         // Query 생성
@@ -405,6 +476,24 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
+
+        if(username != null) {
+            User user = userJpaRepository.findByUserNameOrThrow(username);
+            query = query.select(Projections.constructor(BookReviewDto.class,
+                            bookReview.id
+                            ,bookReview.title
+                            ,bookReview.content
+                            ,bookReview.likes
+                            ,reviewCommnetCnt(bookReview.id)
+                            ,bookReview.user.id
+                            ,bookReview.user.profile
+                            ,bookReview.user.userName
+                            ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime)
+                            ,likeUserCk(user)
+                    )
+            );
+        }
+
 
         List<BookReviewDto> reviews = query.fetch();
         Long total = 0L;
@@ -481,6 +570,30 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         }
     }
 
+    @Override
+    public void UpdateReviewLike(ReviewLikeDto reviewLikeDto, String username) {
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+
+        Optional<ReviewLikes> like = likesJpaRepository.findByReviewIdAndUserId(reviewLikeDto.getReviewId(), user.getId());
+        BookReview bookReview = bookReviewJpaRepository.findByIdOrThrow(reviewLikeDto.getReviewId());
+
+        /**
+         * 이미 좋아요가 있을 경우 좋아요 취소
+         * 좋아요가 없을경우 추가
+         */
+        boolean bol = like.isPresent();
+
+        if(bol) {
+            likesJpaRepository.delete(like.get());
+            bookReviewJpaRepository.decrementLikes(like.get().getReview().getId());
+        } else {
+            ReviewLikes likes = ReviewLikes.createEntity(bookReview, user);
+            likesJpaRepository.save(likes);
+            bookReviewJpaRepository.incrementLikes(likes.getReview().getId());
+        }
+
+    }
+
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록
     private List<Long> findUnreviewedCompletedGatherings(long userId) {
 
@@ -530,5 +643,12 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .select(reviewComment.count())
                 .from(reviewComment)
                 .where(reviewComment.review.id.eq(reviewId));
+    }
+    public BooleanExpression likeUserCk(User user) {
+        return JPAExpressions
+                .select(reviewLikes.count())
+                .from(reviewLikes)
+                .where(reviewLikes.user.id.eq(user.getId()).and(reviewLikes.review.id.eq(bookReview.id)))
+                .gt(0L);
     }
 }

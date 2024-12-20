@@ -86,15 +86,27 @@ public class ReviewConroller {
     @Operation(summary = "리뷰 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewListDto> findReviews(
             @RequestParam BookReviewTagType tag,
-            @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(reviewService.findReviews(tag, pageable));
+            @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String username = null;
+        if(userDetails != null) {
+            username = userDetails.getUsername();
+        }
+        return new BaseResponse<>(reviewService.findReviews(tag, pageable, username));
     }
 
     @GetMapping("/{reviewId}/detail")
     @Operation(summary = "독서 리뷰 상세 조회", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewDto> selectBookReviewDetail(
-            @PathVariable long reviewId) {
-        return new BaseResponse<>(reviewService.selectBookReviewDetail(reviewId));
+            @PathVariable long reviewId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String username = null;
+        if(userDetails != null) {
+            username = userDetails.getUsername();
+        }
+        return new BaseResponse<>(reviewService.selectBookReviewDetail(reviewId, username));
     }
 
     @GetMapping("/search")
@@ -102,8 +114,15 @@ public class ReviewConroller {
     public BaseResponse<ReviewListDto> searchReviews(
             @RequestParam @Valid SearchType type,
             @RequestParam String searchParam,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PageableDefault(page = 0, size = 5, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(reviewService.searchReviews(type, searchParam, pageable));
+
+        String username = null;
+        if(userDetails != null) {
+            username = userDetails.getUsername();
+        }
+
+        return new BaseResponse<>(reviewService.searchReviews(type, searchParam, pageable, username));
     }
 
 
@@ -121,7 +140,7 @@ public class ReviewConroller {
         return new BaseResponse<>();
     }
 
-    @PutMapping("/edit/{type}/{reviewId}")
+    @PutMapping("/{type}/{reviewId}/edit")
     @Operation(summary = "리뷰 수정", description = "상세 조건 Notion 참고")
     public BaseResponse<Void> UpdateReview(
             @RequestBody @Valid CreateReviewDto editReviewDto,
@@ -130,6 +149,16 @@ public class ReviewConroller {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         reviewService.UpdateReview(editReviewDto, reviewId, type, userDetails.getUsername());
+        return new BaseResponse<>();
+    }
+
+    @PostMapping("/like")
+    @Operation(summary = "리뷰 좋아요", description = "상세 조건 Notion 참고")
+    public BaseResponse<Void> UpdateReviewLike(
+            @RequestBody ReviewLikeDto reviewLikeDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        reviewService.UpdateReviewLike(reviewLikeDto, userDetails.getUsername());
         return new BaseResponse<>();
     }
 
