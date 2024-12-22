@@ -2,6 +2,7 @@ package com.gathering.book.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.book.model.entity.Book;
+import com.gathering.user.model.entitiy.UserAttendanceBook;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,6 +61,13 @@ public class BookResponse {
                 .publisherDate(book.getPublishDate())
                 .star(book.getStar())
                 .image(book.getImage())
+                .build();
+    }
+
+    public static BookResponse fromEntity(UserAttendanceBook userAttendanceBook) {
+        return BookResponse.builder()
+                .id(userAttendanceBook.getBook().getId())
+                .image(userAttendanceBook.getBook().getImage())
                 .build();
     }
 }

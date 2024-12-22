@@ -10,7 +10,6 @@ import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.review.model.dto.BookReviewDto;
-import com.gathering.review.model.dto.ReviewListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,30 +46,15 @@ public class GatheringSearchActions {
         return GatheringSearchResponse.fromEntity(gatheringResponses, result.getTotalElements());
     }
 
-    public GatheringSearchResponse convertToResultPages(Page<Object[]> gatherings, Page<BookReviewDto> reviews) {
+    public GatheringSearchResponse convertToIntegratedResultPages(Page<Object[]> gatherings, Page<BookReviewDto> reviews) {
         /**
          * 검색한 모임 리스트 DTO 변환
          */
-        List<GatheringResultPageResponse> gatheringResultPageResponses = Arrays.stream(gatherings.getContent().toArray(new Object[0][]))
-                .map(row -> new GatheringResultPageResponse(
-                        (Long) row[0],  // GATHERING_ID
-                        (String) row[1], // NAME
-                        (Integer) row[2], // CURRENT_CAPACITY
-                        (Integer) row[3], // MAX_CAPACITY
-                        GatheringWeek.valueOf((String) row[4]), // GATHERING_WEEK
-                        ReadingTimeGoal.valueOf((String) row[5]), // READING_TIME_GOAL
-                        (String) row[6], // IMAGE_URL
-                        (Long) row[7], // BOOK_ID
-                        (String) row[8],  // BOOK TITLE
-                        (String) row[9]  // BOOK IMAGE
-                ))
+        List<GatheringResultPageResponse> gatheringResultPageResponses = gatherings.getContent().stream()
+                .map(this::convertRowToGatheringResultPageResponse)
                 .collect(Collectors.toList());
 
-        /**
-         * TODO - 리뷰 리스트 정보 커스텀 필요
-         */
-
-        return GatheringSearchResponse.resultPages(gatheringResultPageResponses,
+        return GatheringSearchResponse.integratedResultPages(gatheringResultPageResponses,
                 gatherings.getTotalElements(),
                 reviews.getContent(),
                 reviews.getTotalElements());
@@ -92,5 +76,35 @@ public class GatheringSearchActions {
         return Arrays.stream(gatherings.getContent().toArray(new Object[0][]))
                 .map(row -> (Long) row[0])
                 .collect(Collectors.toList());
+    }
+
+    public GatheringSearchResponse convertToGatheringsResultPage(Page<Object[]> gatherings, long totalElements) {
+        /**
+         * 검색한 모임 리스트 DTO 변환
+         */
+        List<GatheringResultPageResponse> gatheringResultPageResponses = gatherings.getContent().stream()
+                .map(this::convertRowToGatheringResultPageResponse)
+                .collect(Collectors.toList());
+
+        return GatheringSearchResponse.gatheringsResultPage(gatheringResultPageResponses, totalElements);
+    }
+
+    private GatheringResultPageResponse convertRowToGatheringResultPageResponse(Object[] row) {
+        return new GatheringResultPageResponse(
+                (Long) row[0],  // GATHERING_ID
+                (String) row[1], // NAME
+                (Integer) row[2], // CURRENT_CAPACITY
+                (Integer) row[3], // MAX_CAPACITY
+                GatheringWeek.valueOf((String) row[4]), // GATHERING_WEEK
+                ReadingTimeGoal.valueOf((String) row[5]), // READING_TIME_GOAL
+                (String) row[6], // IMAGE_URL
+                (Long) row[7], // BOOK_ID
+                (String) row[8],  // BOOK TITLE
+                (String) row[9]   // BOOK IMAGE
+        );
+    }
+
+    public GatheringSearchResponse convertToReviewsResultPage(Page<BookReviewDto> reviews) {
+        return GatheringSearchResponse.reviewsResultPage(reviews.getContent(), reviews.getTotalElements());
     }
 }

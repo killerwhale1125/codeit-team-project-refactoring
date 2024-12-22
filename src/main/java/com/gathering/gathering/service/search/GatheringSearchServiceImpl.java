@@ -22,8 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import static com.gathering.common.base.response.BaseResponseStatus.INVALID_SEARCH_WORD;
@@ -93,8 +91,11 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         return gatheringSearchJpaRepository.getGatheringReviewList(gatheringId, sort, pageable);
     }
 
+    /**
+     * 검색 시 첫 검색은 integrated로 호출
+     */
     @Override
-    public GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable, String username) {
+    public GatheringSearchResponse getIntegratedResultBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable, String username) {
         // 2글자 미만일 경우 X
         if (!StringUtil.isValidLength(searchWord, 2)) {
             throw new BaseException(INVALID_SEARCH_WORD);
@@ -109,15 +110,42 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         Page<Object[]> gatherings = gatheringSearchActions
                 .findGatheringsBySearchWordAndType(formatSearchWord, searchType, pageable);
 
-        // 조회한 모임 리스트의 모임 ID 리스트  -> 미사용으로 주석처리
-        //List<Long> gatheringIds = gatheringSearchActions.convertToGatheringIds(gatherings);
-
         /**
          * 리뷰 목록 및 카운트 조회
          */
         ReviewListDto tempReviews = reviewRepository.searchReviews(searchType, searchWord, pageable, username);
         Page<BookReviewDto> reviews = new PageImpl<>(tempReviews.getBookReviews(), pageable, tempReviews.getTotal());
 
-        return gatheringSearchActions.convertToResultPages(gatherings, reviews);
+        return gatheringSearchActions.convertToIntegratedResultPages(gatherings, reviews);
+    }
+
+    /**
+     * integrated 이후 따로 검색
+     */
+    @Override
+    public GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable) {
+        // 2글자 미만일 경우 X
+        if (!StringUtil.isValidLength(searchWord, 2)) {
+            throw new BaseException(INVALID_SEARCH_WORD);
+        }
+
+        // Full Text 인덱스에 맞는 검색 조건으로 변환
+        String formatSearchWord = FullTextIndexParser.formatForFullTextQuery(searchWord);
+
+        Page<Object[]> gatherings = gatheringSearchActions
+                .findGatheringsBySearchWordAndType(formatSearchWord, searchType, pageable);
+
+        return gatheringSearchActions.convertToGatheringsResultPage(gatherings, gatherings.getTotalElements());
+    }
+
+    @Override
+    public GatheringSearchResponse getReviewsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable, String username) {
+        /**
+         * 리뷰 목록 및 카운트 조회
+         */
+        ReviewListDto tempReviews = reviewRepository.searchReviews(searchType, searchWord, pageable, username);
+        Page<BookReviewDto> reviews = new PageImpl<>(tempReviews.getBookReviews(), pageable, tempReviews.getTotal());
+
+        return gatheringSearchActions.convertToReviewsResultPage(reviews);
     }
 }

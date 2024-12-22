@@ -6,11 +6,14 @@ import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
+import com.gathering.user.model.entitiy.UserAttendance;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -109,6 +112,11 @@ public class UserRepositoryImpl implements UserRepository{
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<UserAttendance> getUserAttendancesByUserIdAndDate(Long userId, LocalDate startDate, LocalDate endDate) {
+        return userAttendanceJpaRepository.getUserAttendancesByUserIdAndDate(userId, startDate, endDate);
     }
 
 }

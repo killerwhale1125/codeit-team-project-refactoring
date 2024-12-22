@@ -2,7 +2,6 @@ package com.gathering.gathering.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.review.model.dto.BookReviewDto;
-import com.gathering.review.model.dto.ReviewListDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -42,10 +41,24 @@ public class GatheringSearchResponse {
                 .build();
     }
 
-    public static GatheringSearchResponse resultPages(List<GatheringResultPageResponse> gatherings, long gatheringCount, List<BookReviewDto> reviews, long reviewCount) {
+    public static GatheringSearchResponse integratedResultPages(List<GatheringResultPageResponse> gatherings, long gatheringCount, List<BookReviewDto> reviews, long reviewCount) {
         return GatheringSearchResponse.builder()
                 .gatheringResultPageResponses(gatherings)
                 .totalCount(gatheringCount)
+                .reviewResultPageResponses(reviews)
+                .reviewTotalCount(reviewCount)
+                .build();
+    }
+
+    public static GatheringSearchResponse gatheringsResultPage(List<GatheringResultPageResponse> gatherings, long totalElements) {
+        return GatheringSearchResponse.builder()
+                .gatheringResultPageResponses(gatherings)
+                .totalCount(totalElements)
+                .build();
+    }
+
+    public static GatheringSearchResponse reviewsResultPage(List<BookReviewDto> reviews, long reviewCount) {
+        return GatheringSearchResponse.builder()
                 .reviewResultPageResponses(reviews)
                 .reviewTotalCount(reviewCount)
                 .build();

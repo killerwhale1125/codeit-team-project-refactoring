@@ -28,4 +28,5 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     Set<Long> findWishGatheringIdsByUserName(@Param("userName") String username);
 
     boolean existsByUserName(String username);
+
 }

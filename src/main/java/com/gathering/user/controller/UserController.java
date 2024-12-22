@@ -7,6 +7,7 @@ import com.gathering.security.auth.PrincipalDetails;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.*;
+import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,9 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.YearMonth;
+import java.util.List;
 
 import static com.gathering.common.base.response.BaseResponseStatus.*;
 import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
@@ -203,4 +207,11 @@ public class UserController {
 
     }
 
+    /**
+     * 달력의 날짜 별 내가 읽었던 책 기록 ( 오늘의 독서 체크 기능 구현 후 테스트 예정 )
+     */
+    public BaseResponse<List<UserAttendanceBookResponse>> getBooksByCalendarDate(@AuthenticationPrincipal UserDetails userDetails,
+                                                                                 @RequestParam YearMonth yearMonth) {
+        return new BaseResponse<>(userService.getBooksByCalendarDate(userDetails.getUsername(), yearMonth));
+    }
 }

@@ -10,7 +10,6 @@ import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.util.GatheringActions;
-import com.gathering.image.service.gathering.GatheringImageService;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
@@ -28,7 +27,6 @@ public class GatheringServiceImpl implements GatheringService {
 
     private final GatheringRepository gatheringRepository;
     private final UserRepository userRepository;
-    private final GatheringImageService gatheringImageService;
     private final GatheringActions gatheringActions;
     private final ChallengeRedisService challengeRedisService;
 

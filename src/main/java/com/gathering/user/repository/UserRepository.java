@@ -4,7 +4,10 @@ import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.User;
+import com.gathering.user.model.entitiy.UserAttendance;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 public interface UserRepository {
@@ -33,4 +36,7 @@ public interface UserRepository {
     Set<Long> findWishGatheringIdsByUserName(String username);
 
     boolean existsByUserName(String username);
+
+    List<UserAttendance> getUserAttendancesByUserIdAndDate(Long id, LocalDate startDate, LocalDate endDate);
+
 }

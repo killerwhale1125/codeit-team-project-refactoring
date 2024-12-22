@@ -93,8 +93,11 @@ public class GatheringSearchController {
         return new BaseResponse<>(gatheringSearchService.review(gatheringId, sort, pageable));
     }
 
-    @GetMapping("/integrated-search")
-    @Operation(summary = "검색 기능 구현 중 (미완성)", description = "상세 조건 Notion 참고")
+    /**
+     * 처음 검색은 integrated 호출
+     */
+    @GetMapping("/search-integrated")
+    @Operation(summary = "검색 기능 (검색어로 처음 검색했을 때)", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> search(@RequestParam String searchWord,
                                                         @RequestParam SearchType searchType,
                                                         @AuthenticationPrincipal UserDetails userDetails,
@@ -105,7 +108,34 @@ public class GatheringSearchController {
             username = userDetails.getUsername();
         }
 
-        return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, pageable, username));
+        return new BaseResponse<>(gatheringSearchService.getIntegratedResultBySearchWordAndType(searchWord, searchType, pageable, username));
     }
 
+    /**
+     * 검색된 이후 부터는 각각 호출
+     */
+    @GetMapping("/search-gatherings")
+    @Operation(summary = "검색어로 검색 후 모임탭에서 페이징 조회", description = "상세 조건 Notion 참고")
+    public BaseResponse<GatheringSearchResponse> gatheringSearch(@RequestParam String searchWord,
+                                                                 @RequestParam SearchType searchType,
+                                                                 @PageableDefault(page = 0, size = 5) Pageable pageable) {
+        return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, pageable));
+    }
+
+    /**
+     * 검색된 이후 부터는 각각 호출
+     */
+    @GetMapping("/search-reviews")
+    @Operation(summary = "검색어로 검색 후 리뷰탭에서 페이징 조회", description = "상세 조건 Notion 참고")
+    public BaseResponse<GatheringSearchResponse> reviewSearch(@RequestParam String searchWord,
+                                                                 @RequestParam SearchType searchType,
+                                                                 @AuthenticationPrincipal UserDetails userDetails,
+                                                                 @PageableDefault(page = 0, size = 5) Pageable pageable) {
+        String username = null;
+        if(userDetails != null) {
+            username = userDetails.getUsername();
+        }
+
+        return new BaseResponse<>(gatheringSearchService.getReviewsBySearchWordAndType(searchWord, searchType, pageable, username));
+    }
 }

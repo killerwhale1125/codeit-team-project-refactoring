@@ -1,14 +1,16 @@
 package com.gathering.user.service;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.common.model.constant.Code;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
+import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
+import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
+import com.gathering.util.date.DateCalculateHolder;
 import com.gathering.util.file.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.gathering.common.base.response.BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service("userService")
@@ -25,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileUtil fileUtil;
+    private final DateCalculateHolder dateCalculateHolder;
 
     @Value("${path.user.profile}")
     private String serverPath;
@@ -88,6 +94,20 @@ public class UserServiceImpl implements UserService {
         UserDto result = userRepository.editUser(editUserRequestDto, fileName, userDto.getUsersId());
 
         return result;
+    }
+
+    @Override
+    public List<UserAttendanceBookResponse> getBooksByCalendarDate(String username, YearMonth yearMonth) {
+        User user = userRepository.findByUsername(username);
+        
+        // yyyy-mm 으로 받은 것 중 시작일과 종료일 계산
+        LocalDate startDate = dateCalculateHolder.getStartOfMonth(yearMonth);
+        LocalDate endDate = dateCalculateHolder.getEndOfMonth(yearMonth);
+        
+        // 시작일 종료일 기준으로 출석 엔티티 조회
+        return userRepository.getUserAttendancesByUserIdAndDate(user.getId(), startDate, endDate).stream()
+                .map(UserAttendanceBookResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
 }

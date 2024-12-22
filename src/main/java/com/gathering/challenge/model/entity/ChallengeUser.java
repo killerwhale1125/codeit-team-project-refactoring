@@ -7,7 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -27,7 +27,7 @@ public class ChallengeUser extends BaseTimeEntity {
     @JoinColumn(name = "users_id")
     private User user;
 
-    private LocalDateTime attendanceDate;   // 출석 날짜
+    private LocalDate attendanceDate;   // 출석 날짜
     private double attendanceRate;  // 출석률
     private double readingRate; // 독서 달성률
 

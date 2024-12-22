@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 
 import static com.gathering.common.base.response.BaseResponseStatus.INVALID_CHALLENGE_START_BETWEEN_TIME;
@@ -16,16 +17,6 @@ import static com.gathering.common.base.response.BaseResponseStatus.INVALID_GOAL
 @Component
 public class DateCalculateUtil implements DateCalculateHolder {
 
-//    @Override
-//    public long calculateGoalDays(LocalDate startDate, LocalDate endDate) {
-//        if (startDate.isAfter(endDate) || startDate.isEqual(endDate)) {
-//            throw new BaseException(INVALID_GOAL_PERIOD);
-//        }
-//
-//        // LocalDate 객체 간 차이를 ChronoUnit.DAYS.between()을 사용하여 계산
-//        return ChronoUnit.DAYS.between(startDate, endDate);
-//    }
-
     @Override
     public long calculateSecondsUntilStart(LocalDate startDate, LocalDateTime now) {
         long between = ChronoUnit.SECONDS.between(now, startDate.atStartOfDay());
@@ -33,5 +24,15 @@ public class DateCalculateUtil implements DateCalculateHolder {
             throw new BaseException(INVALID_CHALLENGE_START_BETWEEN_TIME);
         }
         return between;
+    }
+
+    @Override
+    public LocalDate getStartOfMonth(YearMonth yearMonth) {
+        return yearMonth.atDay(1);
+    }
+
+    @Override
+    public LocalDate getEndOfMonth(YearMonth yearMonth) {
+        return yearMonth.atEndOfMonth();
     }
 }
