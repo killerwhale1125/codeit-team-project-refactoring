@@ -95,8 +95,8 @@ public class GatheringSearchActions {
                 (String) row[1], // NAME
                 (Integer) row[2], // CURRENT_CAPACITY
                 (Integer) row[3], // MAX_CAPACITY
-                GatheringWeek.valueOf((String) row[4]), // GATHERING_WEEK
-                ReadingTimeGoal.valueOf((String) row[5]), // READING_TIME_GOAL
+                GatheringWeek.valueOf((String) row[4]).getWeek(), // GATHERING_WEEK
+                ReadingTimeGoal.valueOf((String) row[5]).getMinutes(), // READING_TIME_GOAL
                 (String) row[6], // IMAGE_URL
                 (Long) row[7], // BOOK_ID
                 (String) row[8],  // BOOK TITLE
