@@ -5,7 +5,7 @@ public enum FileType {
     PNG("png"),
     JPEG("jpeg"),
     JPG("jpg"),
-    GIF("git");
+    GIF("gif");
 
     private final String extension;
 

@@ -89,7 +89,6 @@ public class ReviewRepositoryImpl implements ReviewRepository{
             Book book = bookJpaRepository.findById(createReviewDto.getBookId())
                     .orElseThrow(() -> new BaseException(BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND));
 
-
             BookReview review = BookReview.createEntity(book, user, createReviewDto);
 
             review = bookReviewJpaRepository.save(review);
@@ -644,6 +643,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .from(reviewComment)
                 .where(reviewComment.review.id.eq(reviewId));
     }
+
+    // 사용자 좋아요 여부 서브 쿼리
     public BooleanExpression likeUserCk(User user) {
         return JPAExpressions
                 .select(reviewLikes.count())

@@ -3,6 +3,8 @@ package com.gathering.user.service;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.common.model.constant.Code;
+import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.service.AwsS3Service;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
@@ -12,7 +14,9 @@ import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.date.DateCalculateHolder;
 import com.gathering.util.file.FileUtil;
+import com.gathering.util.image.FileUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
@@ -31,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final FileUtil fileUtil;
     private final DateCalculateHolder dateCalculateHolder;
+    private final AwsS3Service awsS3Service;
 
     @Value("${path.user.profile}")
     private String serverPath;
@@ -74,24 +80,29 @@ public class UserServiceImpl implements UserService {
     public UserDto editUser(EditUserRequestDto editUserRequestDto, MultipartFile file, String userName) {
 
         String fileName = "";
+        String filepath = "";
         UserDto userDto = userRepository.selectUser(userName);
         if( file != null) {
             String profile = userDto.getProfile();
+            try {
+                // 기존 프로필 파일 삭제
+                if(profile != null && !profile.isEmpty()) {
+                        awsS3Service.delete(profile);
+                    }
+                String filename = FileUtils.getRandomFilename();
+                filepath = awsS3Service.upload(file, filename, EntityType.USER);
 
-            // 기존 프로필 파일 삭제
-            if(profile != null && !profile.isEmpty()) {
-                fileUtil.DeleteFile(profile);
+            } catch (Exception e) {
+                // 로깅 및 예외 처리
+                log.error("Failed to delete image from S3: " + profile, e);
             }
-
-            fileName = fileUtil.FileUpload(serverPath, file, Code.PROFILE.getCode(), userDto.getUsersId());
-
         }
         // 비밀번호 암호화
         if(editUserRequestDto.getPassword() != null) {
             editUserRequestDto.setPassword(passwordEncoder.encode(editUserRequestDto.getPassword()));
         }
 
-        UserDto result = userRepository.editUser(editUserRequestDto, fileName, userDto.getUsersId());
+        UserDto result = userRepository.editUser(editUserRequestDto, filepath, userDto.getUsersId());
 
         return result;
     }
