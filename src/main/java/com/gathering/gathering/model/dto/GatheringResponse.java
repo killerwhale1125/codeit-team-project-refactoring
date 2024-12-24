@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
+import com.gathering.user.model.entitiy.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,6 +43,8 @@ public class GatheringResponse {
     private String introduce;
     private String thumbnail;
     private int gatheringWeek;
+    private int bookTotalPage;
+    private String userProfile;
 
     public static GatheringResponse fromEntity(Gathering gathering) {
         return GatheringResponse.builder()
@@ -89,20 +92,23 @@ public class GatheringResponse {
     /**
      * 모임 소개
      */
-    public static GatheringResponse introduceFromEntity(Gathering gathering) {
+    public static GatheringResponse introduceFromEntity(Gathering gathering, User user) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .owner(gathering.getOwner())
+                .userProfile(user.getProfile())
                 .name(gathering.getName())
                 .content(gathering.getContent())
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
+                .bookTotalPage(gathering.getBook().getTotalPage())
                 .publisher(gathering.getBook().getPublisher())
                 .publishDate(gathering.getBook().getPublishDate())
                 .star(gathering.getBook().getStar())
                 .author(gathering.getBook().getAuthor())
                 .introduce(gathering.getBook().getIntroduce())
+                .gatheringWeek(gathering.getGatheringWeek().getWeek())
                 .build();
     }
 

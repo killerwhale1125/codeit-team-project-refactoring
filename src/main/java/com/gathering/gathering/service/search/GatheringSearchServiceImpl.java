@@ -83,7 +83,10 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     public GatheringResponse introduce(Long gatheringId) {
         Gathering gathering = gatheringSearchJpaRepository.getGatheringWithChallengeAndBook(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
-        return GatheringResponse.introduceFromEntity(gathering);
+
+        User user = userRepository.findByUsername(gathering.getOwner());
+
+        return GatheringResponse.introduceFromEntity(gathering, user);
     }
 
     @Override
