@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -99,7 +100,7 @@ public class ReviewListDto {
         return ReviewListDto.builder()
                 .gatheringReviews(gatheringReviews)
                 .total(result.get(0, Long.class))
-                .scoreAvg(result.get(1, Double.class))
+                .scoreAvg(Optional.ofNullable(result.get(1, Double.class)).orElse(0.0))
                 .good((int) ((double) result.get(2, Long.class) / result.get(0, Long.class) * 100))
                 .soso((int) ((double) result.get(3, Long.class) / result.get(0, Long.class) * 100))
                 .bad((int) ((double) result.get(4, Long.class) / result.get(0, Long.class) * 100))
