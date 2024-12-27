@@ -604,7 +604,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         ReviewComment reviewComment = reviewCommentJpaRepository.findByIdOrThrow(commentId);
 
         if(reviewComment.getUser().getId() != user.getId()) {
-            throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+            throw new BaseException(BaseResponseStatus.COMMENT_OWNER_MISMATCH);
         }
 
         return reviewCommentJpaRepository.deleteComment(reviewComment.getId(), StatusType.N);
@@ -619,7 +619,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         ReviewComment reviewComment = reviewCommentJpaRepository.findByIdOrThrow(commentId);
 
         if(reviewComment.getUser().getId() != user.getId()) {
-            throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+            throw new BaseException(BaseResponseStatus.COMMENT_OWNER_MISMATCH);
         }
 
 

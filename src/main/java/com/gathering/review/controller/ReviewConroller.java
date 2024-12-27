@@ -189,7 +189,7 @@ public class ReviewConroller {
         int result = reviewService.UpdateComment(commentId,updateReviewCommentDto, userDetails.getUsername());
 
         if(result != 1) {
-            throw new BaseException(BaseResponseStatus.REVIEW_DELETED_FAILED);
+            throw new BaseException(BaseResponseStatus.COMMENT_UPDATE_FAILED);
         }
 
         return new BaseResponse<>();
