@@ -18,7 +18,7 @@ public interface ReviewCommentJpaRepository extends JpaRepository<ReviewComment,
     long countByReviewId(long id);
 
     default ReviewComment findByIdOrThrow(long commentId) {
-        return findById(commentId).orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_REVIEW));
+        return findById(commentId).orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_COMMENT));
     };
     @Modifying
     @Query("UPDATE ReviewComment b SET b.status = :statusType WHERE b.id = :id")

@@ -622,7 +622,6 @@ public class ReviewRepositoryImpl implements ReviewRepository{
             throw new BaseException(BaseResponseStatus.COMMENT_OWNER_MISMATCH);
         }
 
-
         return reviewCommentJpaRepository.UpdateComment(reviewComment.getId(), updateReviewCommentDto.getContent(), LocalDateTime.now());
     }
 
