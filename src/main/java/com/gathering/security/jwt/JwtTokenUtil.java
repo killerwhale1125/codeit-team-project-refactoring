@@ -18,6 +18,14 @@ public class JwtTokenUtil implements Serializable {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 256비트 키 생성
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1시간
 
+    public static String createRefreshToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME * 24 * 7)) // 7일
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     // 토큰 발급
     public static String generateToken(String username) {

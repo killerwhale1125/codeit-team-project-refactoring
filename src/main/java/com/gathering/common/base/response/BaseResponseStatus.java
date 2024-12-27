@@ -18,6 +18,8 @@ public enum BaseResponseStatus {
     TOKEN_PARSE_ERROR(HttpStatus.BAD_REQUEST, "TOKEN_PARSE_ERROR", "Unexpected JWT parsing error"),
     SIGN_IN_FAIL(HttpStatus.UNAUTHORIZED, "SIGN_IN_FAIL", "Login information mismatch"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "You do not have permission to access this resource"),
+    SC_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SC_UNAUTHORIZED", "Unauthorized: Missing or invalid JWT"),
+    REFRESH_TOKEN_ISEMPTY(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_ISEMPTY", "Refresh token is Empty"),
 
     // User
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "DUPLICATE_EMAIL", "Duplicate email"),
@@ -65,10 +67,6 @@ public enum BaseResponseStatus {
     UNSUPPORTED_FILETYPE(HttpStatus.BAD_REQUEST, "UNSUPPORTED_FILETYPE", "Unsupported File Type!"),
     NON_EXISTED_IMAGE(HttpStatus.NOT_FOUND, "IMAGE_NOT_FOUND", "This image does not exist"),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD_FAILED", "File upload failed"),
-
-    // Oauth
-    SC_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SC_UNAUTHORIZED", "Unauthorized: Missing or invalid JWT"),
-
     // Redis
     REDIS_OPERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "REDIS_OPERATION_FAILED", "Failed to save key to Redis");
 

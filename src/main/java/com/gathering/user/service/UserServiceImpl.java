@@ -5,12 +5,14 @@ import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.common.model.constant.Code;
 import com.gathering.image.model.entity.EntityType;
 import com.gathering.image.service.AwsS3Service;
+import com.gathering.security.jwt.JwtTokenUtil;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
 import com.gathering.user.model.entitiy.User;
+import com.gathering.user.redis.UserRedisKey;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.date.DateCalculateHolder;
 import com.gathering.util.file.FileUtil;
@@ -18,6 +20,7 @@ import com.gathering.util.image.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +28,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.gathering.security.jwt.JwtTokenUtil.createRefreshToken;
+import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -37,12 +44,7 @@ public class UserServiceImpl implements UserService {
     private final FileUtil fileUtil;
     private final DateCalculateHolder dateCalculateHolder;
     private final AwsS3Service awsS3Service;
-
-    @Value("${path.user.profile}")
-    private String serverPath;
-
-
-
+    private final RedisTemplate<String, String> redisTemplate;
     @Override
     public UserDto sginIn(SignInRequestDto requestDto) {
 
@@ -53,6 +55,10 @@ public class UserServiceImpl implements UserService {
         } else if(passwordEncoder.matches(requestDto.password(), userDto.getPassword())) {
             userRepository.insertAttendance(userDto.getUsersId());
             userDto.setPassword(null);
+
+            String accessToken = generateToken(userDto.getUserName());
+            userDto.setToken(accessToken);
+
             return userDto;
         } else {
             throw new BaseException(BaseResponseStatus.SIGN_IN_FAIL);
@@ -119,6 +125,54 @@ public class UserServiceImpl implements UserService {
         return userRepository.getUserAttendancesByUserIdAndDate(user.getId(), startDate, endDate).stream()
                 .map(UserAttendanceBookResponse::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void setRefreshTokenRedis(String redisKey, String token) {
+
+        if(Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+            redisTemplate.delete(redisKey);
+        }
+
+        // redis에 7일동안 리프레시 토큰 저장
+        redisTemplate.opsForValue().set(redisKey, token,7, TimeUnit.DAYS);
+
+    }
+
+    @Override
+    public void deleteRefreshTokenRedis(String redisKey) {
+        redisTemplate.delete(redisKey);
+    }
+
+    @Override
+    public UserDto reissueToken(String redisKey) {
+
+        String oldRefreshToken = redisTemplate.opsForValue().get(redisKey);
+
+        if(oldRefreshToken != null) {
+            try{
+                // 서버 재기동 이후 리프레시 토큰을 가져올 경우 인증 방식이 달라지기때문에 에러 발생
+                // 레디스의 리프레시 토큰 제거
+                String username = JwtTokenUtil.extractUsername(oldRefreshToken);
+
+                UserDto userDto = userRepository.selectUser(username);
+
+                userDto.setPassword(null);
+                String accessToken = generateToken(userDto.getUserName());
+                userDto.setToken(accessToken);
+
+                // 기존 refresh token 삭제 후 새로운 refresh토큰으로 재설정
+                redisTemplate.delete(redisKey);
+                setRefreshTokenRedis(redisKey, JwtTokenUtil.createRefreshToken(username));
+
+                return userDto;
+            } catch (Exception e) {
+                redisTemplate.delete(redisKey);
+                throw new BaseException(BaseResponseStatus.INVALID_TOKEN);
+            }
+        } else {
+            throw new BaseException(BaseResponseStatus.REFRESH_TOKEN_ISEMPTY);
+        }
     }
 
 }

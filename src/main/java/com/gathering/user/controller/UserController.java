@@ -3,12 +3,11 @@ package com.gathering.user.controller;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.security.auth.PrincipalDetails;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.*;
 import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
-import com.gathering.user.model.entitiy.User;
+import com.gathering.user.redis.UserRedisKey;
 import com.gathering.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,10 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -33,6 +29,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 import static com.gathering.common.base.response.BaseResponseStatus.*;
+import static com.gathering.security.jwt.JwtTokenUtil.createRefreshToken;
 import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
 import static com.gathering.user.util.Validator.isValidEmail;
 
@@ -60,23 +57,16 @@ public class UserController {
     @RequestMapping(value = "/signIn", method = RequestMethod.POST)
     @Operation(summary = "로그인", description = "사용자 로그인")
     public BaseResponse<UserDto> signIn(
-            @Valid @RequestBody SignInRequestDto requestDto) {
+            @Valid @RequestBody SignInRequestDto requestDto,
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
         UserDto userDto = userService.sginIn(requestDto);
         // 토큰 발급
         if(userDto != null) {
-            String accessToken = generateToken(userDto.getUserName());
-            userDto.setToken(accessToken);
 
-            // UserDetails 생성
-            UserDetails userDetails = new PrincipalDetails(User.fromDto(userDto));
-
-            // Authentication 생성
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-            // SecurityContext에 설정
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // 리프레시 토큰 redis 저장
+            userService.setRefreshTokenRedis(UserRedisKey.getUserRefreshTokenKey(request, response), createRefreshToken(userDto.getUserName()));
 
             return new BaseResponse<>(userDto);
         }
@@ -128,7 +118,6 @@ public class UserController {
     @RequestMapping(value = "/signOut", method = RequestMethod.POST)
     @Operation(summary = "사용자 로그아웃", description = "사용자 로그아웃 ")
     public BaseResponse<Void> signout(
-            @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request, HttpServletResponse response
     ) {
 
@@ -138,6 +127,10 @@ public class UserController {
 
         // 필요 시 세션 무효화
         request.getSession().invalidate();
+
+        // 리프레시 토큰 삭제
+        userService.deleteRefreshTokenRedis(UserRedisKey.getUserRefreshTokenKey(request, response));
+
         return new BaseResponse<>();
     }
 
@@ -204,8 +197,18 @@ public class UserController {
             return new BaseResponse<>(BaseResponseStatus.PASSWORD_MISMATCHED);
         }
 
-
     }
+    @RequestMapping(value = "/refresh", method = RequestMethod.POST)
+    @Operation(summary = "토큰 재발급", description = "Notion 참고")
+    public BaseResponse<UserDto> reissueToken(
+            HttpServletRequest request, HttpServletResponse response
+    ) {
+
+        UserDto userDto = userService.reissueToken(UserRedisKey.getUserRefreshTokenKey(request, response));
+
+        return new BaseResponse<>(userDto);
+    }
+
 
     /**
      * 달력의 날짜 별 내가 읽었던 책 기록 ( 오늘의 독서 체크 기능 구현 후 테스트 예정 )

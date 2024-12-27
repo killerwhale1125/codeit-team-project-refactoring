@@ -294,7 +294,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                         ,bookReview.user.id
                         ,bookReview.user.profile
                         ,bookReview.user.userName
-                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime))
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d %H:%i:%s')", bookReview.createdTime))
                 )
                 .from(bookReview)
                 .leftJoin(bookReview.user, user)
@@ -433,7 +433,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                         ,reviewComment.orders
                         ,user.profile
                         ,user.userName
-                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", reviewComment.createdTime)
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d %H:%i:%s')", reviewComment.createdTime)
                         ))
                 .from(reviewComment)
                 .leftJoin(user).on(user.id.eq(reviewComment.user.id))

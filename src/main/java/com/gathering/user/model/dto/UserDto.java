@@ -21,6 +21,8 @@ public class UserDto {
     private String token;
     private String password;
 
+    private String refreshToken;
+
     // Entity -> DTO 변환 메서드
     public static UserDto fromEntity(User user) {
         return UserDto.builder()

@@ -20,4 +20,13 @@ public interface UserService {
     UserDto editUser(EditUserRequestDto editUserRequestDto, MultipartFile file, String userName);
 
     List<UserAttendanceBookResponse> getBooksByCalendarDate(String username, YearMonth yearMonth);
+
+    // 리프레시 토큰 redis에 저장
+    void setRefreshTokenRedis(String key, String token);
+
+    // 로그아웃 시 리프레시 토큰 삭제
+    void deleteRefreshTokenRedis(String userRefreshTokenKey);
+
+    // 리프레시 토큰을 활용한 accesstoken 재발급
+    UserDto reissueToken(String userRefreshTokenKey);
 }
