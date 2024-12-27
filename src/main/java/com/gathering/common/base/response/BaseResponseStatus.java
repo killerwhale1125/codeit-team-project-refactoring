@@ -53,9 +53,13 @@ public enum BaseResponseStatus {
     INVALID_SEARCH_WORD(HttpStatus.BAD_REQUEST, "INVALID_SEARCH_WORD", "The search keyword must be at least 3 characters long"),
     // review
     NON_EXISTED_REVIEW(HttpStatus.NOT_FOUND, "NON_EXISTED_REVIEW", "This review does not exist"),
+    NON_EXISTED_COMMENT(HttpStatus.NOT_FOUND, "NON_EXISTED_COMMENT", "This comment does not exist"),
     REVIEW_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "REVIEW_OWNER_MISMATCH", "The review owner does not match the current user."),
+    COMMENT_OWNER_MISMATCH(HttpStatus.BAD_REQUEST, "COMMENT_OWNER_MISMATCH", "The comment owner does not match the current user."),
     REVIEW_DELETED_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "REVIEW_DELETED_FAILED", "The review delete failed."),
+    COMMENT_DELETED_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "COMMENT_DELETED_FAILED", "The comment delete failed."),
     REVIEW_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "REVIEW_UPDATE_FAILED", "The review update failed."),
+    COMMENT_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "COMMENT_UPDATE_FAILED", "The comment update failed."),
 
     // Other
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "UNKNOWN_ERROR", "Unknown error"),

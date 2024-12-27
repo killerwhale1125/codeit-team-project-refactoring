@@ -64,4 +64,10 @@ public class ReviewServiceImpl implements ReviewService{
     public void UpdateReviewLike(ReviewLikeDto reviewLikeDto, String username) {
         reviewRepository.UpdateReviewLike(reviewLikeDto, username);
     }
+
+    @Override
+    public int DeleteComment(long commentId, String username) { return reviewRepository.DeleteComment(commentId, username); }
+
+    @Override
+    public int UpdateComment(long commentId, CreateReviewCommentDto updateReviewCommentDto, String username) {return reviewRepository.UpdateComment(commentId, updateReviewCommentDto, username);}
 }

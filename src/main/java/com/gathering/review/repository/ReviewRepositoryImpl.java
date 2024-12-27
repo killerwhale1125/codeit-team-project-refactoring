@@ -35,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -278,9 +279,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         BooleanBuilder builder = new BooleanBuilder();
         if (!BookReviewTagType.ALL.getType().equals(tag.getType())) {
             builder.and(bookReview.tagCd.like("%" + tag + "%"));
-            builder.and(bookReview.status.eq(StatusType.Y));
         }
-
+        builder.and(bookReview.status.eq(StatusType.Y));
         // Query 생성
         JPAQuery<BookReviewDto> query = jpaQueryFactory
                 .select(Projections.constructor(BookReviewDto.class,
@@ -301,6 +301,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .leftJoin(bookReview.book, book)
                 .leftJoin(bookReview.reviewComments, reviewComment)
                 .where(builder)
+                .distinct()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1);
 
@@ -473,9 +474,11 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                 .leftJoin(bookReview.book, book)
                 .leftJoin(bookReview.reviewComments, reviewComment)
                 .where(builder)
+                .distinct()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
+        // 회원일 경우 좋아요 여부 포함
         if(username != null) {
             User user = userJpaRepository.findByUserNameOrThrow(username);
             query = query.select(Projections.constructor(BookReviewDto.class,
@@ -593,6 +596,36 @@ public class ReviewRepositoryImpl implements ReviewRepository{
 
     }
 
+    @Transactional
+    @Override
+    public int DeleteComment(long commentId, String username) {
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+
+        ReviewComment reviewComment = reviewCommentJpaRepository.findByIdOrThrow(commentId);
+
+        if(reviewComment.getUser().getId() != user.getId()) {
+            throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+        }
+
+        return reviewCommentJpaRepository.deleteComment(reviewComment.getId(), StatusType.N);
+
+    }
+
+    @Override
+    public int UpdateComment(long commentId, CreateReviewCommentDto updateReviewCommentDto, String username) {
+
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+
+        ReviewComment reviewComment = reviewCommentJpaRepository.findByIdOrThrow(commentId);
+
+        if(reviewComment.getUser().getId() != user.getId()) {
+            throw new BaseException(BaseResponseStatus.REVIEW_OWNER_MISMATCH);
+        }
+
+
+        return reviewCommentJpaRepository.UpdateComment(reviewComment.getId(), updateReviewCommentDto.getContent(), LocalDateTime.now());
+    }
+
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록
     private List<Long> findUnreviewedCompletedGatherings(long userId) {
 
@@ -641,7 +674,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         return JPAExpressions
                 .select(reviewComment.count())
                 .from(reviewComment)
-                .where(reviewComment.review.id.eq(reviewId));
+                .where(reviewComment.review.id.eq(reviewId)
+                        .and(reviewComment.status.eq(StatusType.Y)));
     }
 
     // 사용자 좋아요 여부 서브 쿼리

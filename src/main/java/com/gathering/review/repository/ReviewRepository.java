@@ -26,4 +26,8 @@ public interface ReviewRepository {
     void UpdateReview(CreateReviewDto createReviewDto, long reviewId, ReviewType type, String username);
 
     void UpdateReviewLike(ReviewLikeDto reviewLikeDto, String username);
+
+    int DeleteComment(long commentId, String username);
+
+    int UpdateComment(long commentId, CreateReviewCommentDto updateReviewCommentDto, String username);
 }

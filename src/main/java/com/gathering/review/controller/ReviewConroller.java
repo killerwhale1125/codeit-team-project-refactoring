@@ -46,8 +46,9 @@ public class ReviewConroller {
 
     @PostMapping("/comment/create")
     @Operation(summary = "댓글 생성", description = "상세 조건 Notion 참고")
-    public BaseResponse<ReviewCommentDto> createReviewComment(@RequestBody @Valid CreateReviewCommentDto createReviewCommentDto,
-                                                @AuthenticationPrincipal UserDetails userDetails) {
+    public BaseResponse<ReviewCommentDto> createReviewComment(
+            @RequestBody @Valid CreateReviewCommentDto createReviewCommentDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
 
         ReviewCommentDto commentDto = reviewService.createReviewComment(createReviewCommentDto, userDetails.getUsername());
@@ -160,6 +161,37 @@ public class ReviewConroller {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         reviewService.UpdateReviewLike(reviewLikeDto, userDetails.getUsername());
+        return new BaseResponse<>();
+    }
+
+    
+    @DeleteMapping("/{commentId}/comment")
+    @Operation(summary = "댓글 삭제", description = "상세 조건 Notion 참고")
+    public BaseResponse<Void> DeleteComment(
+            @PathVariable long commentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        int result = reviewService.DeleteComment(commentId, userDetails.getUsername());
+
+        if(result != 1) {
+            throw new BaseException(BaseResponseStatus.COMMENT_DELETED_FAILED);
+        }
+
+        return new BaseResponse<>();
+    }
+    @PutMapping("/{commentId}/comment/edit")
+    @Operation(summary = "댓글 수정", description = "상세 조건 Notion 참고")
+    public BaseResponse<Void> UpdateComment(
+            @PathVariable long commentId,
+            @RequestBody @Valid CreateReviewCommentDto updateReviewCommentDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        int result = reviewService.UpdateComment(commentId,updateReviewCommentDto, userDetails.getUsername());
+
+        if(result != 1) {
+            throw new BaseException(BaseResponseStatus.REVIEW_DELETED_FAILED);
+        }
+
         return new BaseResponse<>();
     }
 

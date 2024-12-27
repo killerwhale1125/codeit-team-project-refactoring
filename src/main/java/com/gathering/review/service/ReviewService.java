@@ -1,6 +1,5 @@
 package com.gathering.review.service;
 
-import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.constant.ReviewType;
@@ -37,4 +36,10 @@ public interface ReviewService {
 
     // 리뷰 좋아요
     void UpdateReviewLike(ReviewLikeDto reviewLikeDto, String username);
+
+    // 댓글 삭제
+    int DeleteComment(long commentId, String username);
+
+    // 댓글 수정
+    int UpdateComment(long commentId, CreateReviewCommentDto updateReviewCommentDto, String username);
 }
