@@ -16,7 +16,6 @@ public class CreateReviewCommentDto {
     @NotEmpty
     private String content;
 
-    @NotNull
     private long parent;
 
 }
