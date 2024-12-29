@@ -22,6 +22,7 @@ import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserJpaRepository;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -503,13 +504,21 @@ public class ReviewRepositoryImpl implements ReviewRepository{
 
         // 전체 데이터 개수 조회
         if(!reviews.isEmpty()) {
-            total = jpaQueryFactory
-                    .select(bookReview.count())
+            QBookReview subBookReview = new QBookReview("subBookReview");
+
+            JPQLQuery<Long> subQuery = JPAExpressions
+                    .select(bookReview.id)
                     .from(bookReview)
                     .leftJoin(bookReview.user, user)
                     .leftJoin(bookReview.book, book)
                     .leftJoin(bookReview.reviewComments, reviewComment)
                     .where(builder)
+                    .distinct();
+
+            total = jpaQueryFactory
+                    .select(bookReview.count())
+                    .from(bookReview)
+                    .where(bookReview.id.in(subQuery))  // 서브쿼리를 where 절에서 사용
                     .fetchOne();
         }
         return ReviewListDto.fromBookReviews(reviews, total);
