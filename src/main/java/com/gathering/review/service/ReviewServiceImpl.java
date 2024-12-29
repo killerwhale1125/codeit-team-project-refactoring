@@ -1,5 +1,6 @@
 package com.gathering.review.service;
 
+import com.gathering.book.model.dto.BookResponse;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.constant.ReviewType;
@@ -8,6 +9,8 @@ import com.gathering.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -70,4 +73,7 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     public int UpdateComment(long commentId, CreateReviewCommentDto updateReviewCommentDto, String username) {return reviewRepository.UpdateComment(commentId, updateReviewCommentDto, username);}
+
+    @Override
+    public List<BookResponse> searchUserGatheringBooks(String username) { return reviewRepository.searchUserGatheringBooks(username); }
 }

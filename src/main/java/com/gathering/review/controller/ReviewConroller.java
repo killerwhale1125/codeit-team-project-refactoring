@@ -1,5 +1,6 @@
 package com.gathering.review.controller;
 
+import com.gathering.book.model.dto.BookResponse;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
@@ -17,6 +18,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/review")
@@ -193,6 +196,14 @@ public class ReviewConroller {
         }
 
         return new BaseResponse<>();
+    }
+
+    @GetMapping("/user/gathering")
+    @Operation(summary = "내가 참여한 모임의 책 목록", description = "Notion 참고")
+    public BaseResponse<List<BookResponse>> searchUserGatheringBooks(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return new BaseResponse<>(reviewService.searchUserGatheringBooks(userDetails.getUsername()));
     }
 
 }

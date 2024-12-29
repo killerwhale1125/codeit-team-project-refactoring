@@ -1,10 +1,14 @@
 package com.gathering.review.service;
 
+import com.gathering.book.model.dto.BookResponse;
+import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.dto.*;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface ReviewService {
     
@@ -42,4 +46,7 @@ public interface ReviewService {
 
     // 댓글 수정
     int UpdateComment(long commentId, CreateReviewCommentDto updateReviewCommentDto, String username);
+
+    // 내가 참여한 모임 책 목록
+    List<BookResponse> searchUserGatheringBooks(String username);
 }

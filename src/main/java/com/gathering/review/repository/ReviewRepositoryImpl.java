@@ -67,6 +67,7 @@ public class ReviewRepositoryImpl implements ReviewRepository{
     private final ReviewQueryBuilder queryBuilder;
     private final ReviewLikesJpaRepository likesJpaRepository;
 
+    @Transactional
     @Override
     public ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type) {
 
@@ -623,6 +624,13 @@ public class ReviewRepositoryImpl implements ReviewRepository{
         }
 
         return reviewCommentJpaRepository.UpdateComment(reviewComment.getId(), updateReviewCommentDto.getContent(), LocalDateTime.now());
+    }
+
+    @Override
+    public List<BookResponse> searchUserGatheringBooks(String username) {
+        User user = userJpaRepository.findByUserNameOrThrow(username);
+
+        return findUnreviewedCompletedBook(user.getId());
     }
 
     // 모임이 종료되었지만 모임 리뷰를 작성하지 않은 목록
