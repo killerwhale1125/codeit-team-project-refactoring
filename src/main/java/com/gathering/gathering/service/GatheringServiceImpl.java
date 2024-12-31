@@ -29,6 +29,7 @@ public class GatheringServiceImpl implements GatheringService {
     private final UserRepository userRepository;
     private final GatheringActions gatheringActions;
     private final ChallengeRedisService challengeRedisService;
+    private final ChallengeService challengeService;
 
     @Override
     @Transactional

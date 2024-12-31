@@ -9,11 +9,12 @@ import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.review.model.dto.ReviewListDto;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface GatheringSearchService {
-    GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable);
+    GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails);
 
-    GatheringResponse getById(Long gatheringId, String userKey);
+    GatheringResponse getById(Long gatheringId, String userKey, UserDetails userDetails);
 
     GatheringSearchResponse findMyGatherings(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
 
@@ -30,4 +31,6 @@ public interface GatheringSearchService {
     GatheringSearchResponse getGatheringsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable);
 
     GatheringSearchResponse getReviewsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable, String username);
+
+    GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails);
 }

@@ -95,14 +95,18 @@ public class Gathering extends BaseTimeEntity {
     }
 
     // 모임 참여
-    public static void join(Gathering gathering, User user,GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
+    public static void join(Gathering gathering, User user, GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
         // 이미 참여한 유저인지 검증
         gathering.isUserAlreadyJoined(user.getId());
+        // 모임(챌린지) 시작일 보다 참여하려는 날짜가 더 나중일 경우 -> startDate < 참여일
+        gatheringValidator.validateJoinDate(gathering.getStartDate(), LocalDate.now());
         // 모임 상태가 참여할 수 있는 상태인지 검증
         gathering.validateGatheringStatus();
+        // 참여 자리가 남은지 검증 후 모임 유저(중간테이블) 추가
         gathering.addGatheringUser(gatheringUser, gatheringValidator);
+        // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
         gathering.increaseCurrentCapacity();
-        // 인원 FULL일 경우 모집완료 상태 변경
+        // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
         gathering.checkIsFullAndUpdateStatus();
     }
 

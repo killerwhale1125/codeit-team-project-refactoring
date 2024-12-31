@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -45,8 +47,10 @@ public class GatheringResponse {
     private int gatheringWeek;
     private int bookTotalPage;
     private String userProfile;
+    private boolean isWish;
+    private List<String> userProfiles;
 
-    public static GatheringResponse fromEntity(Gathering gathering) {
+    public static GatheringResponse fromEntity(Gathering gathering, boolean isWish) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .owner(gathering.getOwner())
@@ -69,6 +73,33 @@ public class GatheringResponse {
                 .publishDate(gathering.getBook().getPublishDate())
                 .star(gathering.getBook().getStar())
                 .author(gathering.getBook().getAuthor())
+                .isWish(isWish)
+                .build();
+    }
+
+    public static GatheringResponse joinableGatherings(Gathering gathering, boolean isWish) {
+        return GatheringResponse.builder()
+                .id(gathering.getId())
+                .name(gathering.getName())
+                .content(gathering.getContent())
+                .gatheringWeek(gathering.getGatheringWeek().getWeek())
+                .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .startDate(gathering.getStartDate())
+                .endDate(gathering.getEndDate())
+                .minCapacity(gathering.getMinCapacity())
+                .maxCapacity(gathering.getMaxCapacity())
+                .currentCapacity(gathering.getCurrentCapacity())
+                .gatheringStatus(gathering.getGatheringStatus())
+                .createdTime(gathering.getCreatedTime())
+                .updatedTime(gathering.getModifiedTime())
+                .bookTitle(gathering.getBook().getTitle())
+                .bookImage(gathering.getBook().getImage())
+                .publishDate(gathering.getBook().getPublishDate())
+                .userProfiles(gathering.getGatheringUsers().stream()
+                        .limit(3)
+                        .map(gatheringUser -> gatheringUser.getUser().getProfile())
+                        .collect(Collectors.toList()))
+                .isWish(isWish)
                 .build();
     }
 
@@ -124,4 +155,5 @@ public class GatheringResponse {
         this.readingTimeGoal = readingTimeGoal.getMinutes();
         this.thumbnail = thumbnail;
     }
+
 }

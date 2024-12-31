@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.UNKNOWN_SEARCH_TYPE;
@@ -28,9 +29,19 @@ public class GatheringSearchActions {
 
     private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
 
-    public GatheringSearchResponse convertToGatheringSearchResponse(Slice<Gathering> slice) {
+    public GatheringSearchResponse convertToGatheringSearchResponse(Slice<Gathering> slice, Set<Long> wishGatheringIds) {
         List<GatheringResponse> gatheringResponses = slice.getContent().stream()
-                .map(GatheringResponse::fromEntity)
+                .map(gathering -> GatheringResponse.fromEntity(gathering, wishGatheringIds.contains(gathering.getId())))
+                .collect(Collectors.toList());
+
+        boolean hasNext = slice.hasNext();
+
+        return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
+    }
+
+    public GatheringSearchResponse convertToGatheringSearchJoinableResponse(Slice<Gathering> slice, Set<Long> wishGatheringIds) {
+        List<GatheringResponse> gatheringResponses = slice.getContent().stream()
+                .map(gathering -> GatheringResponse.joinableGatherings(gathering, wishGatheringIds.contains(gathering.getId())))
                 .collect(Collectors.toList());
 
         boolean hasNext = slice.hasNext();
@@ -107,4 +118,5 @@ public class GatheringSearchActions {
     public GatheringSearchResponse convertToReviewsResultPage(Page<BookReviewDto> reviews) {
         return GatheringSearchResponse.reviewsResultPage(reviews.getContent(), reviews.getTotalElements());
     }
+
 }

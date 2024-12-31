@@ -23,4 +23,5 @@ public interface GatheringSearchRepository {
 
     ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, Pageable pageable);
 
+    Slice<Gathering> findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable);
 }

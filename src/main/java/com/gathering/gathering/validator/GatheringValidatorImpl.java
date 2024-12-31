@@ -3,6 +3,8 @@ package com.gathering.gathering.validator;
 import com.gathering.common.base.exception.BaseException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 import static com.gathering.common.base.response.BaseResponseStatus.*;
 
 @Component
@@ -33,5 +35,12 @@ public class GatheringValidatorImpl implements GatheringValidator {
     @Override
     public boolean validateCapacityRange(int minCapacity, int maxCapacity) {
         return maxCapacity < minCapacity ? true : false;
+    }
+
+    @Override
+    public void validateJoinDate(LocalDate startDate, LocalDate now) {
+        if(!startDate.isBefore(LocalDate.now())) {
+            throw new BaseException(RECRUITMENT_CLOSED);
+        }
     }
 }

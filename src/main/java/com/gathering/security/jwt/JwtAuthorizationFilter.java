@@ -37,16 +37,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     public static final String tokenPrefix = "Bearer ";
     private UserJpaRepository userJpaRepository;
     private List<String> excludePaths;
-    private List<String> includePaths;
     private List<String> publicPaths;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository,
-                                  List<String> excludePaths, List<String> includePaths, List<String> publicPaths) {
+                                  List<String> excludePaths, List<String> publicPaths) {
         super(authenticationManager);
         this.userJpaRepository = userJpaRepository;
         this.excludePaths = excludePaths;
-        this.includePaths = includePaths;
         this.publicPaths = publicPaths;
     }
 
@@ -84,13 +82,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         AntPathMatcher pathMatcher = new AntPathMatcher();
         boolean isExcluded = excludePaths.stream()
                 .anyMatch(path -> pathMatcher.match(path, requestUri));
-
-        boolean isIncluded = includePaths.stream()
-                .anyMatch(path -> pathMatcher.match(path, requestUri));
-
-        if(isExcluded && isIncluded) {
-            isExcluded = false;
-        }
 
         if(isExcluded || !requestUri.startsWith("/api") || requestUri.startsWith("/api/auths/check")) {
             chain.doFilter(request, response);

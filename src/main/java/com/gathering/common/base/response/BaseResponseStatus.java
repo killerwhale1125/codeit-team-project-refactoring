@@ -34,6 +34,7 @@ public enum BaseResponseStatus {
     NON_EXISTED_CHALLENGE(HttpStatus.NOT_FOUND, "NON_EXISTED_CHALLENGE", "This challenge does not exist"),
     EXCEEDS_CAPACITY(HttpStatus.BAD_REQUEST, "EXCEEDS_CAPACITY", "The gathering exceeds the capacity limit"),
     ALREADY_JOINED(HttpStatus.CONFLICT, "ALREADY_JOINED", "You are already a member of this gathering"),
+    RECRUITMENT_CLOSED(HttpStatus.BAD_REQUEST, "RECRUITMENT_CLOSED", "Recruitment for this gathering has already ended"),
     GATHERING_FULL(HttpStatus.BAD_REQUEST, "GATHERING_FULL", "The gathering has reached its maximum capacity and cannot accept new participants."),
     GATHERING_ALREADY_STARTED(HttpStatus.BAD_REQUEST, "GATHERING_ALREADY_STARTED", "The gathering has already started."),
     GATHERING_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "GATHERING_ALREADY_DELETED", "The gathering has been deleted"),

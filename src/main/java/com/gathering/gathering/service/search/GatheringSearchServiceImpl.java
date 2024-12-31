@@ -20,8 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.gathering.common.base.response.BaseResponseStatus.INVALID_SEARCH_WORD;
@@ -38,20 +40,37 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     private final ReviewRepository reviewRepository;
 
     @Override
-    public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
+    public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
         Slice<Gathering> slice = gatheringSearchJpaRepository.findGatherings(gatheringSearch, pageable);
-        return gatheringSearchActions.convertToGatheringSearchResponse(slice);
+
+        Set<Long> wishGatheringIds
+                = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
+
+        return gatheringSearchActions.convertToGatheringSearchResponse(slice, wishGatheringIds);
     }
 
     @Override
-    public GatheringResponse getById(Long gatheringId, String userKey) {
+    public GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
+        Slice<Gathering> slice = gatheringSearchJpaRepository.findJoinableGatherings(gatheringSearch, pageable);
+
+        Set<Long> wishGatheringIds
+                = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
+
+        return gatheringSearchActions.convertToGatheringSearchJoinableResponse(slice, wishGatheringIds);
+    }
+
+    @Override
+    public GatheringResponse getById(Long gatheringId, String userKey, UserDetails userDetails) {
         Gathering gathering = gatheringSearchJpaRepository.getGatheringWithChallengeAndBook(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
 
         // 조회수 비동기 처리
         gatheringSearchAsync.incrementViewCount(gathering.getId(), userKey);
 
-        return GatheringResponse.fromEntity(gathering);
+        Set<Long> wishGatheringIds
+                = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
+
+        return GatheringResponse.fromEntity(gathering, wishGatheringIds.contains(gathering.getId()));
     }
 
     @Override
@@ -151,4 +170,5 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
         return gatheringSearchActions.convertToReviewsResultPage(reviews);
     }
+
 }

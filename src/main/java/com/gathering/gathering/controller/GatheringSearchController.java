@@ -39,11 +39,20 @@ public class GatheringSearchController {
      * TODO - 필터가 아예 설정되지 않을 경우 Default값은?
      *      - 쿼리 최적화 필요
      */
-    @GetMapping
+    @GetMapping("/filtering")
     @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findGatherings(@ModelAttribute GatheringSearch gatheringSearch,
-                                                                @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.findGatherings(gatheringSearch, pageable));
+                                                                @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable,
+                                                                @AuthenticationPrincipal UserDetails userDetails) {
+        return new BaseResponse<>(gatheringSearchService.findGatherings(gatheringSearch, pageable, userDetails));
+    }
+
+    @GetMapping("/joinable")
+    @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
+    public BaseResponse<GatheringSearchResponse> findJoinableGatherings(@ModelAttribute GatheringSearch gatheringSearch,
+                                                                @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable,
+                                                                @AuthenticationPrincipal UserDetails userDetails) {
+        return new BaseResponse<>(gatheringSearchService.findJoinableGatherings(gatheringSearch, pageable, userDetails));
     }
 
     @GetMapping("/participating")
@@ -58,11 +67,14 @@ public class GatheringSearchController {
     /**
      * TODO - Challenge 정보 추가 여부 보류
      */
-    @GetMapping("/{gatheringId}")
+    @GetMapping("/{gatheringId}/detail")
     @Operation(summary = "모임 상세 조회", description = "상세 조건 Notion 참고")
-    public BaseResponse<GatheringResponse> getById(@PathVariable Long gatheringId, HttpServletRequest request, HttpServletResponse response) {
-        return new BaseResponse<>(gatheringSearchService.getById(gatheringId,
-                UserSessionKeyGenerator.generateUserKey(request, response)));
+    public BaseResponse<GatheringResponse> getById(@PathVariable Long gatheringId,
+                                                   HttpServletRequest request,
+                                                   HttpServletResponse response,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        String userKey = UserSessionKeyGenerator.generateUserKey(request, response);
+        return new BaseResponse<>(gatheringSearchService.getById(gatheringId, userKey, userDetails));
     }
 
     @GetMapping("/my")

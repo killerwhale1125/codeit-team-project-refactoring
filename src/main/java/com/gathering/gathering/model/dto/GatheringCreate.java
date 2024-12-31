@@ -22,7 +22,7 @@ public class GatheringCreate {
     @NotNull
     private LocalDate endDate;  // 챌린지 종료일
     @NotNull
-    private LocalDate startDate;    // 챌린지 시작일 ( 생성일 X, 챌린지가 시작되는 날짜 )
+    private LocalDate startDate;    // 챌린지 시작일 (모집 마감일과 같음)
     @Min(5)  // 최소 5명 이상
     private int minCapacity;
     @Min(6)  // 최소 6명 이상
