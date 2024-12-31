@@ -9,6 +9,7 @@ import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.image.model.entity.Image;
 import com.gathering.review.model.entitiy.GatheringReview;
 import com.gathering.user.model.entitiy.User;
+import com.gathering.user.model.entitiy.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -52,6 +53,9 @@ public class Gathering extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GatheringReview> gatheringReviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserAttendanceBook> userAttendanceBooks = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "challenge_id")

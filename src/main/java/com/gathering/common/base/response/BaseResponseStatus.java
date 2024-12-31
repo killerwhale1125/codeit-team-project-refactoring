@@ -47,6 +47,7 @@ public enum BaseResponseStatus {
     INVALID_CAPACITY_RANGE(HttpStatus.BAD_REQUEST, "INVALID_CAPACITY_RANGE", "The maximum capacity must be greater than or equal to the minimum capacity"),
     INVALID_CHALLENGE_START_BETWEEN_TIME(HttpStatus.BAD_REQUEST, "INVALID_CHALLENGE_START_BETWEEN_TIME", "Challenge start between time must be greater than 0"),
     UNKNOWN_SEARCH_TYPE(HttpStatus.NOT_FOUND, "UNKNOWN_SEARCH_TYPE", "Unknown SearchType"),
+    ALREADY_READING_BOOK(HttpStatus.CONFLICT, "ALREADY_READING_BOOK", "You are already reading book of this gathering"),
     // Book & CATEGORY
     BOOK_OR_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOK_OR_CATEGORY_NOT_FOUND", "The specified book or category could not be found"),
     NOT_EXISTED_BOOK(HttpStatus.NOT_FOUND, "NOT_EXISTED_BOOK", "This book does not exist"),

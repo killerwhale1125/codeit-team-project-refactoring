@@ -77,6 +77,12 @@ public class GatheringServiceImpl implements GatheringService {
 
     @Override
     @Transactional
+    public void readBook(String username, long gatheringId) {
+        gatheringActions.readBookGathering(gatheringId, username);
+    }
+
+    @Override
+    @Transactional
     public void delete(Long gatheringId, String userName) {
         gatheringRepository.delete(gatheringActions.deleteGathering(gatheringId, userName));
     }

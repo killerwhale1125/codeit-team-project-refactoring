@@ -37,7 +37,19 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public int insertAttendance(long usersId) { return userAttendanceJpaRepository.insertAttendance(usersId); }
+    public int insertAttendance(long userId) {
+        LocalDate today = LocalDate.now();
+
+        Optional<UserAttendance> existingAttendance =
+                userAttendanceJpaRepository.findByUserIdAndCreateDate(userId, today);
+
+        int result = 0;
+        if(existingAttendance.isEmpty()) {
+            result = userAttendanceJpaRepository.insertAttendance(userId);
+        }
+
+        return result;
+    }
 
     @Override
     public User findByUsername(String username) {

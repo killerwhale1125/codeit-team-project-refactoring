@@ -30,5 +30,7 @@ public interface GatheringService {
 
     MyPageGatheringsCountResponse getMyPageGatheringsCount(String username);
 
+    void readBook(String username, long gatheringId);
+
 //    void incrementViewCountAsync(Long gatheringId);
 }
