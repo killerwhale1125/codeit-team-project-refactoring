@@ -127,7 +127,8 @@ public class BookReviewDto extends ReviewDto {
 
     // 독서 리뷰 상세 정보 (비회원)
     public BookReviewDto(long id,long bookId, String title, String apprCd,String tagCd, String content,
-                         int likes, long userId, String profile, String userName,long writerReviewCnt, String createTime) {
+                         int likes, long userId, String profile, String userName,long writerReviewCnt, String createTime,
+                         long gatheringId) {
         this.id = id;
         this.bookId = bookId;
         this.title = title;
@@ -140,10 +141,12 @@ public class BookReviewDto extends ReviewDto {
         this.userName = userName;
         this.writerReviewCnt = writerReviewCnt;
         this.createTime = createTime;
+        this.gatheringId = gatheringId;
     }
     // 독서 리뷰 상세 정보
     public BookReviewDto(long id,long bookId, String title, String apprCd,String tagCd, String content,
-                         int likes, long userId, String profile, String userName,long writerReviewCnt, String createTime, boolean userLikeCk) {
+                         int likes, long userId, String profile, String userName,long writerReviewCnt, String createTime, boolean userLikeCk,
+                         long gatheringId) {
         this.id = id;
         this.bookId = bookId;
         this.title = title;
@@ -157,6 +160,7 @@ public class BookReviewDto extends ReviewDto {
         this.writerReviewCnt = writerReviewCnt;
         this.createTime = createTime;
         this.userLikeCk = userLikeCk;
+        this.gatheringId = gatheringId;
     }
     // 리뷰 상세페이지 사이드에 특정 책에 대한 리뷰 목록 or 통합 검색 결과 생성자 (비회원)
     public BookReviewDto(long id, String title,String content, int likes,long commentCnt,

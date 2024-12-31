@@ -29,6 +29,12 @@ public class BookResponse {
     // 독서 리뷰 상세 페이지의 해당 책에 대한 모임 여부 추가
     private boolean gatheringExists;
 
+    // 추천 검색어 생성자
+    public BookResponse(Long id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     public BookResponse(Long id, String title, String author, String publisher, String publisherDate, double star, String image, Long gatheringId) {
         this.id = id;
         this.title = title;

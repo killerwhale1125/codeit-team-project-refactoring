@@ -35,4 +35,6 @@ public interface ReviewRepository {
     int UpdateComment(long commentId, CreateReviewCommentDto updateReviewCommentDto, String username);
 
     List<BookResponse> searchUserGatheringBooks(String username);
+
+    List<BookResponse> getRecommendedKeywords();
 }

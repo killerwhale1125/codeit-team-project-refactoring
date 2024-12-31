@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,4 +77,7 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     public List<BookResponse> searchUserGatheringBooks(String username) { return reviewRepository.searchUserGatheringBooks(username); }
+
+    @Override
+    public List<BookResponse> getRecommendedKeywords() { return reviewRepository.getRecommendedKeywords(); }
 }
