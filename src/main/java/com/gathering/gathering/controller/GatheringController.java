@@ -111,4 +111,13 @@ public class GatheringController {
     public BaseResponse<MyPageGatheringsCountResponse> getMyPageGatheringsCount(@AuthenticationPrincipal UserDetails userDetails) {
         return new BaseResponse<>(gatheringService.getMyPageGatheringsCount(userDetails.getUsername()));
     }
+
+    @PostMapping("/{gatheringId}/read-book")
+    @Operation(summary = "모임 독서 기록", description = "Notion 참고")
+    public BaseResponse<Void> readBook(
+            @PathVariable long gatheringId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        gatheringService.readBook(userDetails.getUsername(), gatheringId);
+        return new BaseResponse<>();
+    }
 }

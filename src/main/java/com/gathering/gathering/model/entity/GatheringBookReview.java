@@ -1,6 +1,7 @@
 package com.gathering.gathering.model.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
+import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.entitiy.BookReview;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,14 +31,15 @@ public class GatheringBookReview extends BaseTimeEntity {
     private BookReview review;
 
     @Comment("상태")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
 
     public static GatheringBookReview createGatheringReview(Gathering gathering, BookReview review) {
 
         return GatheringBookReview.builder()
                 .gathering(gathering)
                 .review(review)
-                .status("Y")
+                .status(StatusType.Y)
                 .build();
     }
 

@@ -5,6 +5,8 @@ import com.gathering.book.repository.BookRepository;
 import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challenge.model.entity.ChallengeUser;
 import com.gathering.challenge.repository.ChallengeRepository;
+import com.gathering.common.base.exception.BaseException;
+import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.Gathering;
@@ -16,13 +18,19 @@ import com.gathering.image.model.entity.Image;
 import com.gathering.image.service.gathering.GatheringImageService;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.User;
+import com.gathering.user.model.entitiy.UserAttendance;
+import com.gathering.user.model.entitiy.UserAttendanceBook;
+import com.gathering.user.repository.UserAttendanceBookJpaRepository;
+import com.gathering.user.repository.UserAttendanceJpaRepository;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.date.DateCalculateHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +45,8 @@ public class GatheringActions {
     private final BookRepository bookRepository;
     private final DateCalculateHolder dateCalculateHolder;
     private final GatheringImageService gatheringImageService;
+    private final UserAttendanceJpaRepository userAttendanceRepository;
+    private final UserAttendanceBookJpaRepository userAttendanceBookRepository;
 
     public Gathering createGathering(GatheringCreate gatheringCreate, String username, List<MultipartFile> files) {
         List<Image> images = gatheringImageService.uploadGatheringImage(files);
@@ -95,4 +105,22 @@ public class GatheringActions {
 
         return MyPageGatheringsCountResponse.fromEntity(participatingCount, completedCount, myCreatedCount, myWishedCount);
     }
+
+    public void readBookGathering(Long gatheringId, String username) {
+        User user = userRepository.findByUsername(username);
+        Gathering gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
+        LocalDate today = LocalDate.now();
+        Optional<UserAttendance> attendance =
+                userAttendanceRepository.findByUserIdAndCreateDate(user.getId(), today);
+
+        Optional<UserAttendanceBook> attendanceBook = userAttendanceBookRepository.findByUserAttendanceAndGathering(attendance.get(), gathering);
+
+        // 독서 기록이 없으면 독서 기록 생성
+        if(attendanceBook.isEmpty()) {
+            userAttendanceBookRepository.save(UserAttendanceBook.createUserAttendanceBook(attendance.get(), gathering.getBook(), gathering));
+        } else {
+            throw new BaseException(BaseResponseStatus.ALREADY_READING_BOOK);
+        }
+    }
+
 }

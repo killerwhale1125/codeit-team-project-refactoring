@@ -206,4 +206,11 @@ public class ReviewConroller {
         return new BaseResponse<>(reviewService.searchUserGatheringBooks(userDetails.getUsername()));
     }
 
+
+    @GetMapping("/recommendedKeywords")
+    @Operation(summary = "추천 검색어", description = "Notion 참고")
+    public BaseResponse<List<BookResponse>> getRecommendedKeywords() {
+        return new BaseResponse<>(reviewService.getRecommendedKeywords());
+    }
+
 }

@@ -2,6 +2,7 @@ package com.gathering.book.model.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.review.model.entitiy.BookReview;
+import com.gathering.user.model.entitiy.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,6 +41,9 @@ public class Book extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     List<BookReview> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    List<UserAttendanceBook> userAttendanceBooks = new ArrayList<>();
 
     public static Book createBook(String title, String image, String author, String publisher, BookCategory bookCategory, String publisherDate, double star, String introduce, int page) {
         Book book = new Book();

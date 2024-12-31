@@ -16,6 +16,7 @@ public class UserAttendanceBookResponse {
     private Date date;
     private List<BookResponse> bookResponses;
     private int totalBookCount;
+    private long gatheringId;
 
     public static UserAttendanceBookResponse fromEntity(UserAttendance userAttendance) {
         List<BookResponse> bookResponses = userAttendance.getUserAttendanceBooks().stream()

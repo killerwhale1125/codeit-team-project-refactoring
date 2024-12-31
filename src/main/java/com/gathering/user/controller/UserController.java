@@ -3,6 +3,8 @@ package com.gathering.user.controller;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.gathering.model.dto.GatheringSearchResponse;
+import com.gathering.gathering.service.search.GatheringSearchService;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.*;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.print.Pageable;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -43,7 +47,7 @@ public class UserController {
 
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-
+    private final GatheringSearchService gatheringSearchService;
     @RequestMapping(value = "/getAccessToken", method = RequestMethod.POST)
     @Operation(summary = "토큰 발급(임시)", description = "개발용 토큰 발급 api")
     public BaseResponse<String> getAccessToken(
@@ -134,18 +138,15 @@ public class UserController {
         return new BaseResponse<>();
     }
 
-    /*
-    * TODO - 참여 모임 , 작성한 리뷰 등 모임 관련 내용 추가 핋요
-    * */
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
     @Operation(summary = "마이 프로필", description = "사용자 정보 제공")
-    public BaseResponse<Void> myprofile(
+    public BaseResponse<UserDto> myprofile(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
         UserDto userDto = userService.selectUserInfo(userDetails.getUsername());
         
-        return new BaseResponse<>();
+        return new BaseResponse<>(userDto);
     }
 
     /*
@@ -211,8 +212,10 @@ public class UserController {
 
 
     /**
-     * 달력의 날짜 별 내가 읽었던 책 기록 ( 오늘의 독서 체크 기능 구현 후 테스트 예정 )
+     * 달력의 날짜 별 내가 읽었던 책 기록
      */
+    @RequestMapping(value = "/myBookCalendar", method = RequestMethod.GET)
+    @Operation(summary = "독서 기록 달력", description = "Notion 참고")
     public BaseResponse<List<UserAttendanceBookResponse>> getBooksByCalendarDate(@AuthenticationPrincipal UserDetails userDetails,
                                                                                  @RequestParam YearMonth yearMonth) {
         return new BaseResponse<>(userService.getBooksByCalendarDate(userDetails.getUsername(), yearMonth));

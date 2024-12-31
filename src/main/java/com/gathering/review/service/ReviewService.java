@@ -49,4 +49,7 @@ public interface ReviewService {
 
     // 내가 참여한 모임 책 목록
     List<BookResponse> searchUserGatheringBooks(String username);
+
+    // 추천 검색어( 독서 리뷰 페이지의 bestReview 목록에서 아이디랑 책 제목만 추출)
+    List<BookResponse> getRecommendedKeywords();
 }
