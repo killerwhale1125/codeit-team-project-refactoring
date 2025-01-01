@@ -21,4 +21,12 @@ public class ChallengeServiceImpl implements ChallengeService {
         Gathering gathering = challenge.getGathering();
         gathering.start();
     }
+
+    @Override
+    public void end(Long challengeId) {
+        Challenge challenge = challengeRepository.findGatheringAndChallengeById(challengeId);
+        challenge.end();
+        Gathering gathering = challenge.getGathering();
+        gathering.end();
+    }
 }

@@ -5,6 +5,9 @@ import com.gathering.common.base.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_CHALLENGE;
 
 @Repository
@@ -31,6 +34,11 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     @Override
     public Challenge findGatheringAndChallengeById(Long challengeId) {
         return challengeJpaRepository.findGatheringAndChallengeById(challengeId).orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE));
+    }
+
+    @Override
+    public List<Long> findByStartDate(LocalDate today) {
+        return challengeJpaRepository.findByStartDate(today);
     }
 
 }

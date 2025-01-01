@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface ChallengeJpaRepository extends JpaRepository<Challenge, Long> {
@@ -17,4 +19,7 @@ public interface ChallengeJpaRepository extends JpaRepository<Challenge, Long> {
     @EntityGraph(attributePaths = {"gathering"})
     @Query("SELECT c FROM Challenge c WHERE c.id = :challengeId")
     Optional<Challenge> findGatheringAndChallengeById(@Param("challengeId") Long challengeId);
+
+    @Query("SELECT c.id FROM Challenge c WHERE c.startDateTime = :today")
+    List<Long> findByStartDate(@Param("today") LocalDate today);
 }

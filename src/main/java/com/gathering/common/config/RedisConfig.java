@@ -1,6 +1,5 @@
 package com.gathering.common.config;
 
-import com.gathering.challenge.redis.ChallengeMessageListener;
 import com.gathering.gathering.redis.GatheringMessageListener;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,17 +42,14 @@ public class RedisConfig {
 
     @Bean
     public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory,
-                                                        GatheringMessageListener gatheringMessageListener,
-                                                        ChallengeMessageListener challengeMessageListener) {
+                                                        GatheringMessageListener gatheringMessageListener) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
+
         // Gathering 관련 이벤트
         container.addMessageListener(new MessageListenerAdapter(gatheringMessageListener),
                 new PatternTopic("__keyevent@0__:expired:gathering"));
 
-        // Challenge 관련 이벤트
-        container.addMessageListener(new MessageListenerAdapter(challengeMessageListener),
-                new PatternTopic("__keyevent@0__:expired:challenge"));
         return container;
     }
 }

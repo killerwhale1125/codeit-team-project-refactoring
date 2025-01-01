@@ -1,6 +1,5 @@
 package com.gathering.gathering.service;
 
-import com.gathering.challenge.redis.ChallengeRedisService;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringUpdate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
@@ -28,15 +27,12 @@ public class GatheringServiceImpl implements GatheringService {
     private final GatheringRepository gatheringRepository;
     private final UserRepository userRepository;
     private final GatheringActions gatheringActions;
-    private final ChallengeRedisService challengeRedisService;
 
     @Override
     @Transactional
     public void create(GatheringCreate gatheringCreate, List<MultipartFile> files, String username) {
         Gathering gathering = gatheringActions.createGathering(gatheringCreate, username, files);
         gatheringRepository.save(gathering);
-        // 현재 시간에서 모임 시작일까지 시간 간격을 계산하여 그 시간을 만료설정으로 레디스에 저장하여 Pub/Sub 이벤트 발생시켜 추후 Challenge 상태변화
-        challengeRedisService.scheduleChallengeStateChange(gathering.getChallenge(), gathering.getStartDate());
     }
 
     @Override
