@@ -86,7 +86,7 @@ public class Gathering extends BaseTimeEntity {
         // 최소 최대 인원수 검증
         validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity(), gatheringValidator);
         gathering.maxCapacity = gatheringCreate.getMaxCapacity();
-        gathering.minCapacity = gatheringCreate.getMinCapacity();
+        gathering.minCapacity = checkUnlimitedMinCapacity(gatheringCreate);
         gathering.gatheringStatus = gatheringCreate.getGatheringStatus();
         gathering.book = book;
         gathering.owner = gatheringUser.getUser().getUserName();
@@ -96,6 +96,10 @@ public class Gathering extends BaseTimeEntity {
         // 현재 썸네일은 1개뿐이라 get(0)으로 지정
         gathering.image = images.get(0);
         return gathering;
+    }
+
+    private static int checkUnlimitedMinCapacity(GatheringCreate gatheringCreate) {
+        return gatheringCreate.getMinCapacity() == Integer.MAX_VALUE && gatheringCreate.getMaxCapacity() == Integer.MAX_VALUE ? 5 : gatheringCreate.getMinCapacity();
     }
 
     // 모임 참여
@@ -154,6 +158,8 @@ public class Gathering extends BaseTimeEntity {
     }
 
     private static void validateCapacity(int minCapacity, int maxCapacity, GatheringValidator gatheringValidator) {
+        if(minCapacity == Integer.MAX_VALUE && maxCapacity == Integer.MAX_VALUE) return;
+
         if (gatheringValidator.validateMinCapacity(minCapacity)) {
             throw new BaseException(INVALID_MIN_CAPACITY);
         }
