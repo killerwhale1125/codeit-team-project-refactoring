@@ -8,6 +8,7 @@ import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.model.entitiy.UserAttendance;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,7 @@ public class UserRepositoryImpl implements UserRepository{
     private final UserJpaRepository userJpaRepository;
     private final UserAttendanceJpaRepository userAttendanceJpaRepository;
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
 
     @Override
     public UserDto selectUser(String userName) {
@@ -94,6 +96,8 @@ public class UserRepositoryImpl implements UserRepository{
                 .execute();
 
         if(result != 0) {
+            // 영속성 관리를 위해 업데이트 이후에는 clear
+            em.clear();
             User user = userJpaRepository.findById(userId).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
 
             return UserDto.fromEntity(user);

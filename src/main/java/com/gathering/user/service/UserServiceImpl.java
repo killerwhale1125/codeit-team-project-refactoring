@@ -2,7 +2,6 @@ package com.gathering.user.service;
 
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.common.model.constant.Code;
 import com.gathering.image.model.entity.EntityType;
 import com.gathering.image.service.AwsS3Service;
 import com.gathering.security.jwt.JwtTokenUtil;
@@ -12,14 +11,12 @@ import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
 import com.gathering.user.model.entitiy.User;
-import com.gathering.user.redis.UserRedisKey;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.date.DateCalculateHolder;
 import com.gathering.util.file.FileUtil;
 import com.gathering.util.image.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.gathering.security.jwt.JwtTokenUtil.createRefreshToken;
 import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
 
 @RequiredArgsConstructor

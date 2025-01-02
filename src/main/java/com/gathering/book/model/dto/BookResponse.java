@@ -76,4 +76,8 @@ public class BookResponse {
                 .image(userAttendanceBook.getBook().getImage())
                 .build();
     }
+
+    public void ChangeFormat(String publisherDate) {
+        this.publisherDate = publisherDate.replace("년 ", ".").replace("월","");
+    }
 }
