@@ -235,6 +235,9 @@ public class ReviewRepositoryImpl implements ReviewRepository{
             // 모임이 종료되었지만 독서 리뷰를 작성하지 않은 책 정보 목록
             unreviewsBookInfo = findUnreviewedCompletedBook(user.getId());
 
+            // 출판날짜 포맷 형식 변경
+            unreviewsBookInfo.forEach(book -> book.ChangeFormat(book.getPublisherDate()));
+
             query = query.select(Projections.constructor(BookReviewDto.class,
                     bookReview.id
                     ,bookReview.title
