@@ -1,9 +1,9 @@
 package com.gathering.gathering.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
+import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import com.gathering.user.model.entitiy.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -49,6 +50,7 @@ public class GatheringResponse {
     private String userProfile;
     private boolean isWish;
     private List<String> userProfiles;
+    private double readingRate;
 
     public static GatheringResponse fromEntity(Gathering gathering, boolean isWish) {
         return GatheringResponse.builder()
@@ -106,14 +108,14 @@ public class GatheringResponse {
     /**
      * 마이페이지 모임 리스트 조회
      */
-    public static GatheringResponse myGatheringFromEntity(Gathering gathering) {
+    public static GatheringResponse myGatheringFromEntity(Gathering gathering, Map<Long, Double> challengeReadingRateMap) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .name(gathering.getName())
                 .startDate(gathering.getStartDate())
                 .endDate(gathering.getEndDate())
                 .currentCapacity(gathering.getCurrentCapacity())
-                .completeRate(gathering.getChallenge().getCompleteRate())
+                .readingRate(challengeReadingRateMap.get(gathering.getChallenge().getId()))
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())

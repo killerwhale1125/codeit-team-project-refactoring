@@ -1,5 +1,8 @@
 package com.gathering.gathering.service.search;
 
+import com.gathering.challenge.model.entity.Challenge;
+import com.gathering.challenge.model.entity.ChallengeUser;
+import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
@@ -24,7 +27,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.INVALID_SEARCH_WORD;
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
@@ -38,6 +44,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     private final GatheringSearchActions gatheringSearchActions;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final ChallengeRepository challengeRepository;
 
     @Override
     public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
@@ -76,14 +83,20 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public GatheringSearchResponse findMyGatherings(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
         Page<Gathering> result = gatheringSearchJpaRepository.findGatheringsForUserByUsername(username, pageable, gatheringStatus, gatheringUserStatus);
-        return gatheringSearchActions.convertToMyGatheringPage(result);
+
+        Map<Long, Double> challengeReadingRateMap = getReadingRateMap(username, result);
+
+        return gatheringSearchActions.convertToMyGatheringPage(result, challengeReadingRateMap);
     }
 
     @Override
     public GatheringSearchResponse findMyCreated(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username);
         Page<Gathering> result = gatheringSearchJpaRepository.findMyCreated(user.getUserName(), pageable);
-        return gatheringSearchActions.convertToMyGatheringPage(result);
+
+        Map<Long, Double> challengeReadingRateMap = getReadingRateMap(username, result);
+
+        return gatheringSearchActions.convertToMyGatheringPage(result, challengeReadingRateMap);
     }
 
     @Override
@@ -95,7 +108,10 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         }
 
         Page<Gathering> result = gatheringSearchJpaRepository.findMyWishes(wishGatheringIds, pageable);
-        return gatheringSearchActions.convertToMyGatheringPage(result);
+
+        Map<Long, Double> challengeReadingRateMap = getReadingRateMap(username, result);
+
+        return gatheringSearchActions.convertToMyGatheringPage(result, challengeReadingRateMap);
     }
 
     @Override
@@ -171,4 +187,31 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         return gatheringSearchActions.convertToReviewsResultPage(reviews);
     }
 
+    private Map<Long, Double> getReadingRateMap(String username, Page<Gathering> result) {
+        // Gathering에서 페치조인한 Challenge 정보에서 Id 리스트를 가져온다.
+        List<Long> challengeIds = result.getContent().stream().map(gathering -> gathering.getChallenge().getId()).collect(Collectors.toList());
+
+        /**
+         * 챌린지 ID 리스트로 ChallengeUser와 User를 한번 더 페치조인하여 조회한다.
+         * 한번 더 조회하는 이유
+         * - 이미 Gathering을 조회할 때 GatheringUsers 1대다 페치조인 했기 때문에 ChallengeUser는 분리시켰다.
+          */
+        List<Challenge> challenges = challengeRepository.getByIdsIn(challengeIds);
+
+        /**
+         * Challenge Id를 키값으로 한 Map을 생성한다.
+         * Value는 해당 모임의 챌린지에 참여중인 유저의 독서 달성률
+         * key - challengeId
+         * value - 50.0 %
+         */
+        return challenges.stream()
+                .collect(Collectors.toMap(
+                        Challenge::getId, // Key: Challenge ID
+                        challenge -> challenge.getChallengeUsers().stream()
+                                .filter(challengeUser -> challengeUser.getUser().getUserName().equals(username)) // 사용자 ID 매칭
+                                .findFirst() // ChallengeUser는 1명뿐이므로 첫 번째 요소를 가져옴
+                                .map(ChallengeUser::getReadingRate)
+                                .orElse(0.0) // 매칭되지 않는 경우 null로 처리
+                ));
+    }
 }

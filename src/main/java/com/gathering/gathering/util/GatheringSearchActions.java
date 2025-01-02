@@ -1,12 +1,12 @@
 package com.gathering.gathering.util;
 
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringResultPageResponse;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringWeek;
+import com.gathering.gathering.model.entity.ReadingTimeGoal;
 import com.gathering.gathering.model.entity.SearchType;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.review.model.dto.BookReviewDto;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,9 +50,9 @@ public class GatheringSearchActions {
         return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
     }
 
-    public GatheringSearchResponse convertToMyGatheringPage(Page<Gathering> result) {
+    public GatheringSearchResponse convertToMyGatheringPage(Page<Gathering> result, Map<Long, Double> challengeReadingRateMap) {
         List<GatheringResponse> gatheringResponses = result.getContent().stream()
-                .map(GatheringResponse::myGatheringFromEntity)
+                .map(gathering -> GatheringResponse.myGatheringFromEntity(gathering, challengeReadingRateMap))
                 .collect(Collectors.toList());
 
         return GatheringSearchResponse.fromEntity(gatheringResponses, result.getTotalElements());

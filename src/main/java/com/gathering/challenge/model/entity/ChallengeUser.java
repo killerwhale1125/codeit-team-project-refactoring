@@ -1,6 +1,7 @@
 package com.gathering.challenge.model.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
+import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -47,5 +48,9 @@ public class ChallengeUser extends BaseTimeEntity {
     public void addUser(User user) {
         this.user = user;
         user.getChallengeUsers().add(this);
+    }
+
+    public void updateReadingRate(GatheringWeek gatheringWeek, long userAttendanceCount) {
+        this.readingRate = userAttendanceCount / gatheringWeek.getWeek() * 100;
     }
 }
