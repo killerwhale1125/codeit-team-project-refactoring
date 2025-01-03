@@ -4,10 +4,7 @@ import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringResultPageResponse;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
-import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
-import com.gathering.gathering.model.entity.SearchType;
+import com.gathering.gathering.model.entity.*;
 import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
 import com.gathering.review.model.dto.BookReviewDto;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.UNKNOWN_SEARCH_TYPE;
@@ -108,11 +102,13 @@ public class GatheringSearchActions {
                 (Integer) row[2], // CURRENT_CAPACITY
                 (Integer) row[3], // MAX_CAPACITY
                 GatheringWeek.valueOf((String) row[4]).getWeek(), // GATHERING_WEEK
-                ReadingTimeGoal.valueOf((String) row[5]).getMinutes(), // READING_TIME_GOAL
-                (String) row[6], // IMAGE_URL
-                (Long) row[7], // BOOK_ID
-                (String) row[8],  // BOOK TITLE
-                (String) row[9]   // BOOK IMAGE
+                GatheringStatus.valueOf((String) row[5]),
+                (Date) row[6],
+                ReadingTimeGoal.valueOf((String) row[7]).getMinutes(), // READING_TIME_GOAL
+                (String) row[8], // IMAGE_URL
+                (Long) row[9], // BOOK_ID
+                (String) row[10],  // BOOK TITLE
+                (String) row[11]   // BOOK IMAGE
         );
     }
 
