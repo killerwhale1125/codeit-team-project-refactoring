@@ -37,7 +37,7 @@ public class GatheringSearchConditionBuilder {
             builder.and(gathering.gatheringStatus.eq(gatheringSearch.getGatheringStatus()));
         }
 
-        if(gatheringSearch.isToday()) {
+        if(gatheringSearch.getToday() != null && gatheringSearch.getToday() == true) {
             builder.and(gathering.startDate.eq(LocalDate.now()));
         }
 
