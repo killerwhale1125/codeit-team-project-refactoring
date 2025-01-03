@@ -53,6 +53,9 @@ public class BookReviewDto extends ReviewDto {
     // 현재 사용자가 좋아요를 눌렀는지 여부
     private boolean userLikeCk;
 
+    // 통학 검색
+    private String bookTitle;
+
     
     // 나의 리뷰 목록 조회
     public BookReviewDto(long id, String title, String createTime,String content,int likes, long commentCnt, boolean userLikeCk ) {
@@ -164,7 +167,7 @@ public class BookReviewDto extends ReviewDto {
     }
     // 리뷰 상세페이지 사이드에 특정 책에 대한 리뷰 목록 or 통합 검색 결과 생성자 (비회원)
     public BookReviewDto(long id, String title,String content, int likes,long commentCnt,
-                         long userId, String profile, String userName, String createTime) {
+                         long userId, String profile, String userName, String createTime, String bookTitle) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -174,11 +177,12 @@ public class BookReviewDto extends ReviewDto {
         this.profile = profile;
         this.userName = userName;
         this.createTime = createTime;
+        this.bookTitle = bookTitle;
     }
 
     // 리뷰 상세페이지 사이드에 특정 책에 대한 리뷰 목록 or 통합 검색 결과 생성자
     public BookReviewDto(long id, String title,String content, int likes,long commentCnt,
-                         long userId, String profile, String userName, String createTime, boolean userLikeCk) {
+                         long userId, String profile, String userName, String createTime, boolean userLikeCk, String bookTitle) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -189,6 +193,7 @@ public class BookReviewDto extends ReviewDto {
         this.userName = userName;
         this.createTime = createTime;
         this.userLikeCk = userLikeCk;
+        this.bookTitle = bookTitle;
     }
     public static BookReviewDto fromEntity(BookReview review) {
         return BookReviewDto.builder()

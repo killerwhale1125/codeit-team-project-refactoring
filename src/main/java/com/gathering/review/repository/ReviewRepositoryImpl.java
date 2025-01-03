@@ -455,7 +455,9 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                         ,bookReview.user.id
                         ,bookReview.user.profile
                         ,bookReview.user.userName
-                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime))
+                        ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime)
+                        ,book.title
+                        )
                 )
                 .from(bookReview)
                 .leftJoin(bookReview.user, user)
@@ -480,10 +482,10 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                             ,bookReview.user.userName
                             ,Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime)
                             ,likeUserCk(user)
+                            ,book.title
                     )
             );
         }
-
 
         List<BookReviewDto> reviews = query.fetch();
         Long total = 0L;
