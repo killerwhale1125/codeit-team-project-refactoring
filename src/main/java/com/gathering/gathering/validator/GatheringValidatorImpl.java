@@ -39,7 +39,7 @@ public class GatheringValidatorImpl implements GatheringValidator {
 
     @Override
     public void validateJoinDate(LocalDate startDate, LocalDate now) {
-        if(!startDate.isBefore(LocalDate.now())) {
+        if(!now.isEqual(startDate) && !now.isAfter(startDate)) {
             throw new BaseException(RECRUITMENT_CLOSED);
         }
     }

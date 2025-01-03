@@ -19,4 +19,5 @@ public class GatheringSearch {
     private LocalDate endDate;
     private GatheringStatus gatheringStatus;
     private List<ReadingTimeGoal> readingTimeGoals;
+    private boolean today;
 }

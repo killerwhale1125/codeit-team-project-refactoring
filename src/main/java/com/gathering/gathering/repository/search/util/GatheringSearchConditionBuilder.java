@@ -6,6 +6,8 @@ import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
 
@@ -33,6 +35,10 @@ public class GatheringSearchConditionBuilder {
 
         if (gatheringSearch.getGatheringStatus() != null) {
             builder.and(gathering.gatheringStatus.eq(gatheringSearch.getGatheringStatus()));
+        }
+
+        if(gatheringSearch.isToday()) {
+            builder.and(gathering.startDate.eq(LocalDate.now()));
         }
 
         return builder;
