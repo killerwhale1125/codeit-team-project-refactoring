@@ -149,7 +149,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
                             Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", bookReview.createdTime),
                             bookReview.likes,
                             reviewCommnetCnt(bookReview.id),
-                            likeUserCk(user)
+                            likeUserCk(user),
+                            bookReview.book.title
                     ))
                     .from(bookReview)
                     .where(bookReview.user.id.eq(user.getId())

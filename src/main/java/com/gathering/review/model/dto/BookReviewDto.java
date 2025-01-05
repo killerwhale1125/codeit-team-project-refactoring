@@ -58,7 +58,8 @@ public class BookReviewDto extends ReviewDto {
 
     
     // 나의 리뷰 목록 조회
-    public BookReviewDto(long id, String title, String createTime,String content,int likes, long commentCnt, boolean userLikeCk ) {
+    public BookReviewDto(long id, String title, String content,String createTime,int likes
+            , long commentCnt, boolean userLikeCk, String bookTitle ) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -66,6 +67,7 @@ public class BookReviewDto extends ReviewDto {
         this.likes = likes;
         this.commentCnt = commentCnt;
         this.userLikeCk = userLikeCk;
+        this.bookTitle = bookTitle;
     }
 
     // best 리뷰 생성자 (비회원)
