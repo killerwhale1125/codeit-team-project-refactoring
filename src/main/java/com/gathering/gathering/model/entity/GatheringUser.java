@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.gathering.gathering.model.entity.GatheringUserStatus.NOT_PARTICIPATING;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,5 +44,9 @@ public class GatheringUser extends BaseTimeEntity {
 
     public void addGathering(Gathering gathering) {
         this.gathering = gathering;
+    }
+
+    public void endGatheringStatus() {
+        this.gatheringUserStatus = NOT_PARTICIPATING;
     }
 }
