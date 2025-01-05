@@ -58,7 +58,7 @@ public class BookReviewDto extends ReviewDto {
 
     
     // 나의 리뷰 목록 조회
-    public BookReviewDto(long id, String title, String createTime,String content,int likes, long commentCnt, boolean userLikeCk ) {
+    public BookReviewDto(long id, String title, String content,String createTime,int likes, long commentCnt, boolean userLikeCk ) {
         this.id = id;
         this.title = title;
         this.content = content;
