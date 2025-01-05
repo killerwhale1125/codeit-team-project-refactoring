@@ -127,6 +127,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         JPAQuery<Gathering> query = queryFactory.select(gathering)
                 .from(gathering)
                 .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .leftJoin(gatheringUser.user, user).fetchJoin()
                 .leftJoin(gathering.challenge, challenge).fetchJoin()
                 .leftJoin(gathering.book, book).fetchJoin()
                 .where(gatheringUser.user.userName.eq(username).and(builder));
@@ -150,6 +151,8 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         List<Gathering> result = queryFactory.select(gathering)
                 .from(gathering)
                 .leftJoin(gathering.challenge, challenge).fetchJoin()
+                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .leftJoin(gatheringUser.user, user).fetchJoin()
                 .leftJoin(gathering.book, book).fetchJoin()
                 .where(gathering.owner.eq(username))
                 .offset(pageable.getOffset())  // 페이지 시작 위치
@@ -169,6 +172,8 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .from(gathering)
                 .leftJoin(gathering.challenge, challenge).fetchJoin()
                 .leftJoin(gathering.book, book).fetchJoin()
+                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .leftJoin(gatheringUser.user, user).fetchJoin()
                 .where(gathering.id.in(wishGatheringIds))
                 .offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기

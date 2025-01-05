@@ -117,6 +117,10 @@ public class GatheringResponse {
                 .currentCapacity(gathering.getCurrentCapacity())
                 .readingRate(challengeReadingRateMap.get(gathering.getChallenge().getId()))
                 .readingTimeGoal(gathering.getChallenge().getReadingTimeGoal().getMinutes())
+                .userProfiles(gathering.getGatheringUsers().stream()
+                        .limit(3)
+                        .map(gatheringUser -> gatheringUser.getUser().getProfile())
+                        .collect(Collectors.toList()))
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
                 .build();
