@@ -1,13 +1,14 @@
 package com.gathering.user.model.entitiy;
 
 import com.gathering.book.model.entity.Book;
+import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.Gathering;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter
 @Entity
-public class UserAttendanceBook {
+public class UserAttendanceBook extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ATNDC_BOOK_ID")
