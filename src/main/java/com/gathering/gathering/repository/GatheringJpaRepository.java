@@ -39,7 +39,7 @@ public interface GatheringJpaRepository extends JpaRepository<Gathering, Long> {
     @Query("SELECT COUNT(g.id) FROM Gathering g " +
             "LEFT JOIN g.gatheringUsers gu " +
             "WHERE gu.user.id = :userId " +
-            "AND gu.gatheringUserStatus = PARTICIPATING " +
+            "AND gu.gatheringUserStatus = NOT_PARTICIPATING " +
             "AND g.gatheringStatus = COMPLETED")
     long getCompletedCountByUserId(@Param("userId") long userId);
 
