@@ -60,6 +60,11 @@ dependencies {
 
 	implementation 'org.jsoup:jsoup:1.16.1'
 
+	// Selenium WebDriver 의존성 추가
+	implementation 'org.seleniumhq.selenium:selenium-java:4.19.1'
+	implementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.19.1'
+	implementation 'org.seleniumhq.selenium:selenium-remote-driver:4.19.1'
+
 //	========================== queryDsl ====================================
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"

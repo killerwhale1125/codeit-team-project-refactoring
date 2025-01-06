@@ -1,10 +1,11 @@
 package com.gathering.user.model.entitiy;
 
-import com.gathering.challenge.model.entity.ChallengeUser;
+import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewLikes;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import jakarta.persistence.*;
@@ -98,6 +99,28 @@ public class User extends BaseTimeEntity {
                 .userName(userDto.getUserName())
                 .password(userDto.getPassword())
                 .email(userDto.getEmail())
+                .build();
+    }
+
+    public static User fromEntity(UserDomain user) {
+        return User.builder()
+                .id(user.getId())
+                .userName(user.getUserName())
+                .password(user.getPassword())
+                .email(user.getEmail())
+                .profile(user.getProfile())
+                .roles(user.getRoles())
+                .build();
+    }
+
+    public UserDomain toEntity() {
+        return UserDomain.builder()
+                .id(id)
+                .userName(userName)
+                .password(password)
+                .email(email)
+                .profile(profile)
+                .roles(roles)
                 .build();
     }
 }

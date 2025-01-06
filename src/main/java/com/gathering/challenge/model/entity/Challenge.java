@@ -1,5 +1,6 @@
 package com.gathering.challenge.model.entity;
 
+import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;

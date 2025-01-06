@@ -1,7 +1,7 @@
 package com.gathering.gathering.service.search;
 
 import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.challenge.model.entity.ChallengeUser;
+import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringResponse;

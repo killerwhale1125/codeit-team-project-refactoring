@@ -1,7 +1,7 @@
 package com.gathering.challenge.repository;
 
 import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.challenge.model.entity.ChallengeUser;
+import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
