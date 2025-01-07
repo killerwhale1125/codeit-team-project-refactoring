@@ -1,12 +1,16 @@
 package com.gathering.gathering.service;
 
 import com.gathering.book.model.domain.BookDomain;
-import com.gathering.gatheringuser.repository.GatheringUserRepository;
-import com.gathering.mock.fake.repository.*;
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.gathering.model.entity.GatheringStatus;
+import com.gathering.gathering.model.entity.GatheringWeek;
+import com.gathering.gathering.model.entity.ReadingTimeGoal;
+import com.gathering.mock.fake.repository.*;
 import com.gathering.mock.fake.service.FakeAwsS3Service;
 import com.gathering.mock.fake.service.FakeImageService;
+import com.gathering.mock.test.TestGatheringValidator;
 import com.gathering.mock.test.TestMultipartFile;
 import com.gathering.mock.test.TestUUIDUtils;
 import com.gathering.user.model.domain.UserDomain;
@@ -22,7 +26,9 @@ import static com.gathering.gathering.model.entity.GatheringStatus.RECRUITING;
 import static com.gathering.gathering.model.entity.GatheringUserStatus.PARTICIPATING;
 import static com.gathering.gathering.model.entity.GatheringWeek.ONE_WEEK;
 import static com.gathering.gathering.model.entity.ReadingTimeGoal.ONE_HOUR;
+import static java.lang.Integer.MAX_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GatheringServiceImplTest {
 
@@ -41,6 +47,7 @@ class GatheringServiceImplTest {
         FakeImageRepository fakeImageRepository = new FakeImageRepository();
         FakeImageService fakeImageService = new FakeImageService(fakeAwsS3Service, fakeImageRepository);
         TestUUIDUtils testUUIDUtils = new TestUUIDUtils("randomUUID");
+        TestGatheringValidator testGatheringValidator = new TestGatheringValidator();
 
         // 의존성 주입
         this.gatheringService = GatheringServiceImpl.builder()
@@ -52,6 +59,7 @@ class GatheringServiceImplTest {
                 .challengeRepository(fakeChallengeRepository)
                 .imageService(fakeImageService)
                 .uuidUtils(testUUIDUtils)
+                .gatheringValidator(testGatheringValidator)
                 .build();
         
         // 테스트 유저 생성
@@ -84,33 +92,15 @@ class GatheringServiceImplTest {
     }
 
     @Test
-    @DisplayName("모임을 생성하면 챌린지도 생성된다.")
+    @DisplayName("책, 썸네일 이미지, 유저 정보를 통하여 챌린지와 모임을 생성한다.")
     void createGathering() {
         /* given */
         final String username = "범고래1";
-
-        final LocalDate startDate = LocalDate.of(2025, 01, 10);
-        final LocalDate endDate = LocalDate.of(2025, 02, 10);
-
-        final GatheringCreate gatheringCreate = GatheringCreate.builder()
-                .name("모임 제목")
-                .content("모임장 소개")
-                .startDate(startDate)
-                .endDate(endDate)
-                .minCapacity(10)
-                .maxCapacity(20)
-                .bookId(1L)
-                .gatheringStatus(RECRUITING)
-                .readingTimeGoal(ONE_HOUR)
-                .gatheringWeek(ONE_WEEK)
-                .build();
-
-        final TestMultipartFile file = new TestMultipartFile(
-                "file",
-                "thumbnail-image.jpg",
-                "image/jpeg",
-                "image content".getBytes()
-        );
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
 
         /* when */
         final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), username);
@@ -156,5 +146,113 @@ class GatheringServiceImplTest {
         // 이미지 ( Image )
         assertThat(gathering.getImage().getId()).isNotNull();
         assertThat(gathering.getImage().getUrl()).isEqualTo("http://www.codeit.com/image/gathering/randomUUID.jpg");
+    }
+
+    @Test
+    @DisplayName("모임을 생성할 때 사용자가 인원 제한 없음을 선택한 경우에는 " +
+            "최대 최소 인원 수를 MAX 값을 전달하여 모임의 최소 인원 수는 5, 최대 인원 수는 MAX 값이 저장된다.")
+    void createGatheringWithUnlimitedCapacity() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, MAX_VALUE, MAX_VALUE, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        /* when */
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), username);
+
+        /* then */
+
+        // 모임 ( Gathering )
+        assertThat(gathering.getId()).isNotNull();
+        assertThat(gathering.getMinCapacity()).isEqualTo(5);
+        assertThat(gathering.getMaxCapacity()).isEqualTo(MAX_VALUE);
+    }
+
+    @Test
+    @DisplayName("시작일이 종료일보다 나중일 경우 예외가 발생한다.")
+    void createGatheringWithValidateStartDate() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.minusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        /* when then */
+        // 모임 ( Gathering )
+        assertThatThrownBy(() -> gatheringService.create(gatheringCreate, List.of(file), username))
+                .isInstanceOf(BaseException.class);
+    }
+
+    @Test
+    @DisplayName("시작일과 종료일이 같은 날짜면 예외를 발생시킨다.")
+    void createGatheringWithValidateEqualsDate() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate;
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, MAX_VALUE, MAX_VALUE, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        /* when then */
+        // 모임 ( Gathering )
+        assertThatThrownBy(() -> gatheringService.create(gatheringCreate, List.of(file), username))
+                .isInstanceOf(BaseException.class);
+    }
+
+    @Test
+    @DisplayName("시작일이 현재보다 이전 날짜일 경우 예외를 발생시킨다.")
+    void createGatheringWithValidateStartDateNow() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now().minusDays(10);
+        final LocalDate endDate = LocalDate.now().plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, MAX_VALUE, MAX_VALUE, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        /* when then */
+        // 모임 ( Gathering )
+        assertThatThrownBy(() -> gatheringService.create(gatheringCreate, List.of(file), username))
+                .isInstanceOf(BaseException.class);
+    }
+
+    private static TestMultipartFile getTestMultipartFile() {
+        final TestMultipartFile file = new TestMultipartFile(
+                "file",
+                "thumbnail-image.jpg",
+                "image/jpeg",
+                "image content".getBytes()
+        );
+        return file;
+    }
+
+    private static GatheringCreate getGatheringCreate(String name,
+                                                      String content,
+                                                      LocalDate startDate,
+                                                      LocalDate endDate,
+                                                      int minCapacity,
+                                                      int maxCapacity,
+                                                      long bookId,
+                                                      GatheringStatus gatheringStatus,
+                                                      ReadingTimeGoal readingTimeGoal,
+                                                      GatheringWeek gatheringWeek) {
+        return GatheringCreate.builder()
+                .name(name)
+                .content(content)
+                .startDate(startDate)
+                .endDate(endDate)
+                .minCapacity(minCapacity)
+                .maxCapacity(maxCapacity)
+                .bookId(bookId)
+                .gatheringStatus(gatheringStatus)
+                .readingTimeGoal(readingTimeGoal)
+                .gatheringWeek(gatheringWeek)
+                .build();
     }
 }
