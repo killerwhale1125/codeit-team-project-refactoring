@@ -1,6 +1,6 @@
-package com.gathering.image.repository.gathering;
+package com.gathering.image.repository;
 
-import com.gathering.image.model.entity.Image;
+import com.gathering.image.model.domain.ImageDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,19 +11,19 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class GatheringImageJdbcRepository {
+public class ImageJdbcRepository {
     private static final String BULK_INSERT_SQL = "INSERT INTO " +
             "`IMAGE`(`IMAGE_NAME` , `IMAGE_URL`, `CREATED_TIME`, `MODIFIED_TIME`, `IS_REMOVED`) " +
             "VALUES(?, ?, ?, ?, ?)";
 
-    private static final String BULK_DELETE_SQL = "DELETE FROM `IMAGE` WHERE `GATHERING_ID` = ?";
+//    private static final String BULK_DELETE_SQL = "DELETE FROM `IMAGE` WHERE `GATHERING_ID` = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
     /**
      * JdbcTemplate가 JPA보다 성능상 이점이 많아서 JdbcTemplate 사용
      */
-    public void saveAll(List<Image> images) {
+    public void saveAll(List<ImageDomain> images) {
         jdbcTemplate.batchUpdate(BULK_INSERT_SQL,
                 images,
                 images.size(),
@@ -40,7 +40,7 @@ public class GatheringImageJdbcRepository {
     /**
      * 특정 gatheringId에 해당하는 이미지 벌크 삭제
      */
-    public void deleteAllByGatheringId(Long gatheringId) {
-        jdbcTemplate.update(BULK_DELETE_SQL, gatheringId);
-    }
+//    public void deleteAllByGatheringId(Long gatheringId) {
+//        jdbcTemplate.update(BULK_DELETE_SQL, gatheringId);
+//    }
 }

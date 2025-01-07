@@ -43,7 +43,7 @@ import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
 import static com.gathering.gathering.model.entity.QGatheringBookReview.gatheringBookReview;
-import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
+import static com.gathering.gatheringuser.model.entity.QGatheringUser.gatheringUser;
 import static com.gathering.review.model.dto.ReviewListDto.fromGatheringReviews;
 import static com.gathering.review.model.entitiy.QBookReview.bookReview;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;

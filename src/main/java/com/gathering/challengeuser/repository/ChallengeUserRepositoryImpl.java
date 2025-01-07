@@ -13,6 +13,7 @@ public class ChallengeUserRepositoryImpl implements ChallengeUserRepository {
 
     @Override
     public ChallengeUserDomain save(ChallengeUserDomain challengeUserDomain) {
-        return challengeUserJpaRepository.save(ChallengeUser.from(challengeUserDomain)).toEntity();
+        ChallengeUserDomain challengeUser = challengeUserJpaRepository.save(ChallengeUser.fromEntity(challengeUserDomain)).toEntity();
+        return challengeUser;
     }
 }

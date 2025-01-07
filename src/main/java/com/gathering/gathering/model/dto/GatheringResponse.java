@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.ReadingTimeGoal;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.entitiy.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -129,7 +130,7 @@ public class GatheringResponse {
     /**
      * 모임 소개
      */
-    public static GatheringResponse introduceFromEntity(Gathering gathering, User user) {
+    public static GatheringResponse introduceFromEntity(Gathering gathering, UserDomain user) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .owner(gathering.getOwner())

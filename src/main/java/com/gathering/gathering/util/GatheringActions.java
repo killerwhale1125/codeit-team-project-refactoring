@@ -1,23 +1,21 @@
 package com.gathering.gathering.util;
 
-import com.gathering.book.model.entity.Book;
 import com.gathering.book.repository.BookRepository;
 import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.challenge.repository.ChallengeRepository;
+import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.validator.GatheringValidator;
+import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.image.model.entity.Image;
-import com.gathering.image.service.gathering.GatheringImageService;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.response.UserResponseDto;
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.model.entitiy.UserAttendance;
 import com.gathering.user.model.entitiy.UserAttendanceBook;
 import com.gathering.user.repository.UserAttendanceBookJpaRepository;
@@ -42,28 +40,28 @@ public class GatheringActions {
     private final ChallengeRepository challengeRepository;
     private final GatheringValidator gatheringValidator;
     private final BookRepository bookRepository;
-    private final GatheringImageService gatheringImageService;
     private final UserAttendanceJpaRepository userAttendanceRepository;
     private final UserAttendanceBookJpaRepository userAttendanceBookRepository;
 
     public Gathering createGathering(GatheringCreate gatheringCreate, String username, List<MultipartFile> files) {
-        List<Image> images = gatheringImageService.uploadGatheringImage(files);
-        User user = userRepository.findByUsername(username);
-        Book book = bookRepository.findById(gatheringCreate.getBookId());
-        book.incrementSelectedCount();
-
-        return Gathering.createGathering(
-                gatheringCreate,
-                Challenge.createChallenge(gatheringCreate, ChallengeUser.createChallengeUser(user)),
-                book,
-                images,
-                GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING),
-                gatheringValidator);
+//        List<Image> images = gatheringImageService.uploadGatheringImage(files);
+//        UserDomain user = userRepository.findByUsername(username);
+//        Book book = bookRepository.findById(gatheringCreate.getBookId());
+//        book.incrementSelectedCount();
+//
+//        return Gathering.createGathering(
+//                gatheringCreate,
+//                Challenge.createChallenge(gatheringCreate, ChallengeUser.createChallengeUser(user)),
+//                book,
+//                images,
+//                GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING),
+//                gatheringValidator);
+        return null;
     }
 
 
     public void joinGathering(Long gatheringId, String username) {
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
         Gathering gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
 
         Gathering.join(gathering, user, GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING), gatheringValidator);
@@ -72,7 +70,7 @@ public class GatheringActions {
 
     public void leaveGathering(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus) {
         Gathering gathering = gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus);
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
 
         Gathering.leave(gathering, user);
         Challenge challenge = challengeRepository.getChallengeUsersById(gathering.getChallenge().getId());
@@ -80,7 +78,7 @@ public class GatheringActions {
     }
 
     public Gathering deleteGathering(Long gatheringId, String username) {
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
         Gathering gathering = gatheringRepository.getById(gatheringId);
         gatheringValidator.validateOwner(gathering.getOwner(), user.getUserName());
         return gathering;
@@ -92,7 +90,7 @@ public class GatheringActions {
                 .collect(Collectors.toList());
     }
 
-    public MyPageGatheringsCountResponse getMyPageGatheringsCount(User user) {
+    public MyPageGatheringsCountResponse getMyPageGatheringsCount(UserDomain user) {
 
         long participatingCount = gatheringRepository.getActiveAndParticipatingCount(user.getId());
         long completedCount = gatheringRepository.getCompletedCount(user.getId());
@@ -105,7 +103,7 @@ public class GatheringActions {
     }
 
     public void readBookGathering(Long gatheringId, String username) {
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
         Gathering gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
         LocalDate today = LocalDate.now();
 

@@ -5,17 +5,13 @@ import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.user.model.entitiy.UserAttendanceBook;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Builder
 public class Book extends BaseTimeEntity {
 
     @Id
@@ -38,28 +34,43 @@ public class Book extends BaseTimeEntity {
 
     private int totalPage;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book")
     List<BookCategory> bookCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book")
     List<BookReview> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book")
     List<UserAttendanceBook> userAttendanceBooks = new ArrayList<>();
 
     public static Book createBook(String title, String image, String author, String publisher, BookCategory bookCategory, String publisherDate, double star, String introduce, int page) {
-//        Book book = new Book();
-//        book.title = title;
-//        book.image = image;
-//        book.author = author;
-//        book.publisher = publisher;
-//        book.publishDate = publisherDate;
-//        book.star = star;
-//        book.introduce = introduce;
-//        book.totalPage = page;
-//        book.bookCategories.add(bookCategory);
-//        bookCategory.addBook(book);
-        return null;
+        Book book = new Book();
+        book.title = title;
+        book.image = image;
+        book.author = author;
+        book.publisher = publisher;
+        book.publishDate = publisherDate;
+        book.star = star;
+        book.introduce = introduce;
+        book.totalPage = page;
+        book.bookCategories.add(bookCategory);
+        bookCategory.addBook(book);
+        return book;
+    }
+
+    public static Book fromEntity(BookDomain book) {
+        Book bookEntity = new Book();
+        bookEntity.id = book.getId();
+        bookEntity.title = book.getTitle();
+        bookEntity.image = book.getImage();
+        bookEntity.publisher = book.getPublisher();
+        bookEntity.author = book.getAuthor();
+        bookEntity.publishDate = book.getPublishDate();
+        bookEntity.selectedCount = book.getSelectedCount();
+        bookEntity.star = book.getStar();
+        bookEntity.introduce = book.getIntroduce();
+        bookEntity.totalPage = book.getTotalPage();
+        return bookEntity;
     }
 
     // 모임에 책이 선택될 때마다 카운트를 증가 ( Best 독서 모임 조회용 )
@@ -73,6 +84,7 @@ public class Book extends BaseTimeEntity {
                 .title(title)
                 .image(image)
                 .publisher(publisher)
+                .author(author)
                 .publishDate(publishDate)
                 .selectedCount(selectedCount)
                 .star(star)

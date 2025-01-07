@@ -1,19 +1,24 @@
 package com.gathering.gathering.model.domain;
 
-import com.gathering.book.model.entity.Book;
-import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.gathering.model.entity.GatheringBookReview;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.book.model.domain.BookDomain;
+import com.gathering.challenge.model.domain.ChallengeDomain;
+import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.entity.GatheringStatus;
-import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.image.model.entity.Image;
-import com.gathering.review.model.entitiy.GatheringReview;
-import com.gathering.user.model.entitiy.UserAttendanceBook;
+import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
+import com.gathering.image.model.domain.ImageDomain;
+import com.gathering.user.model.domain.UserDomain;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GatheringDomain {
     private Long id;
     private String name;
@@ -22,24 +27,34 @@ public class GatheringDomain {
     private LocalDate endDate;
     private int maxCapacity;
     private int minCapacity;
-    private int currentCapacity = 0;
+    private int currentCapacity;
     private String owner;
     private long viewCount;
     private GatheringStatus gatheringStatus;
-
-    private List<GatheringUser> gatheringUsers = new ArrayList<>();
-
-    private List<GatheringBookReview> gatheringBookReviews = new ArrayList<>();
-
-    private List<GatheringReview> gatheringReviews = new ArrayList<>();
-
-    private List<UserAttendanceBook> userAttendanceBooks = new ArrayList<>();
-
-    private Challenge challenge;
-
-    private Book book;
-
+    private List<GatheringUserDomain> gatheringUsers;
+    private ChallengeDomain challenge;
+    private BookDomain book;
     private GatheringWeek gatheringWeek;
+    private ImageDomain image;
 
-    private Image image;
+    public static GatheringDomain create(GatheringCreate gatheringCreate, ChallengeDomain challenge, BookDomain book, List<ImageDomain> images, UserDomain user) {
+        GatheringDomain gathering = GatheringDomain.builder()
+                .name(gatheringCreate.getName())
+                .content(gatheringCreate.getContent())
+                .startDate(gatheringCreate.getStartDate())
+                .endDate(gatheringCreate.getEndDate())
+                .minCapacity(gatheringCreate.getMinCapacity())
+                .maxCapacity(gatheringCreate.getMaxCapacity())
+                .currentCapacity(1)
+                .owner(user.getUserName())
+                .viewCount(0)
+                .gatheringStatus(gatheringCreate.getGatheringStatus())
+                .gatheringUsers(new ArrayList<>())
+                .challenge(challenge)
+                .book(book)
+                .gatheringWeek(gatheringCreate.getGatheringWeek())
+                .image(images.get(0))
+                .build();
+        return gathering;
+    }
 }

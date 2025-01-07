@@ -1,17 +1,31 @@
 package com.gathering.gathering.service;
 
+import com.gathering.book.model.domain.BookDomain;
+import com.gathering.book.repository.BookRepository;
+import com.gathering.challenge.model.domain.ChallengeDomain;
+import com.gathering.challenge.repository.ChallengeRepository;
+import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
+import com.gathering.challengeuser.repository.ChallengeUserRepository;
+import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringUpdate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
-import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.GatheringUser;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.util.GatheringActions;
+import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
+import com.gathering.gatheringuser.model.entity.GatheringUser;
+import com.gathering.gatheringuser.repository.GatheringUserRepository;
+import com.gathering.image.model.domain.ImageDomain;
+import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.service.ImageService;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
+import com.gathering.util.string.UUIDUtils;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,18 +35,48 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Builder
 @RequiredArgsConstructor
 public class GatheringServiceImpl implements GatheringService {
 
     private final GatheringRepository gatheringRepository;
+    private final GatheringUserRepository gatheringUserRepository;
     private final UserRepository userRepository;
     private final GatheringActions gatheringActions;
+    private final BookRepository bookRepository;
+    private final ChallengeUserRepository challengeUserRepository;
+    private final ChallengeRepository challengeRepository;
+    private final ImageService imageService;
+    private final UUIDUtils uuidUtils;
 
     @Override
     @Transactional
-    public void create(GatheringCreate gatheringCreate, List<MultipartFile> files, String username) {
-        Gathering gathering = gatheringActions.createGathering(gatheringCreate, username, files);
-        gatheringRepository.save(gathering);
+    public GatheringDomain create(GatheringCreate gatheringCreate, List<MultipartFile> files, String username) {
+        UserDomain user = userRepository.findByUsername(username);
+        ChallengeDomain challenge = createChallengeForUserAndSave(gatheringCreate, user);
+        BookDomain book = bookRepository.findById(gatheringCreate.getBookId());
+        List<ImageDomain> images = imageService.uploadImage(files, EntityType.GATHERING, uuidUtils);
+        return createGatheringAndSave(gatheringCreate, user, challenge, book, images);
+    }
+
+    private GatheringDomain createGatheringAndSave(GatheringCreate gatheringCreate, UserDomain user, ChallengeDomain challenge, BookDomain book, List<ImageDomain> images) {
+        GatheringDomain gathering = gatheringRepository.save(
+                GatheringDomain.create(
+                        gatheringCreate,
+                        challenge,
+                        book,
+                        images,
+                        user)
+        );
+
+        gatheringUserRepository.save(GatheringUserDomain.create(user, gathering));
+        return gathering;
+    }
+
+    private ChallengeDomain createChallengeForUserAndSave(GatheringCreate gatheringCreate, UserDomain user) {
+        ChallengeDomain challenge = challengeRepository.save(ChallengeDomain.create(gatheringCreate));
+        challengeUserRepository.save(ChallengeUserDomain.create(user, challenge));
+        return challenge;
     }
 
     @Override
@@ -50,7 +94,7 @@ public class GatheringServiceImpl implements GatheringService {
     @Override
     @Transactional
     public void wish(Long gatheringId, String username) {
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
         User.addWish(user, gatheringRepository.findIdById(gatheringId));
         userRepository.save(user);
     }
@@ -67,7 +111,7 @@ public class GatheringServiceImpl implements GatheringService {
 
     @Override
     public MyPageGatheringsCountResponse getMyPageGatheringsCount(String username) {
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
         return gatheringActions.getMyPageGatheringsCount(user);
     }
 

@@ -1,14 +1,15 @@
 package com.gathering.image.model.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
+import com.gathering.image.model.domain.ImageDomain;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Image extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +26,34 @@ public class Image extends BaseTimeEntity {
     private boolean removed;
 
     public static Image createImage(String filepath, String filename) {
-        Image image = new Image();
-        image.name = filename;
-        image.url = filepath;
-        return image;
+//        Image image = new Image();
+//        image.name = filename;
+//        image.url = filepath;
+//        return image;
+        return null;
+    }
+
+    public static Image fromEntity(ImageDomain image) {
+        Image imageEntity = new Image();
+        imageEntity.id = image.getId();
+        imageEntity.name = image.getName();
+        imageEntity.url = image.getUrl();
+        imageEntity.removed = image.isRemoved();
+        return imageEntity;
+    }
+
+    public static List<Image> fromEntity(List<ImageDomain> images) {
+        return images.stream()
+                .map(Image::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public ImageDomain toEntity() {
+        return ImageDomain.builder()
+                .id(id)
+                .name(name)
+                .url(url)
+                .removed(removed)
+                .build();
     }
 }

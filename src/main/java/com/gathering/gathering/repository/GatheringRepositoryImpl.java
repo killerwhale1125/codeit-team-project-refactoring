@@ -1,9 +1,9 @@
 package com.gathering.gathering.repository;
 
 import com.gathering.common.base.exception.BaseException;
+import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,11 +17,10 @@ import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_
 public class GatheringRepositoryImpl implements GatheringRepository {
 
     private final GatheringJpaRepository gatheringJpaRepository;
-    private final JPAQueryFactory queryFactory;
 
     @Override
-    public void save(Gathering gathering) {
-        gatheringJpaRepository.save(gathering);
+    public GatheringDomain save(GatheringDomain gathering) {
+        return gatheringJpaRepository.save(Gathering.fromEntity(gathering)).toEntity();
     }
 
     @Override

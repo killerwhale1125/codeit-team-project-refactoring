@@ -14,7 +14,6 @@ import java.time.LocalDate;
 
 @Getter
 @Entity
-@Builder
 public class ChallengeUser extends BaseTimeEntity {
 
     @Id
@@ -34,7 +33,7 @@ public class ChallengeUser extends BaseTimeEntity {
     private double attendanceRate;  // 출석률
     private double readingRate; // 독서 달성률
 
-    public static ChallengeUser createChallengeUser(User user) {
+    public static ChallengeUser createChallengeUser(UserDomain user) {
 //        ChallengeUser challengeUser = new ChallengeUser();
 //        challengeUser.attendanceDate = null;
 //        challengeUser.attendanceRate = 0.0;
@@ -43,13 +42,18 @@ public class ChallengeUser extends BaseTimeEntity {
         return null;
     }
 
-    public static ChallengeUser from(ChallengeUserDomain challengeUserDomain) {
-        return ChallengeUser.builder()
-                .attendanceDate(challengeUserDomain.getAttendanceDate())
-                .attendanceRate(challengeUserDomain.getAttendanceRate())
-                .readingRate(challengeUserDomain.getReadingRate())
-                .user(User.fromEntity(challengeUserDomain.getUser()))
-                .build();
+    public static ChallengeUser fromEntity(ChallengeUserDomain challengeUser) {
+        ChallengeUser challengeUserEntity = new ChallengeUser();
+        challengeUserEntity.id = challengeUser.getId();
+        challengeUserEntity.attendanceDate = challengeUser.getAttendanceDate();
+        challengeUserEntity.attendanceRate = challengeUser.getAttendanceRate();
+        challengeUserEntity.readingRate = challengeUser.getReadingRate();
+        challengeUserEntity.user = User.fromEntity(challengeUser.getUser());
+        Challenge challenge = Challenge.fromEntity(challengeUser.getChallenge());
+        challengeUserEntity.challenge = challenge;
+        challenge.addChallengeUser(challengeUserEntity);
+
+        return challengeUserEntity;
     }
 
     public void addChallenge(Challenge challenge) {
@@ -68,10 +72,11 @@ public class ChallengeUser extends BaseTimeEntity {
     public ChallengeUserDomain toEntity() {
         return ChallengeUserDomain.builder()
                 .id(id)
-                .user(UserDomain.toEntity(user))
+                .user(user.toEntity())
                 .attendanceDate(attendanceDate)
                 .attendanceRate(attendanceRate)
                 .readingRate(readingRate)
+                .challenge(challenge.toEntity())
                 .build();
     }
 }

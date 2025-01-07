@@ -1,5 +1,6 @@
 package com.gathering.book.repository;
 
+import com.gathering.book.model.domain.BookDomain;
 import com.gathering.book.model.dto.BookResponse;
 import com.gathering.book.model.dto.BookSearchResponse;
 import com.gathering.book.model.entity.Book;
@@ -12,9 +13,11 @@ public interface BookRepository {
 
     boolean existsByTitle(String title);
 
-    void save(Book book);
+    BookDomain save(BookDomain book);
 
-    Book findById(Long bookId);
+    Book save(Book book);
+
+    BookDomain findById(Long bookId);
 
     List<BookSearchResponse> findPopularBooks(Pageable pageable);
 

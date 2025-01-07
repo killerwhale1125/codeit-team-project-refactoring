@@ -5,16 +5,17 @@ import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.image.model.entity.EntityType;
 import com.gathering.image.service.AwsS3Service;
 import com.gathering.security.jwt.JwtTokenUtil;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.date.DateCalculateHolder;
 import com.gathering.util.file.FileUtil;
-import com.gathering.util.image.FileUtils;
+import com.gathering.util.image.SystemFileUtils;
+import com.gathering.util.string.UUIDUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,10 +38,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final FileUtil fileUtil;
     private final DateCalculateHolder dateCalculateHolder;
     private final AwsS3Service awsS3Service;
     private final RedisTemplate<String, String> redisTemplate;
+    private final UUIDUtils uuidUtils;
+
     @Override
     public UserDto sginIn(SignInRequestDto requestDto) {
 
@@ -91,7 +93,7 @@ public class UserServiceImpl implements UserService {
                 if(profile != null && !profile.isEmpty()) {
                         awsS3Service.delete(profile);
                     }
-                String filename = FileUtils.getRandomFilename();
+                String filename = SystemFileUtils.getRandomFilename(uuidUtils);
                 filepath = awsS3Service.upload(file, filename, EntityType.USER);
 
             } catch (Exception e) {
@@ -111,7 +113,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserAttendanceBookResponse> getBooksByCalendarDate(String username, YearMonth yearMonth) {
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
         
         // yyyy-mm 으로 받은 것 중 시작일과 종료일 계산
         LocalDate startDate = dateCalculateHolder.getStartOfMonth(yearMonth);

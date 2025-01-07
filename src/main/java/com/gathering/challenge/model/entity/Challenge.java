@@ -1,20 +1,25 @@
 package com.gathering.challenge.model.entity;
 
+import com.gathering.challenge.model.domain.ChallengeDomain;
+import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.ReadingTimeGoal;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.gathering.challenge.model.entity.ChallengeStatus.ACTIVE;
 import static com.gathering.challenge.model.entity.ChallengeStatus.COMPLETED;
@@ -22,7 +27,6 @@ import static com.gathering.common.base.response.BaseResponseStatus.USER_NOT_IN_
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Challenge extends BaseTimeEntity {
 
     @Id
@@ -30,35 +34,21 @@ public class Challenge extends BaseTimeEntity {
     @Column(name = "challenge_id")
     private Long id;
 
-    @OneToOne(mappedBy = "challenge")
-    private Gathering gathering;
-
-    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "challenge")
     private List<ChallengeUser> challengeUsers = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private ChallengeStatus challengeStatus;
 
     private double completeRate;    // 챌린지 전체 달성률 ( 유저 비율당 계산 예정 )
-    private LocalDate startDateTime;
-    private LocalDate endDateTime;  // 챌린지 종료일
+    private LocalDate startDate;
+    private LocalDate endDate;  // 챌린지 종료일
 
     // Enum Type 변경
     @Enumerated(EnumType.STRING)
     private ReadingTimeGoal readingTimeGoal;
 
-    public static Challenge createChallenge(GatheringCreate gatheringCreate, ChallengeUser challengeUsers) {
-        Challenge challenge = new Challenge();
-        challenge.challengeStatus = ChallengeStatus.INACTIVE;
-        challenge.completeRate = 0.0;
-        challenge.startDateTime = gatheringCreate.getStartDate();
-        challenge.endDateTime = gatheringCreate.getEndDate();
-        challenge.readingTimeGoal = gatheringCreate.getReadingTimeGoal();
-        challenge.addChallengeUser(challengeUsers);
-        return challenge;
-    }
-
-    public static void leave(Challenge challenge, User user) {
+    public static void leave(Challenge challenge, UserDomain user) {
         List<ChallengeUser> challengeUsers = challenge.getChallengeUsers();
         ChallengeUser challengeUser = challengeUsers.stream()
                 .filter(cu -> cu.getUser().getId() == user.getId())
@@ -71,13 +61,15 @@ public class Challenge extends BaseTimeEntity {
         challenge.addChallengeUser(challengeUser);
     }
 
-    private void addChallengeUser(ChallengeUser challengeUser) {
-        challengeUsers.add(challengeUser);
-        challengeUser.addChallenge(this);
-    }
-
-    private void addGathering(Gathering gathering) {
-        this.gathering = gathering;
+    public static Challenge fromEntity(ChallengeDomain challenge) {
+        Challenge challengeEntity = new Challenge();
+        challengeEntity.id = challenge.getId();
+        challengeEntity.challengeStatus = challenge.getChallengeStatus();
+        challengeEntity.completeRate = challenge.getCompleteRate();
+        challengeEntity.startDate = challenge.getStartDate();
+        challengeEntity.endDate = challenge.getEndDate();
+        challengeEntity.readingTimeGoal = challenge.getReadingTimeGoal();
+        return challengeEntity;
     }
 
     public void start() {
@@ -86,5 +78,20 @@ public class Challenge extends BaseTimeEntity {
 
     public void end() {
         this.challengeStatus = COMPLETED;
+    }
+
+    public ChallengeDomain toEntity() {
+        return ChallengeDomain.builder()
+                .id(id)
+                .challengeStatus(challengeStatus)
+                .completeRate(completeRate)
+                .startDate(startDate)
+                .endDate(endDate)
+                .readingTimeGoal(readingTimeGoal)
+                .build();
+    }
+
+    public void addChallengeUser(ChallengeUser challengeUser) {
+        challengeUsers.add(challengeUser);
     }
 }

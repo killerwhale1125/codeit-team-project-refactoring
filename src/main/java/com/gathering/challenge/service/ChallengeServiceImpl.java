@@ -13,20 +13,20 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     private final ChallengeRepository challengeRepository;
 
-    @Override
-    @Transactional
-    public void start(Long challengeId) {
-        Challenge challenge = challengeRepository.findGatheringAndChallengeById(challengeId);
-        challenge.start();
-        Gathering gathering = challenge.getGathering();
-        gathering.start();
-    }
+//    @Override
+//    @Transactional
+//    public void start(Long challengeId) {
+//        Challenge challenge = challengeRepository.findGatheringAndChallengeById(challengeId);
+//        challenge.start();
+//        Gathering gathering = challenge.getGathering();
+//        gathering.start();
+//    }
 
-    @Override
-    public void end(Long challengeId) {
-        Challenge challenge = challengeRepository.findGatheringAndChallengeById(challengeId);
-        challenge.end();
-        Gathering gathering = challenge.getGathering();
-        gathering.end();
-    }
+//    @Override
+//    public void end(Long challengeId) {
+//        Challenge challenge = challengeRepository.findGatheringAndChallengeById(challengeId);
+//        challenge.end();
+//        Gathering gathering = challenge.getGathering();
+//        gathering.end();
+//    }
 }

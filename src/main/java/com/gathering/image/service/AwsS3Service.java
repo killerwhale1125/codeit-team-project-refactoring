@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.gathering.common.properties.AwsS3Properties;
 import com.gathering.image.model.entity.EntityType;
-import com.gathering.util.image.FileUtils;
+import com.gathering.util.image.SystemFileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class AwsS3Service implements StorageService {
     private final AmazonS3 client;
 
     public String upload(MultipartFile file, String filename, EntityType entityType) throws IOException {
-        return putObjectToS3Storage(client, FileUtils.getFilePath(file, filename, entityType, uploadPath), file);
+        return putObjectToS3Storage(client, SystemFileUtils.getFilePath(file, filename, entityType, uploadPath), file);
     }
 
     // S3에서 파일 삭제

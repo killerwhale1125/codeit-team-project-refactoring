@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
 import static com.gathering.gathering.model.entity.QGathering.gathering;
-import static com.gathering.gathering.model.entity.QGatheringUser.gatheringUser;
+import static com.gathering.gatheringuser.model.entity.QGatheringUser.gatheringUser;
 
 @Component
 public class GatheringSearchConditionBuilder {
@@ -22,11 +22,11 @@ public class GatheringSearchConditionBuilder {
         }
 
         if (gatheringSearch.getStartDate() != null) {
-            builder.and(gathering.challenge.startDateTime.goe(gatheringSearch.getStartDate()));
+            builder.and(gathering.challenge.startDate.goe(gatheringSearch.getStartDate()));
         }
 
         if (gatheringSearch.getEndDate() != null) {
-            builder.and(gathering.challenge.endDateTime.loe(gatheringSearch.getEndDate()));
+            builder.and(gathering.challenge.endDate.loe(gatheringSearch.getEndDate()));
         }
 
         if (gatheringSearch.getReadingTimeGoals() != null) {

@@ -17,12 +17,17 @@ public class ChallengeUserDomain {
     private double attendanceRate;  // 출석률
     private double readingRate; // 독서 달성률
 
-    public static ChallengeUserDomain create(UserDomain userDomain) {
+    public static ChallengeUserDomain create(UserDomain userDomain, ChallengeDomain challenge) {
         return ChallengeUserDomain.builder()
+                .challenge(challenge)
                 .attendanceDate(null)
                 .attendanceRate(0.0)
                 .readingRate(0.0)
                 .user(userDomain)
                 .build();
+    }
+
+    public void addChallenge(ChallengeDomain challenge) {
+        this.challenge = challenge;
     }
 }

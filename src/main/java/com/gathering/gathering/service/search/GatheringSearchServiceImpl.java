@@ -14,6 +14,7 @@ import com.gathering.gathering.util.GatheringSearchActions;
 import com.gathering.review.model.dto.BookReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.review.repository.ReviewRepository;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.string.FullTextIndexParser;
@@ -91,7 +92,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     @Override
     public GatheringSearchResponse findMyCreated(String username, Pageable pageable) {
-        User user = userRepository.findByUsername(username);
+        UserDomain user = userRepository.findByUsername(username);
         Page<Gathering> result = gatheringSearchJpaRepository.findMyCreated(user.getUserName(), pageable);
 
         Map<Long, Double> challengeReadingRateMap = getReadingRateMap(username, result);
@@ -119,7 +120,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         Gathering gathering = gatheringSearchJpaRepository.getGatheringWithChallengeAndBook(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
 
-        User user = userRepository.findByUsername(gathering.getOwner());
+        UserDomain user = userRepository.findByUsername(gathering.getOwner());
 
         return GatheringResponse.introduceFromEntity(gathering, user);
     }

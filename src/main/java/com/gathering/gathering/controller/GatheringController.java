@@ -1,6 +1,7 @@
 package com.gathering.gathering.controller;
 
 import com.gathering.common.base.response.BaseResponse;
+import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringRequest;
 import com.gathering.gathering.model.dto.GatheringUpdate;
@@ -38,11 +39,10 @@ public class GatheringController {
      */
     @PostMapping
     @Operation(summary = "모임 생성", description = "gatheringStatus는 RECRUITING, 최소 인원 5 이상 최대인원 6 이상")
-    public BaseResponse<Void> create(@RequestPart("gatheringCreate") @Valid GatheringCreate gatheringCreate,
-                                     @RequestPart(value = "file", required = false) List<MultipartFile> files,
-                                     @AuthenticationPrincipal UserDetails userDetails) {
-        gatheringService.create(gatheringCreate, files, userDetails.getUsername());
-        return new BaseResponse<>();
+    public BaseResponse<GatheringDomain> create(@RequestPart("gatheringCreate") @Valid GatheringCreate gatheringCreate,
+                                                @RequestPart(value = "file", required = false) List<MultipartFile> files,
+                                                @AuthenticationPrincipal UserDetails userDetails) {
+        return new BaseResponse<>(gatheringService.create(gatheringCreate, files, userDetails.getUsername()));
     }
 
     @PatchMapping("/{gatheringId}")

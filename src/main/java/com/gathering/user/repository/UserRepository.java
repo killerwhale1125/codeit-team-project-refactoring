@@ -1,5 +1,6 @@
 package com.gathering.user.repository;
 
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
@@ -18,7 +19,7 @@ public interface UserRepository {
     // 출석 체크
     int insertAttendance(long usersId);
 
-    User findByUsername(String username);
+    UserDomain findByUsername(String username);
 
     // 회원 가입
     void signUp(SignUpRequestDto signUpRequestDto);
@@ -28,7 +29,7 @@ public interface UserRepository {
     // 사용자 수정
     UserDto editUser(EditUserRequestDto editUserRequestDto, String fileName, long userId);
 
-    void save(User user);
+    UserDomain save(UserDomain user);
 
     // 이메일로 사용자 찾기
     UserDto selectUserByEmail(String email);

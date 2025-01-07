@@ -1,5 +1,6 @@
 package com.gathering.challenge.repository;
 
+import com.gathering.challenge.model.domain.ChallengeDomain;
 import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
@@ -18,8 +19,9 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     private final ChallengeJpaRepository challengeJpaRepository;
 
     @Override
-    public void save(Challenge challenge) {
-        challengeJpaRepository.save(challenge);
+    public ChallengeDomain save(ChallengeDomain challenge) {
+        Challenge challengeEntity = challengeJpaRepository.save(Challenge.fromEntity(challenge));
+        return challengeEntity.toEntity();
     }
 
     @Override

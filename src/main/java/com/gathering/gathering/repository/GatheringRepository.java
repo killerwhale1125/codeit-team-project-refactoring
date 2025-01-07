@@ -1,5 +1,6 @@
 package com.gathering.gathering.repository;
 
+import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 
@@ -8,7 +9,7 @@ import java.util.Set;
 
 public interface GatheringRepository {
 
-    void save(Gathering gathering);
+    GatheringDomain save(GatheringDomain gathering);
 
     Gathering getById(Long gatheringId);
 

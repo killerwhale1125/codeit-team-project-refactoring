@@ -1,5 +1,6 @@
 package com.gathering.crawel;
 
+import com.gathering.book.model.domain.BookDomain;
 import com.gathering.book.model.entity.Book;
 import com.gathering.book.model.entity.BookCategory;
 import com.gathering.book.repository.BookRepository;

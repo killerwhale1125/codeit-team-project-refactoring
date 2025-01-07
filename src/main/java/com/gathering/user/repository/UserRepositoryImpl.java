@@ -1,6 +1,7 @@
 package com.gathering.user.repository;
 
 import com.gathering.common.base.exception.BaseException;
+import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
@@ -23,7 +24,7 @@ import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_
 @Repository("userRepository")
 @RequiredArgsConstructor
 @Transactional
-public class UserRepositoryImpl implements UserRepository{
+public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
     private final UserAttendanceJpaRepository userAttendanceJpaRepository;
@@ -32,9 +33,7 @@ public class UserRepositoryImpl implements UserRepository{
 
     @Override
     public UserDto selectUser(String userName) {
-
         User user = userJpaRepository.findByUserName(userName).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
-
         return UserDto.fromEntity(user);
     }
 
@@ -54,8 +53,8 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userJpaRepository.findByUserName(username).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
+    public UserDomain findByUsername(String username) {
+        return userJpaRepository.findByUserName(username).orElseThrow(() -> new BaseException(NOT_EXISTED_USER)).toEntity();
     }
 
     @Override
@@ -107,13 +106,14 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public void save(User user) {
-        userJpaRepository.save(user);
+    public UserDomain save(UserDomain user) {
+        return userJpaRepository.save(User.fromEntity(user)).toEntity();
     }
 
     @Override
     public UserDto selectUserByEmail(String email) {
-        User user = userJpaRepository.findByEmailOrThrow(email);
+//        User user = userJpaRepository.findByEmailOrThrow(email);
+        User user = userJpaRepository.findByEmail(email).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
         return UserDto.fromEntity(user);
     }
 

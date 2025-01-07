@@ -12,12 +12,12 @@ import java.util.Set;
 
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 
-    public Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
-    public Optional<User> findByUserName(String userName);
+    Optional<User> findByUserName(String userName);
 
     default User findByUserNameOrThrow(String userName) {
-        return  findByUserName(userName).orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_EXISTED_USER));
+        return findByUserName(userName).orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_EXISTED_USER));
     }
 
     default User findByEmailOrThrow(String email) {

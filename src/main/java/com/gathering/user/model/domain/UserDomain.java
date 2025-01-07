@@ -1,7 +1,8 @@
 package com.gathering.user.model.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
-import com.gathering.gathering.model.entity.GatheringUser;
+import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewLikes;
 import com.gathering.user.model.entitiy.User;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @Getter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDomain {
     private long id;
 
@@ -40,8 +42,4 @@ public class UserDomain {
     private List<BookReview> reviews = new ArrayList<>();
 
     private Set<Long> wishGatheringIds = new HashSet<>();
-
-    public static UserDomain toEntity(User user) {
-        return null;
-    }
 }

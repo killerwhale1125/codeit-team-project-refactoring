@@ -1,5 +1,6 @@
 package com.gathering.book.repository;
 
+import com.gathering.book.model.domain.BookDomain;
 import com.gathering.book.model.dto.BookSearchResponse;
 import com.gathering.book.model.dto.QBookSearchResponse;
 import com.gathering.book.model.entity.Book;
@@ -37,13 +38,17 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public void save(Book book) {
-        bookJpaRepository.save(book);
+    public BookDomain save(BookDomain book) {
+        return bookJpaRepository.save(Book.fromEntity(book)).toEntity();
+    }
+
+    public Book save(Book book) {
+        return bookJpaRepository.save(book);
     }
 
     @Override
-    public Book findById(Long bookId) {
-        return bookJpaRepository.findById(bookId).orElseThrow(() -> new BaseException(NOT_EXISTED_BOOK));
+    public BookDomain findById(Long bookId) {
+        return bookJpaRepository.findById(bookId).orElseThrow(() -> new BaseException(NOT_EXISTED_BOOK)).toEntity();
     }
 
     @Override

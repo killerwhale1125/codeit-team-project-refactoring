@@ -2,7 +2,7 @@ package com.gathering.user.model.entitiy;
 
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.gathering.model.entity.GatheringUser;
+import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewLikes;
 import com.gathering.user.model.domain.UserDomain;
@@ -18,9 +18,9 @@ import java.util.*;
 @Entity
 @Getter
 @Table(name = "users")
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class User extends BaseTimeEntity {
 
     @Id
@@ -67,7 +67,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "gathering_id")
     private Set<Long> wishGatheringIds = new HashSet<>();
 
-    public static void addWish(User user, Long gatheringId) {
+    public static void addWish(UserDomain user, Long gatheringId) {
         Set<Long> gatheringIds = user.getWishGatheringIds();
         if(gatheringIds.contains(gatheringId)) {
             gatheringIds.remove(gatheringId);
@@ -103,14 +103,14 @@ public class User extends BaseTimeEntity {
     }
 
     public static User fromEntity(UserDomain user) {
-        return User.builder()
-                .id(user.getId())
-                .userName(user.getUserName())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .profile(user.getProfile())
-                .roles(user.getRoles())
-                .build();
+        User userEntity = new User();
+        userEntity.id = user.getId();
+        userEntity.userName = user.getUserName();
+        userEntity.password = user.getPassword();
+        userEntity.email = user.getEmail();
+        userEntity.profile = user.getProfile();
+        userEntity.roles = user.getRoles();
+        return userEntity;
     }
 
     public UserDomain toEntity() {

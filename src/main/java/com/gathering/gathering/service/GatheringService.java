@@ -1,5 +1,6 @@
 package com.gathering.gathering.service;
 
+import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringUpdate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface GatheringService {
-    void create(GatheringCreate gatheringCreate, List<MultipartFile> files, String username);
+    GatheringDomain create(GatheringCreate gatheringCreate, List<MultipartFile> files, String username);
 
     void join(Long gatheringId, String username);
 
