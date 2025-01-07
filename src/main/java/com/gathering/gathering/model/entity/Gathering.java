@@ -72,36 +72,6 @@ public class Gathering extends BaseTimeEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    public static Gathering createGathering(GatheringCreate gatheringCreate,
-                                            Challenge challenge,
-                                            Book book,
-                                            List<Image> images, GatheringUser gatheringUser,
-                                            GatheringValidator gatheringValidator) {
-        Gathering gathering = new Gathering();
-        gathering.name = gatheringCreate.getName();
-        gathering.content = gatheringCreate.getContent();
-        gathering.startDate = gatheringCreate.getStartDate();
-        gathering.endDate = gatheringCreate.getEndDate();
-        gathering.gatheringWeek = gatheringCreate.getGatheringWeek();
-        // 최소 최대 인원수 검증
-        validateCapacity(gatheringCreate.getMinCapacity(), gatheringCreate.getMaxCapacity(), gatheringValidator);
-        gathering.maxCapacity = gatheringCreate.getMaxCapacity();
-        gathering.minCapacity = checkUnlimitedMinCapacity(gatheringCreate);
-        gathering.gatheringStatus = gatheringCreate.getGatheringStatus();
-        gathering.book = book;
-        gathering.owner = gatheringUser.getUser().getUserName();
-        gathering.addChallenge(challenge);
-        gathering.addGatheringUser(gatheringUser, gatheringValidator);
-        gathering.increaseCurrentCapacity();
-        // 현재 썸네일은 1개뿐이라 get(0)으로 지정
-        gathering.image = images.get(0);
-        return gathering;
-    }
-
-    private static int checkUnlimitedMinCapacity(GatheringCreate gatheringCreate) {
-        return gatheringCreate.getMinCapacity() == Integer.MAX_VALUE && gatheringCreate.getMaxCapacity() == Integer.MAX_VALUE ? 5 : gatheringCreate.getMinCapacity();
-    }
-
     // 모임 참여
     public static void join(Gathering gathering, UserDomain user, GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
         // 이미 참여한 유저인지 검증
@@ -162,11 +132,6 @@ public class Gathering extends BaseTimeEntity {
         gatheringValidator.validateCapacityLimit(this.currentCapacity, maxCapacity);
         gatheringUsers.add(gatheringUser);
         gatheringUser.addGathering(this);
-    }
-
-    // 모임에 챌린지 추가
-    private void addChallenge(Challenge challenge) {
-        this.challenge = challenge;
     }
 
     // 유저가 모임에 참여중인지 검증

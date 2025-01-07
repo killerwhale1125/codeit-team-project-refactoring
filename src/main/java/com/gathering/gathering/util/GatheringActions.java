@@ -6,14 +6,12 @@ import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
-import com.gathering.image.model.entity.Image;
 import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.model.entitiy.UserAttendance;
@@ -23,7 +21,6 @@ import com.gathering.user.repository.UserAttendanceJpaRepository;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,23 +39,6 @@ public class GatheringActions {
     private final BookRepository bookRepository;
     private final UserAttendanceJpaRepository userAttendanceRepository;
     private final UserAttendanceBookJpaRepository userAttendanceBookRepository;
-
-    public Gathering createGathering(GatheringCreate gatheringCreate, String username, List<MultipartFile> files) {
-//        List<Image> images = gatheringImageService.uploadGatheringImage(files);
-//        UserDomain user = userRepository.findByUsername(username);
-//        Book book = bookRepository.findById(gatheringCreate.getBookId());
-//        book.incrementSelectedCount();
-//
-//        return Gathering.createGathering(
-//                gatheringCreate,
-//                Challenge.createChallenge(gatheringCreate, ChallengeUser.createChallengeUser(user)),
-//                book,
-//                images,
-//                GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING),
-//                gatheringValidator);
-        return null;
-    }
-
 
     public void joinGathering(Long gatheringId, String username) {
         UserDomain user = userRepository.findByUsername(username);

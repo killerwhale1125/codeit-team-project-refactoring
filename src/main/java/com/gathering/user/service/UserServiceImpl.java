@@ -12,8 +12,7 @@ import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
 import com.gathering.user.repository.UserRepository;
-import com.gathering.util.date.DateCalculateHolder;
-import com.gathering.util.file.FileUtil;
+import com.gathering.util.date.DateCalculateUtils;
 import com.gathering.util.image.SystemFileUtils;
 import com.gathering.util.string.UUIDUtils;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DateCalculateHolder dateCalculateHolder;
+    private final DateCalculateUtils dateCalculateUtils;
     private final AwsS3Service awsS3Service;
     private final RedisTemplate<String, String> redisTemplate;
     private final UUIDUtils uuidUtils;
@@ -116,8 +115,8 @@ public class UserServiceImpl implements UserService {
         UserDomain user = userRepository.findByUsername(username);
         
         // yyyy-mm 으로 받은 것 중 시작일과 종료일 계산
-        LocalDate startDate = dateCalculateHolder.getStartOfMonth(yearMonth);
-        LocalDate endDate = dateCalculateHolder.getEndOfMonth(yearMonth);
+        LocalDate startDate = dateCalculateUtils.getStartOfMonth(yearMonth);
+        LocalDate endDate = dateCalculateUtils.getEndOfMonth(yearMonth);
         
         // 시작일 종료일 기준으로 출석 엔티티 조회
         return userRepository.getUserAttendancesByUserIdAndDate(user.getId(), startDate, endDate).stream()

@@ -14,6 +14,7 @@ import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.util.GatheringActions;
+import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.gatheringuser.repository.GatheringUserRepository;
@@ -47,6 +48,7 @@ public class GatheringServiceImpl implements GatheringService {
     private final ChallengeUserRepository challengeUserRepository;
     private final ChallengeRepository challengeRepository;
     private final ImageService imageService;
+    private final GatheringValidator gatheringValidator;
     private final UUIDUtils uuidUtils;
 
     @Override
@@ -56,17 +58,18 @@ public class GatheringServiceImpl implements GatheringService {
         ChallengeDomain challenge = createChallengeForUserAndSave(gatheringCreate, user);
         BookDomain book = bookRepository.findById(gatheringCreate.getBookId());
         List<ImageDomain> images = imageService.uploadImage(files, EntityType.GATHERING, uuidUtils);
-        return createGatheringAndSave(gatheringCreate, user, challenge, book, images);
+        return createGatheringAndSave(gatheringCreate, user, challenge, book, images, gatheringValidator);
     }
 
-    private GatheringDomain createGatheringAndSave(GatheringCreate gatheringCreate, UserDomain user, ChallengeDomain challenge, BookDomain book, List<ImageDomain> images) {
+    private GatheringDomain createGatheringAndSave(GatheringCreate gatheringCreate, UserDomain user, ChallengeDomain challenge, BookDomain book, List<ImageDomain> images, GatheringValidator gatheringValidator) {
         GatheringDomain gathering = gatheringRepository.save(
                 GatheringDomain.create(
                         gatheringCreate,
                         challenge,
                         book,
                         images,
-                        user)
+                        user,
+                        gatheringValidator)
         );
 
         gatheringUserRepository.save(GatheringUserDomain.create(user, gathering));
