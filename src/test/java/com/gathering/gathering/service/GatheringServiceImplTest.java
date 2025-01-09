@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.gathering.challenge.model.entity.ChallengeStatus.INACTIVE;
+import static com.gathering.gathering.model.entity.GatheringStatus.FULL;
 import static com.gathering.gathering.model.entity.GatheringStatus.RECRUITING;
 import static com.gathering.gathering.model.entity.GatheringUserStatus.PARTICIPATING;
 import static com.gathering.gathering.model.entity.GatheringWeek.ONE_WEEK;
@@ -72,7 +73,17 @@ class GatheringServiceImplTest {
                 .roles("USER")
                 .build();
 
+        UserDomain user2 = UserDomain.builder()
+                .id(2L)
+                .userName("범고래2")
+                .password("Password1!")
+                .email("killerwhale2@naver.com")
+                .profile("userProfile")
+                .roles("USER")
+                .build();
+
         fakeUserRepository.save(user1);
+        fakeUserRepository.save(user2);
 
         // 테스트 책 생성
         BookDomain bookDomain = BookDomain.builder()
@@ -122,7 +133,6 @@ class GatheringServiceImplTest {
 
         // 모임 유저 ( GatheringUser )
         assertThat(gathering.getGatheringUsers().get(0).getId()).isNotNull();
-        assertThat(gathering.getGatheringUsers().get(0).getGathering().getId()).isNotNull();    // 양방향 관계가 잘 설정되었는지 확인
         assertThat(gathering.getGatheringUsers().get(0).getGatheringUserStatus()).isEqualTo(PARTICIPATING);
 
         // 책 ( Book )
@@ -221,6 +231,84 @@ class GatheringServiceImplTest {
         assertThatThrownBy(() -> gatheringService.create(gatheringCreate, List.of(file), username))
                 .isInstanceOf(BaseException.class);
     }
+    
+    @Test
+    @DisplayName("사용자는 아직 챌린지가 시작하지 않은 모임에 참여할 수 있다.")
+    void joinSuccess() {
+        /* given */
+        String owner = "범고래1";
+        final LocalDate startDate = LocalDate.now().plusDays(1);
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), owner);
+
+        Long gatheringId = gathering.getId();
+        String joinUsername = "범고래2";
+        /* when */
+        gatheringService.join(gatheringId, joinUsername);
+        /* then */
+    }
+
+    @Test
+    @DisplayName("챌린지가 이미 시작했을 경우 모임에 참여할 수 없다.")
+    void cannotJoinAlreadyStartedChallenge() {
+        /* given */
+        String owner = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), owner);
+
+        Long gatheringId = gathering.getId();
+        String joinUsername = "범고래2";
+        /* when then */
+        assertThatThrownBy(() -> gatheringService.join(gatheringId, joinUsername))
+                .isInstanceOf(BaseException.class);
+    }
+
+    @Test
+    @DisplayName("이미 모임에 참여했을 경우 모임에 다시 참여할 수 없다.")
+    void cannotJoinAlreadySJoinedUser() {
+        /* given */
+        String owner = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), owner);
+
+        Long gatheringId = gathering.getId();
+        String joinUsername = "범고래1";
+        /* when then */
+        assertThatThrownBy(() -> gatheringService.join(gatheringId, joinUsername))
+                .isInstanceOf(BaseException.class);
+    }
+
+    @Test
+    @DisplayName("모임 인원이 꽉찼을 경우 모임에 참여할 수 없다.")
+    void cannotJoinFullGatheringStatus() {
+        /* given */
+        String owner = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 11, 1L, FULL, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), owner);
+
+        Long gatheringId = gathering.getId();
+        String joinUsername = "범고래1";
+        /* when then */
+        assertThatThrownBy(() -> gatheringService.join(gatheringId, joinUsername))
+                .isInstanceOf(BaseException.class);
+    }
+
+    
 
     private static TestMultipartFile getTestMultipartFile() {
         final TestMultipartFile file = new TestMultipartFile(

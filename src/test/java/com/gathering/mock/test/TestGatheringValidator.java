@@ -2,8 +2,11 @@ package com.gathering.mock.test;
 
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.validator.GatheringValidator;
+import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
+import com.gathering.user.model.domain.UserDomain;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.gathering.common.base.response.BaseResponseStatus.*;
 
@@ -37,8 +40,16 @@ public class TestGatheringValidator implements GatheringValidator {
 
     @Override
     public void validateJoinDate(LocalDate startDate, LocalDate now) {
-        if(!now.isEqual(startDate) && !now.isAfter(startDate)) {
+        if(now.isEqual(startDate) || now.isAfter(startDate)) {
             throw new BaseException(RECRUITMENT_CLOSED);
+        }
+    }
+
+    @Override
+    public void validateAlreadyJoinedUser(List<GatheringUserDomain> gatheringUsers, UserDomain user) {
+        if(gatheringUsers.stream()
+                .anyMatch(gatheringUser -> gatheringUser.getUser().getId() == user.getId())) {
+            throw new BaseException(ALREADY_JOINED);
         }
     }
 }

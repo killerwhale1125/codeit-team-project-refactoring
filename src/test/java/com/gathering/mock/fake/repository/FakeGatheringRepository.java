@@ -5,15 +5,11 @@ import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
-import static com.gathering.gathering.model.entity.GatheringStatus.RECRUITING;
-import static com.gathering.gathering.model.entity.GatheringWeek.ONE_WEEK;
 
 public class FakeGatheringRepository implements GatheringRepository {
 
@@ -66,8 +62,9 @@ public class FakeGatheringRepository implements GatheringRepository {
     }
 
     @Override
-    public Gathering getGatheringAndGatheringUsersById(Long gatheringId) {
-        return null;
+    public GatheringDomain getGatheringAndGatheringUsersById(Long gatheringId) {
+        GatheringDomain gatheringDomain = data.stream().filter(gathering -> gathering.getId() == gatheringId).findFirst().get();
+        return gatheringDomain;
     }
 
     @Override
