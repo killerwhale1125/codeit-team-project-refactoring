@@ -17,7 +17,7 @@ public interface GatheringRepository {
 
     Gathering findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringStatus);
 
-    Gathering getGatheringAndGatheringUsersById(Long gatheringId);
+    GatheringDomain getGatheringAndGatheringUsersById(Long gatheringId);
 
     List<Gathering> findByIdIn(List<Long> gatheringIds);
 

@@ -25,14 +25,6 @@ public class Image extends BaseTimeEntity {
     @Column(name = "is_removed")
     private boolean removed;
 
-    public static Image createImage(String filepath, String filename) {
-//        Image image = new Image();
-//        image.name = filename;
-//        image.url = filepath;
-//        return image;
-        return null;
-    }
-
     public static Image fromEntity(ImageDomain image) {
         Image imageEntity = new Image();
         imageEntity.id = image.getId();

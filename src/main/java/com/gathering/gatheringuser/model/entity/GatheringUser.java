@@ -70,7 +70,6 @@ public class GatheringUser extends BaseTimeEntity {
         return GatheringUserDomain.builder()
                 .id(id)
                 .user(user.toEntity())
-                .gathering(gathering.toEntity())
                 .gatheringUserStatus(gatheringUserStatus)
                 .build();
     }

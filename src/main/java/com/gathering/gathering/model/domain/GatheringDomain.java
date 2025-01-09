@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.gathering.common.base.response.BaseResponseStatus.*;
+import static com.gathering.gathering.model.entity.GatheringStatus.FULL;
+import static com.gathering.gathering.model.entity.GatheringStatus.RECRUITING;
 
 @Getter
 @Builder
@@ -93,5 +95,36 @@ public class GatheringDomain {
         if (gatheringValidator.validateCapacityRange(minCapacity, maxCapacity)) {
             throw new BaseException(INVALID_CAPACITY_RANGE);
         }
+    }
+
+    public static void join(GatheringDomain gathering, UserDomain user, GatheringValidator gatheringValidator) {
+        // 이미 참여한 유저인지 검증
+        gatheringValidator.validateAlreadyJoinedUser(gathering.getGatheringUsers(), user);
+        // 모임(챌린지) 시작일 보다 참여하려는 날짜가 더 나중일 경우 -> startDate < 참여일
+        gatheringValidator.validateJoinDate(gathering.getStartDate(), LocalDate.now());
+        // 모임에 참여 가능한지 검사
+        gatheringValidator.validateCapacityLimit(gathering.getCurrentCapacity(), gathering.getMaxCapacity());
+        // 모임 상태가 참여할 수 있는 상태인지 검증
+        gathering.getGatheringStatus().validate();
+        // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
+        gathering.increaseCurrentCapacity();
+        // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
+        gathering.checkIsFullAndUpdateStatus();
+    }
+
+    // 모임을 참여했거나 떠날 때 참여자 수를 검사하여 상태를 변경한다.
+    private void checkIsFullAndUpdateStatus() {
+        if (this.currentCapacity >= this.maxCapacity) {
+            this.gatheringStatus = FULL;
+        }
+
+        if (this.currentCapacity < this.maxCapacity && this.gatheringStatus == FULL) {
+            this.gatheringStatus = RECRUITING;
+        }
+    }
+
+    // 현재 인원을 증가시킨다.
+    private void increaseCurrentCapacity() {
+        this.currentCapacity++;
     }
 }

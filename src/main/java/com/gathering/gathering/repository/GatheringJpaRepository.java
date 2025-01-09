@@ -19,7 +19,7 @@ public interface GatheringJpaRepository extends JpaRepository<Gathering, Long> {
             "AND gu.gatheringUserStatus = :gatheringUserStatus")
     Optional<Gathering> findGatheringWithUsersByIdAndStatus(@Param("gatheringId") Long gatheringId, @Param("gatheringUserStatus") GatheringUserStatus gatheringUserStatus);
 
-    @EntityGraph(attributePaths = {"gatheringUsers"})
+    @EntityGraph(attributePaths = {"gatheringUsers", "gatheringUsers.user"})
     @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
     Optional<Gathering> getGatheringAndGatheringUsersById(@Param("gatheringId") Long gatheringId);
 

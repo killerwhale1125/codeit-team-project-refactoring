@@ -72,22 +72,6 @@ public class Gathering extends BaseTimeEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    // 모임 참여
-    public static void join(Gathering gathering, UserDomain user, GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
-        // 이미 참여한 유저인지 검증
-        gathering.isUserAlreadyJoined(user.getId());
-        // 모임(챌린지) 시작일 보다 참여하려는 날짜가 더 나중일 경우 -> startDate < 참여일
-        gatheringValidator.validateJoinDate(gathering.getStartDate(), LocalDate.now());
-        // 모임 상태가 참여할 수 있는 상태인지 검증
-        gathering.validateGatheringStatus();
-        // 참여 자리가 남은지 검증 후 모임 유저(중간테이블) 추가
-        gathering.addGatheringUser(gatheringUser, gatheringValidator);
-        // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
-        gathering.increaseCurrentCapacity();
-        // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
-        gathering.checkIsFullAndUpdateStatus();
-    }
-
     // 모임 떠나기
     public static void leave(Gathering gathering, UserDomain user) {
         List<GatheringUser> gatheringUsers = gathering.getGatheringUsers();
@@ -134,38 +118,6 @@ public class Gathering extends BaseTimeEntity {
         gatheringUser.addGathering(this);
     }
 
-    // 유저가 모임에 참여중인지 검증
-    private void isUserAlreadyJoined(long userId) {
-        if(gatheringUsers.stream()
-                .anyMatch(gatheringUser -> gatheringUser.getUser().getId() == userId)) {
-            throw new BaseException(ALREADY_JOINED);
-        }
-    }
-
-    private static void validateCapacity(int minCapacity, int maxCapacity, GatheringValidator gatheringValidator) {
-        if(minCapacity == Integer.MAX_VALUE && maxCapacity == Integer.MAX_VALUE) return;
-
-        if (gatheringValidator.validateMinCapacity(minCapacity)) {
-            throw new BaseException(INVALID_MIN_CAPACITY);
-        }
-        if (gatheringValidator.validateMaxCapacity(maxCapacity)) {
-            throw new BaseException(INVALID_MAX_CAPACITY);
-        }
-        if (gatheringValidator.validateCapacityRange(minCapacity, maxCapacity)) {
-            throw new BaseException(INVALID_CAPACITY_RANGE);
-        }
-    }
-    
-    // 모임의 상태 검증
-    private void validateGatheringStatus() {
-        this.gatheringStatus.validate();
-    }
-
-    // 모임 인원 수 증가
-    private void increaseCurrentCapacity() {
-        this.currentCapacity++;
-    }
-
     // 모임 인원 수 감소
     private void decreaseCurrentCapacity() {
         this.currentCapacity--;
@@ -210,6 +162,7 @@ public class Gathering extends BaseTimeEntity {
                 .book(book.toEntity())
                 .gatheringWeek(gatheringWeek)
                 .image(image.toEntity())
+                .gatheringUsers(gatheringUsers.stream().map(GatheringUser::toEntity).collect(Collectors.toList()))
                 .build();
     }
 

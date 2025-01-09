@@ -40,8 +40,10 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     }
 
     @Override
-    public Gathering getGatheringAndGatheringUsersById(Long gatheringId) {
-        return gatheringJpaRepository.getGatheringAndGatheringUsersById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+    public GatheringDomain getGatheringAndGatheringUsersById(Long gatheringId) {
+        return gatheringJpaRepository.getGatheringAndGatheringUsersById(gatheringId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING))
+                .toEntity();
     }
 
     @Override
