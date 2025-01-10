@@ -249,6 +249,9 @@ class GatheringServiceImplTest {
         /* when */
         gatheringService.join(gatheringId, joinUsername);
         /* then */
+        assertThat(gathering.getCurrentCapacity()).isEqualTo(2);
+        assertThat(gathering.getGatheringUsers()).hasSize(2);
+        assertThat(gathering.getChallenge().getChallengeUsers()).hasSize(2);
     }
 
     @Test

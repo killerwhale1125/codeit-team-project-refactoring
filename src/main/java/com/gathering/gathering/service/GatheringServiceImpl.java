@@ -67,7 +67,8 @@ public class GatheringServiceImpl implements GatheringService {
         UserDomain user = userRepository.findByUsername(userName);
 
         GatheringDomain gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
-        GatheringDomain.join(gathering, user, gatheringValidator);  // 모임 상태 변경 더티체킹
+        GatheringDomain.join(gathering, user, gatheringValidator);
+        gatheringRepository.save(gathering);
         gatheringUserRepository.save(GatheringUserDomain.create(user, gathering));
         challengeUserRepository.save(ChallengeUserDomain.create(user, gathering.getChallenge()));
     }
