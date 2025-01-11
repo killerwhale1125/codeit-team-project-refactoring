@@ -1,9 +1,7 @@
 package com.gathering.gathering.util;
 
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
-import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.repository.GatheringRepository;
-import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.response.UserResponseDto;
@@ -21,14 +19,6 @@ public class GatheringActions {
 
     private final GatheringRepository gatheringRepository;
     private final UserRepository userRepository;
-    private final GatheringValidator gatheringValidator;
-
-    public Gathering deleteGathering(Long gatheringId, String username) {
-        UserDomain user = userRepository.findByUsername(username);
-        Gathering gathering = gatheringRepository.getById(gatheringId);
-        gatheringValidator.validateOwner(gathering.getOwner(), user.getUserName());
-        return gathering;
-    }
 
     public List<UserResponseDto> mapToUserResponseDtos(List<GatheringUser> gatheringUsers) {
         return gatheringUsers.stream()

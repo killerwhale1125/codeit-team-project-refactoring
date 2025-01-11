@@ -1,6 +1,5 @@
 package com.gathering.challenge.model.domain;
 
-import com.gathering.challenge.model.entity.ChallengeStatus;
 import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringCreate;
@@ -14,13 +13,12 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static com.gathering.challenge.model.entity.ChallengeStatus.*;
+import static com.gathering.challenge.model.entity.ChallengeStatus.INACTIVE;
 import static com.gathering.gathering.model.entity.GatheringStatus.RECRUITING;
 import static com.gathering.gathering.model.entity.GatheringWeek.ONE_WEEK;
 import static com.gathering.gathering.model.entity.ReadingTimeGoal.ONE_HOUR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ChallengeDomainTest {
 
@@ -34,7 +32,7 @@ class ChallengeDomainTest {
                 getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
 
         /* when */
-        ChallengeDomain challenge = ChallengeDomain.create(gatheringCreate);
+        final ChallengeDomain challenge = ChallengeDomain.create(gatheringCreate);
         /* then */
         assertThat(challenge.getChallengeStatus()).isEqualTo(INACTIVE);
         assertThat(challenge.getCompleteRate()).isEqualTo(0.0);
@@ -57,7 +55,7 @@ class ChallengeDomainTest {
 
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        ChallengeDomain challenge = ChallengeDomain.builder()
+        final ChallengeDomain challenge = ChallengeDomain.builder()
                 .challengeUsers(new ArrayList<>())
                 .challengeStatus(INACTIVE)
                 .completeRate(0.0)
@@ -89,7 +87,7 @@ class ChallengeDomainTest {
 
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        ChallengeDomain challenge = ChallengeDomain.builder()
+        final ChallengeDomain challenge = ChallengeDomain.builder()
                 .challengeUsers(new ArrayList<>())
                 .challengeStatus(INACTIVE)
                 .completeRate(0.0)

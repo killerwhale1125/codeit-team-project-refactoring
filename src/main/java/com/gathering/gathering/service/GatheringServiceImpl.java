@@ -93,6 +93,15 @@ public class GatheringServiceImpl implements GatheringService {
 
     @Override
     @Transactional
+    public void delete(Long gatheringId, String userName) {
+        UserDomain user = userRepository.findByUsername(userName);
+        GatheringDomain gathering = gatheringRepository.getById(gatheringId);
+        gatheringValidator.validateOwner(gathering.getOwner(), user.getUserName());
+        gatheringRepository.deleteById(gathering.getId());
+    }
+
+    @Override
+    @Transactional
     public void wish(Long gatheringId, String username) {
         UserDomain user = userRepository.findByUsername(username);
         User.addWish(user, gatheringRepository.findIdById(gatheringId));
@@ -119,12 +128,6 @@ public class GatheringServiceImpl implements GatheringService {
     @Transactional
     public void readBook(String username, long gatheringId) {
         gatheringActions.readBookGathering(gatheringId, username);
-    }
-
-    @Override
-    @Transactional
-    public void delete(Long gatheringId, String userName) {
-        gatheringRepository.delete(gatheringActions.deleteGathering(gatheringId, userName));
     }
 
     @Override

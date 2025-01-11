@@ -4,7 +4,6 @@ import com.gathering.book.model.domain.BookDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
-import com.gathering.gathering.model.dto.GatheringRequest;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.model.entity.ReadingTimeGoal;
@@ -65,7 +64,7 @@ class GatheringServiceImplTest {
                 .build();
         
         // 테스트 유저 생성
-        UserDomain user1 = UserDomain.builder()
+        final UserDomain user1 = UserDomain.builder()
                 .id(1L)
                 .userName("범고래1")
                 .password("Password1!")
@@ -74,7 +73,7 @@ class GatheringServiceImplTest {
                 .roles("USER")
                 .build();
 
-        UserDomain user2 = UserDomain.builder()
+        final UserDomain user2 = UserDomain.builder()
                 .id(2L)
                 .userName("범고래2")
                 .password("Password1!")
@@ -87,7 +86,7 @@ class GatheringServiceImplTest {
         fakeUserRepository.save(user2);
 
         // 테스트 책 생성
-        BookDomain bookDomain = BookDomain.builder()
+        final BookDomain bookDomain = BookDomain.builder()
                 .id(1L)
                 .title("책 제목")
                 .image("http://localhost:8080/book-image")
@@ -245,8 +244,8 @@ class GatheringServiceImplTest {
         final TestMultipartFile file = getTestMultipartFile();
         final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), owner);
 
-        Long gatheringId = gathering.getId();
-        String joinUsername = "범고래2";
+        final Long gatheringId = gathering.getId();
+        final String joinUsername = "범고래2";
         /* when */
         gatheringService.join(gatheringId, joinUsername);
         /* then */
@@ -337,6 +336,45 @@ class GatheringServiceImplTest {
         assertThat(gathering.getCurrentCapacity()).isEqualTo(1);
         assertThat(gathering.getGatheringUsers()).hasSize(1);
         assertThat(gathering.getChallenge().getChallengeUsers()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("모임장이라면 모임을 삭제할 수 있다.")
+    void deleteSuccess() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), username);
+
+        /* when */
+        gatheringService.delete(gathering.getId(), username);
+
+        /* then */
+
+    }
+
+    @Test
+    @DisplayName("모임장이 아니라면 모임을 삭제할 수 없다.")
+    void deleteFail() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), username);
+
+        String notOwnerUser = "범고래2";
+        /* when then */
+        assertThatThrownBy(() -> gatheringService.delete(gathering.getId(), notOwnerUser))
+                .isInstanceOf(BaseException.class);
     }
 
     private static TestMultipartFile getTestMultipartFile() {

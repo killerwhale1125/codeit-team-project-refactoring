@@ -55,7 +55,7 @@ class GatheringDomainTest {
                 .totalPage(260)
                 .build();
 
-        ChallengeDomain challenge = ChallengeDomain.builder()
+        final ChallengeDomain challenge = ChallengeDomain.builder()
                 .challengeStatus(INACTIVE)
                 .completeRate(0.0)
                 .startDate(startDate)
@@ -63,14 +63,14 @@ class GatheringDomainTest {
                 .readingTimeGoal(ONE_HOUR)
                 .build();
 
-        ImageDomain image = ImageDomain.builder()
+        final ImageDomain image = ImageDomain.builder()
                 .name("이미지 이름")
                 .url("이미지 url")
                 .removed(false)
                 .build();
 
         /* when */
-        GatheringDomain gathering = GatheringDomain.create(gatheringCreate, challenge, book, List.of(image), user, new TestGatheringValidator());
+        final GatheringDomain gathering = GatheringDomain.create(gatheringCreate, challenge, book, List.of(image), user, new TestGatheringValidator());
 
         /* then */
         // 모임 ( Gathering )

@@ -11,7 +11,7 @@ public interface GatheringRepository {
 
     GatheringDomain save(GatheringDomain gathering);
 
-    Gathering getById(Long gatheringId);
+    GatheringDomain getById(Long gatheringId);
 
     void delete(Gathering gathering);
 
@@ -32,4 +32,6 @@ public interface GatheringRepository {
     long getMyWishedCountByGatheringIds(Set<Long> wishGatheringIds);
 
     void join(GatheringDomain gathering);
+
+    void deleteById(Long gatheringId);
 }

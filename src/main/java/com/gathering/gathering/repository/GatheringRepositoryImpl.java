@@ -24,13 +24,18 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     }
 
     @Override
-    public Gathering getById(Long gatheringId) {
-        return gatheringJpaRepository.findById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+    public GatheringDomain getById(Long gatheringId) {
+        return gatheringJpaRepository.findById(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING)).toEntity();
     }
 
     @Override
     public void delete(Gathering gathering) {
         gatheringJpaRepository.delete(gathering);
+    }
+
+    @Override
+    public void deleteById(Long gatheringId) {
+        gatheringJpaRepository.deleteById(gatheringId);
     }
 
     @Override

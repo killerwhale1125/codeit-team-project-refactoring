@@ -1,8 +1,8 @@
 package com.gathering.mock.fake.repository;
 
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 
 import java.util.ArrayList;
@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 
 public class FakeGatheringRepository implements GatheringRepository {
 
@@ -47,8 +49,10 @@ public class FakeGatheringRepository implements GatheringRepository {
     }
 
     @Override
-    public Gathering getById(Long gatheringId) {
-        return null;
+    public GatheringDomain getById(Long gatheringId) {
+        return data.stream().filter(item -> item.getId() == gatheringId)
+                .findFirst()
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
 
     @Override
@@ -59,12 +63,16 @@ public class FakeGatheringRepository implements GatheringRepository {
     // 챌린지 정보와 gatheringUser 의 상태가 참여중인 정보를 필터링하여 조회한다.
     @Override
     public GatheringDomain findByIdWithGatheringUsersAndChallenge(Long gatheringId) {
-        return data.stream().filter(gathering -> gathering.getId() == gatheringId).findFirst().get();
+        return data.stream().filter(gathering -> gathering.getId() == gatheringId)
+                .findFirst()
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
 
     @Override
     public GatheringDomain getByIdWithGatheringUsersAndChallenge(Long gatheringId) {
-        return data.stream().filter(gathering -> gathering.getId() == gatheringId).findFirst().get();
+        return data.stream().filter(gathering -> gathering.getId() == gatheringId)
+                .findFirst()
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
 
     @Override
@@ -100,5 +108,10 @@ public class FakeGatheringRepository implements GatheringRepository {
     @Override
     public void join(GatheringDomain gathering) {
 
+    }
+
+    @Override
+    public void deleteById(Long gatheringId) {
+        data.removeIf(item -> Objects.equals(item.getId(), gatheringId));
     }
 }
