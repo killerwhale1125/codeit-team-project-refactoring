@@ -19,9 +19,9 @@ public interface GatheringService {
 
     void delete(Long gatheringId, String username);
 
-    List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringStatus);
+    List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId);
 
-    void leave(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus);
+    void leave(Long gatheringId, String username);
 
     void wish(Long gatheringId, String username);
 

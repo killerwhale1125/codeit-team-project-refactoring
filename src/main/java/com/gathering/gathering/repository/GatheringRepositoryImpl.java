@@ -34,14 +34,14 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     }
 
     @Override
-    public Gathering findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringUserStatus) {
-        return gatheringJpaRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus)
-                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
+    public GatheringDomain findByIdWithGatheringUsersAndChallenge(Long gatheringId) {
+        return gatheringJpaRepository.findByIdWithGatheringUsersAndChallenge(gatheringId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING)).toEntity();
     }
 
     @Override
-    public GatheringDomain getGatheringAndGatheringUsersById(Long gatheringId) {
-        return gatheringJpaRepository.getGatheringAndGatheringUsersById(gatheringId)
+    public GatheringDomain getByIdWithGatheringUsersAndChallenge(Long gatheringId) {
+        return gatheringJpaRepository.getByIdWithGatheringUsersAndChallenge(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING))
                 .toEntity();
     }
@@ -74,6 +74,11 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     @Override
     public long getMyWishedCountByGatheringIds(Set<Long> wishGatheringIds) {
         return gatheringJpaRepository.getMyWishedCountByGatheringIds(wishGatheringIds);
+    }
+
+    @Override
+    public void join(GatheringDomain gathering) {
+        gatheringJpaRepository.save(Gathering.fromEntity(gathering));
     }
 
 }

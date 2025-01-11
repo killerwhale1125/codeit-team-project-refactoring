@@ -10,7 +10,7 @@ import java.util.List;
 public interface ChallengeRepository {
     ChallengeDomain save(ChallengeDomain challenge);
 
-    Challenge getChallengeUsersById(Long id);
+    ChallengeDomain getByIdWithChallengeUsers(Long id);
 
     Challenge findById(Long challengeId);
 
@@ -21,4 +21,5 @@ public interface ChallengeRepository {
     ChallengeUser getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId);
 
     List<Challenge> getByIdsIn(List<Long> challengeIds);
+
 }

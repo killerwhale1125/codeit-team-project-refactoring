@@ -72,6 +72,43 @@ public class GatheringDomain {
                 .build();
     }
 
+    public static void join(GatheringDomain gathering, UserDomain user, GatheringValidator gatheringValidator) {
+        // 이미 참여한 유저인지 검증
+        gatheringValidator.validateAlreadyJoinedUser(gathering.getGatheringUsers(), user);
+        // 모임(챌린지) 시작일 보다 참여하려는 날짜가 더 나중일 경우 -> startDate < 참여일
+        gatheringValidator.validateJoinDate(gathering.getStartDate(), LocalDate.now());
+        // 모임에 참여 가능한지 검사
+        gatheringValidator.validateCapacityLimit(gathering.getCurrentCapacity(), gathering.getMaxCapacity());
+        // 모임 상태가 참여할 수 있는 상태인지 검증
+        gathering.getGatheringStatus().validate();
+
+        /* 상태 변화 */
+        // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
+        gathering.increaseCurrentCapacity();
+        // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
+        gathering.checkIsFullAndUpdateStatus();
+    }
+
+    public static GatheringUserDomain leave(GatheringDomain gathering, UserDomain user) {
+        List<GatheringUserDomain> gatheringUsers = gathering.getGatheringUsers();
+        GatheringUserDomain gatheringUser = gatheringUsers.stream()
+                .filter(gu -> gu.getUser().getId() == user.getId())
+                .findFirst()
+                .orElseThrow(() -> new BaseException(USER_NOT_IN_GATHERING));
+
+        if(gatheringUser.getUser().getUserName() == gathering.getOwner())
+            throw new BaseException(HOST_CANNOT_LEAVE_GATHERING);
+
+        // 모임의 참여자 리스트에서 유저 제거
+        gatheringUsers.remove(gatheringUser);
+        // 현재 인원 수 감소
+        gathering.decreaseCurrentCapacity();
+        // 정원이 채워졌다면 모집 중으로 변경)
+        gathering.checkIsFullAndUpdateStatus();
+
+        return gatheringUser;
+    }
+
     private static void validateDate(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate) || startDate.isBefore(LocalDate.now()) || startDate.isEqual(endDate)) {
             throw new BaseException(INVALID_DATE_RANGE);
@@ -97,21 +134,6 @@ public class GatheringDomain {
         }
     }
 
-    public static void join(GatheringDomain gathering, UserDomain user, GatheringValidator gatheringValidator) {
-        // 이미 참여한 유저인지 검증
-        gatheringValidator.validateAlreadyJoinedUser(gathering.getGatheringUsers(), user);
-        // 모임(챌린지) 시작일 보다 참여하려는 날짜가 더 나중일 경우 -> startDate < 참여일
-        gatheringValidator.validateJoinDate(gathering.getStartDate(), LocalDate.now());
-        // 모임에 참여 가능한지 검사
-        gatheringValidator.validateCapacityLimit(gathering.getCurrentCapacity(), gathering.getMaxCapacity());
-        // 모임 상태가 참여할 수 있는 상태인지 검증
-        gathering.getGatheringStatus().validate();
-        // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
-        gathering.increaseCurrentCapacity();
-        // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
-        gathering.checkIsFullAndUpdateStatus();
-    }
-
     // 모임을 참여했거나 떠날 때 참여자 수를 검사하여 상태를 변경한다.
     private void checkIsFullAndUpdateStatus() {
         if (this.currentCapacity >= this.maxCapacity) {
@@ -126,5 +148,9 @@ public class GatheringDomain {
     // 현재 인원을 증가시킨다.
     private void increaseCurrentCapacity() {
         this.currentCapacity++;
+    }
+
+    private void decreaseCurrentCapacity() {
+        this.currentCapacity--;
     }
 }

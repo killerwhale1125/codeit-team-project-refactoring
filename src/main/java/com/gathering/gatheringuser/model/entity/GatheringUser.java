@@ -4,15 +4,13 @@ import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
-import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
-
 import static com.gathering.gathering.model.entity.GatheringUserStatus.NOT_PARTICIPATING;
+import static com.gathering.util.entity.EntityUtils.nullableEntity;
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Getter
 @Entity
@@ -34,43 +32,40 @@ public class GatheringUser extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private GatheringUserStatus gatheringUserStatus;
 
-    public static GatheringUser createGatheringUser(UserDomain user, GatheringUserStatus gatheringUserStatus) {
-//        GatheringUser gatheringUser = new GatheringUser();
-//        gatheringUser.gatheringUserStatus = gatheringUserStatus;
-//        gatheringUser.addUser(User.fromEntity(user));
-//        return gatheringUser;
-        return null;
+    public void endGatheringStatus() {
+        this.gatheringUserStatus = NOT_PARTICIPATING;
     }
 
     public static GatheringUser fromEntity(GatheringUserDomain gatheringUser) {
         GatheringUser gatheringUserEntity = new GatheringUser();
         gatheringUserEntity.id = gatheringUser.getId();
-        gatheringUserEntity.user = User.fromEntity(gatheringUser.getUser());
-        Gathering gathering = Gathering.fromEntity(gatheringUser.getGathering());
-        gatheringUserEntity.gathering = gathering;
-        gathering.addGatheringUser(gatheringUserEntity);
+
+        User user = nullableEntity(User::fromEntity, gatheringUser.getUser());
+        if(user != null) {
+            gatheringUserEntity.user = user;
+            user.getGatheringUsers().add(gatheringUserEntity);
+        }
+
+        Gathering gathering = nullableEntity(Gathering::fromEntity, gatheringUser.getGathering());
+        if(gathering != null) {
+            gatheringUserEntity.gathering = gathering;
+            gathering.getGatheringUsers().add(gatheringUserEntity);
+        }
+
         gatheringUserEntity.gatheringUserStatus = gatheringUser.getGatheringUserStatus();
         return gatheringUserEntity;
     }
 
-    public void addUser(User user) {
-        this.user = user;
-        user.getGatheringUsers().add(this);
-    }
-
-    public void addGathering(Gathering gathering) {
-        this.gathering = gathering;
-    }
-
-    public void endGatheringStatus() {
-        this.gatheringUserStatus = NOT_PARTICIPATING;
-    }
-
     public GatheringUserDomain toEntity() {
-        return GatheringUserDomain.builder()
+        GatheringUserDomain.GatheringUserDomainBuilder builder = GatheringUserDomain.builder()
                 .id(id)
                 .user(user.toEntity())
-                .gatheringUserStatus(gatheringUserStatus)
-                .build();
+                .gatheringUserStatus(gatheringUserStatus);
+
+        if (user != null && getPersistenceUtil().isLoaded(user)) {
+            builder.user(user.toEntity());
+        }
+
+        return builder.build();
     }
 }

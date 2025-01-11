@@ -1,30 +1,17 @@
 package com.gathering.gathering.util;
 
-import com.gathering.book.repository.BookRepository;
-import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.challenge.repository.ChallengeRepository;
-import com.gathering.challengeuser.model.entity.ChallengeUser;
-import com.gathering.common.base.exception.BaseException;
-import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.response.UserResponseDto;
-import com.gathering.user.model.entitiy.UserAttendance;
-import com.gathering.user.model.entitiy.UserAttendanceBook;
-import com.gathering.user.repository.UserAttendanceBookJpaRepository;
-import com.gathering.user.repository.UserAttendanceJpaRepository;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,28 +21,7 @@ public class GatheringActions {
 
     private final GatheringRepository gatheringRepository;
     private final UserRepository userRepository;
-    private final ChallengeRepository challengeRepository;
     private final GatheringValidator gatheringValidator;
-    private final BookRepository bookRepository;
-    private final UserAttendanceJpaRepository userAttendanceRepository;
-    private final UserAttendanceBookJpaRepository userAttendanceBookRepository;
-
-    public void joinGathering(Long gatheringId, String username) {
-//        UserDomain user = userRepository.findByUsername(username);
-//        Gathering gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
-//
-//        Gathering.join(gathering, user, GatheringUser.createGatheringUser(user, GatheringUserStatus.PARTICIPATING), gatheringValidator);
-//        Challenge.join(gathering.getChallenge(), ChallengeUser.createChallengeUser(user));
-    }
-
-    public void leaveGathering(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus) {
-        Gathering gathering = gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus);
-        UserDomain user = userRepository.findByUsername(username);
-
-        Gathering.leave(gathering, user);
-        Challenge challenge = challengeRepository.getChallengeUsersById(gathering.getChallenge().getId());
-        Challenge.leave(challenge, user);
-    }
 
     public Gathering deleteGathering(Long gatheringId, String username) {
         UserDomain user = userRepository.findByUsername(username);

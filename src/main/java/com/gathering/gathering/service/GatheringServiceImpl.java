@@ -10,13 +10,11 @@ import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringUpdate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
-import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.util.GatheringActions;
 import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
-import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.gatheringuser.repository.GatheringUserRepository;
 import com.gathering.image.model.domain.ImageDomain;
 import com.gathering.image.model.entity.EntityType;
@@ -57,6 +55,8 @@ public class GatheringServiceImpl implements GatheringService {
         UserDomain user = userRepository.findByUsername(username);
         ChallengeDomain challenge = createChallengeForUserAndSave(gatheringCreate, user);
         BookDomain book = bookRepository.findById(gatheringCreate.getBookId());
+        book.incrementSelectedCount();
+        bookRepository.save(book);
         List<ImageDomain> images = imageService.uploadImage(files, EntityType.GATHERING, uuidUtils);
         return createGatheringAndSave(gatheringCreate, user, challenge, book, images, gatheringValidator);
     }
@@ -66,8 +66,9 @@ public class GatheringServiceImpl implements GatheringService {
     public void join(Long gatheringId, String userName) {
         UserDomain user = userRepository.findByUsername(userName);
 
-        GatheringDomain gathering = gatheringRepository.getGatheringAndGatheringUsersById(gatheringId);
+        GatheringDomain gathering = gatheringRepository.getByIdWithGatheringUsersAndChallenge(gatheringId);
         GatheringDomain.join(gathering, user, gatheringValidator);
+
         gatheringRepository.save(gathering);
         gatheringUserRepository.save(GatheringUserDomain.create(user, gathering));
         challengeUserRepository.save(ChallengeUserDomain.create(user, gathering.getChallenge()));
@@ -75,8 +76,19 @@ public class GatheringServiceImpl implements GatheringService {
 
     @Override
     @Transactional
-    public void leave(Long gatheringId, String username, GatheringUserStatus gatheringUserStatus) {
-        gatheringActions.leaveGathering(gatheringId, username, gatheringUserStatus);
+    public void leave(Long gatheringId, String username) {
+        GatheringDomain gathering = gatheringRepository.findByIdWithGatheringUsersAndChallenge(gatheringId);
+        UserDomain user = userRepository.findByUsername(username);
+
+        GatheringUserDomain gatheringUser = GatheringDomain.leave(gathering, user);
+
+        gatheringRepository.save(gathering);
+        gatheringUserRepository.deleteById(gatheringUser.getId());
+
+        ChallengeDomain challenge = challengeRepository.getByIdWithChallengeUsers(gathering.getChallenge().getId());
+        ChallengeUserDomain challengeUser = ChallengeDomain.leave(challenge, user);
+        challengeRepository.save(challenge);
+        challengeUserRepository.deleteById(challengeUser.getId());
     }
 
     @Override
@@ -116,9 +128,10 @@ public class GatheringServiceImpl implements GatheringService {
     }
 
     @Override
-    public List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringUserStatus) {
-        List<GatheringUser> gatheringUsers = gatheringRepository.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus).getGatheringUsers();
-        return gatheringActions.mapToUserResponseDtos(gatheringUsers);
+    public List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId) {
+//        List<GatheringUser> gatheringUsers = gatheringRepository.findByIdWithGatheringUsersAndChallenge(gatheringId).getGatheringUsers();
+//        return gatheringActions.mapToUserResponseDtos(gatheringUsers);
+        return null;
     }
 
     private GatheringDomain createGatheringAndSave(GatheringCreate gatheringCreate, UserDomain user, ChallengeDomain challenge, BookDomain book, List<ImageDomain> images, GatheringValidator gatheringValidator) {

@@ -2,15 +2,11 @@ package com.gathering.gathering.model.entity;
 
 import com.gathering.book.model.entity.Book;
 import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.domain.GatheringDomain;
-import com.gathering.gathering.model.dto.GatheringCreate;
-import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.image.model.entity.Image;
 import com.gathering.review.model.entitiy.GatheringReview;
-import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.entitiy.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,8 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.gathering.common.base.response.BaseResponseStatus.*;
-import static com.gathering.gathering.model.entity.GatheringStatus.*;
+import static com.gathering.gathering.model.entity.GatheringStatus.ACTIVE;
+import static com.gathering.gathering.model.entity.GatheringStatus.COMPLETED;
+import static com.gathering.util.entity.EntityUtils.nullableEntity;
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Getter
 @Entity
@@ -72,23 +70,15 @@ public class Gathering extends BaseTimeEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    // 모임 떠나기
-    public static void leave(Gathering gathering, UserDomain user) {
-        List<GatheringUser> gatheringUsers = gathering.getGatheringUsers();
-        GatheringUser gatheringUser = gatheringUsers.stream()
-                .filter(gu -> gu.getUser().getId() == user.getId())
-                .findFirst()
-                .orElseThrow(() -> new BaseException(USER_NOT_IN_GATHERING));
+    public void start() {
+        this.gatheringStatus = ACTIVE;
+    }
 
-        if(gatheringUser.getUser().getUserName() == gathering.getOwner())
-            throw new BaseException(HOST_CANNOT_LEAVE_GATHERING);
-
-        // 모임의 참여자 리스트에서 유저 제거
-        gatheringUsers.remove(gatheringUser);
-        // 현재 인원 수 감소
-        gathering.decreaseCurrentCapacity();
-        // 정원이 채워졌다면 모집 중으로 변경)
-        gathering.checkIsFullAndUpdateStatus();
+    public void end() {
+        this.gatheringStatus = COMPLETED;
+        for(GatheringUser gatheringUser : gatheringUsers) {
+            gatheringUser.endGatheringStatus();
+        }
     }
 
     public static Gathering fromEntity(GatheringDomain gathering) {
@@ -105,48 +95,15 @@ public class Gathering extends BaseTimeEntity {
         gatheringEntity.viewCount = gathering.getViewCount();
         gatheringEntity.gatheringStatus = gathering.getGatheringStatus();
         gatheringEntity.gatheringWeek = gathering.getGatheringWeek();
-        gatheringEntity.challenge = Challenge.fromEntity(gathering.getChallenge());
-        gatheringEntity.book = Book.fromEntity(gathering.getBook());
-        gatheringEntity.image = Image.fromEntity(gathering.getImage());
+
+        gatheringEntity.challenge = nullableEntity(Challenge::fromEntity, gathering.getChallenge());
+        gatheringEntity.book = nullableEntity(Book::fromEntity, gathering.getBook());
+        gatheringEntity.image = nullableEntity(Image::fromEntity, gathering.getImage());
         return gatheringEntity;
     }
 
-    // 모임 유저 추가
-    private void addGatheringUser(GatheringUser gatheringUser, GatheringValidator gatheringValidator) {
-        gatheringValidator.validateCapacityLimit(this.currentCapacity, maxCapacity);
-        gatheringUsers.add(gatheringUser);
-        gatheringUser.addGathering(this);
-    }
-
-    // 모임 인원 수 감소
-    private void decreaseCurrentCapacity() {
-        this.currentCapacity--;
-    }
-
-    // 모임 상태 변화
-    private void checkIsFullAndUpdateStatus() {
-        if (this.currentCapacity >= this.maxCapacity) {
-            this.gatheringStatus = FULL;
-        }
-
-        if (this.currentCapacity < this.maxCapacity && this.gatheringStatus == FULL) {
-            this.gatheringStatus = RECRUITING;
-        }
-    }
-
-    public void start() {
-        this.gatheringStatus = ACTIVE;
-    }
-
-    public void end() {
-        this.gatheringStatus = COMPLETED;
-        for(GatheringUser gatheringUser : gatheringUsers) {
-            gatheringUser.endGatheringStatus();
-        }
-    }
-
     public GatheringDomain toEntity() {
-        return GatheringDomain.builder()
+        GatheringDomain.GatheringDomainBuilder builder = GatheringDomain.builder()
                 .id(id)
                 .name(name)
                 .content(content)
@@ -158,15 +115,25 @@ public class Gathering extends BaseTimeEntity {
                 .owner(owner)
                 .viewCount(viewCount)
                 .gatheringStatus(gatheringStatus)
-                .challenge(challenge.toEntity())
-                .book(book.toEntity())
-                .gatheringWeek(gatheringWeek)
-                .image(image.toEntity())
-                .gatheringUsers(gatheringUsers.stream().map(GatheringUser::toEntity).collect(Collectors.toList()))
-                .build();
+                .gatheringWeek(gatheringWeek);
+
+        if (challenge != null && getPersistenceUtil().isLoaded(challenge)) {
+            builder.challenge(challenge.toEntity());
+        }
+
+        if (book != null && getPersistenceUtil().isLoaded(book)) {
+            builder.book(book.toEntity());
+        }
+
+        if (image != null && getPersistenceUtil().isLoaded(image)) {
+            builder.image(image.toEntity());
+        }
+
+        if(gatheringUsers != null && getPersistenceUtil().isLoaded(gatheringUsers)) {
+            builder.gatheringUsers(gatheringUsers.stream().map(GatheringUser::toEntity).collect(Collectors.toList()));
+        }
+
+        return builder.build();
     }
 
-    public void addGatheringUser(GatheringUser gatheringUserEntity) {
-        gatheringUsers.add(gatheringUserEntity);
-    }
 }

@@ -16,4 +16,14 @@ public class ChallengeUserRepositoryImpl implements ChallengeUserRepository {
         ChallengeUserDomain challengeUser = challengeUserJpaRepository.save(ChallengeUser.fromEntity(challengeUserDomain)).toEntity();
         return challengeUser;
     }
+
+    @Override
+    public void deleteById(Long challengeUserId) {
+        challengeUserJpaRepository.deleteById(challengeUserId);
+    }
+
+    @Override
+    public void join(ChallengeUserDomain challengeUserDomain) {
+        challengeUserJpaRepository.save(ChallengeUser.fromEntity(challengeUserDomain));
+    }
 }

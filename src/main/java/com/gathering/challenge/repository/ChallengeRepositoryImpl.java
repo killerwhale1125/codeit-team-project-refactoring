@@ -20,13 +20,14 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
 
     @Override
     public ChallengeDomain save(ChallengeDomain challenge) {
-        Challenge challengeEntity = challengeJpaRepository.save(Challenge.fromEntity(challenge));
-        return challengeEntity.toEntity();
+        return challengeJpaRepository.save(Challenge.fromEntity(challenge)).toEntity();
     }
 
     @Override
-    public Challenge getChallengeUsersById(Long challengeId) {
-        return challengeJpaRepository.getChallengeUsersById(challengeId).orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE));
+    public ChallengeDomain getByIdWithChallengeUsers(Long challengeId) {
+        return challengeJpaRepository.getByIdWithChallengeUsers(challengeId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE))
+                .toEntity();
     }
 
     @Override

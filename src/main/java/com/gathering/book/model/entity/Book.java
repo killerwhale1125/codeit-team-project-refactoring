@@ -73,11 +73,6 @@ public class Book extends BaseTimeEntity {
         return bookEntity;
     }
 
-    // 모임에 책이 선택될 때마다 카운트를 증가 ( Best 독서 모임 조회용 )
-    public void incrementSelectedCount() {
-        this.selectedCount++;
-    }
-
     public BookDomain toEntity() {
         return BookDomain.builder()
                 .id(id)

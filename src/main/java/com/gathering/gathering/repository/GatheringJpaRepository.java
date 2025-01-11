@@ -12,16 +12,13 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface GatheringJpaRepository extends JpaRepository<Gathering, Long> {
-    @Query("SELECT g FROM Gathering g " +
-            "JOIN FETCH g.gatheringUsers gu " +
-            "JOIN FETCH g.challenge c " +
-            "WHERE g.id = :gatheringId " +
-            "AND gu.gatheringUserStatus = :gatheringUserStatus")
-    Optional<Gathering> findGatheringWithUsersByIdAndStatus(@Param("gatheringId") Long gatheringId, @Param("gatheringUserStatus") GatheringUserStatus gatheringUserStatus);
-
-    @EntityGraph(attributePaths = {"gatheringUsers", "gatheringUsers.user"})
+    @EntityGraph(attributePaths = {"gatheringUsers", "gatheringUsers.user", "challenge"})
     @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
-    Optional<Gathering> getGatheringAndGatheringUsersById(@Param("gatheringId") Long gatheringId);
+    Optional<Gathering> findByIdWithGatheringUsersAndChallenge(@Param("gatheringId") Long gatheringId);
+
+    @EntityGraph(attributePaths = {"gatheringUsers", "gatheringUsers.user", "challenge"})
+    @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
+    Optional<Gathering> getByIdWithGatheringUsersAndChallenge(@Param("gatheringId") Long gatheringId);
 
     List<Gathering> findByIdIn(List<Long> list);
 

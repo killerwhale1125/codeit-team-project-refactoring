@@ -1,20 +1,11 @@
 package com.gathering.challenge.model.entity;
 
 import com.gathering.challenge.model.domain.ChallengeDomain;
-import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
-import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.gathering.model.dto.GatheringCreate;
-import com.gathering.gathering.model.entity.Gathering;
 import com.gathering.gathering.model.entity.ReadingTimeGoal;
-import com.gathering.user.model.domain.UserDomain;
-import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static com.gathering.challenge.model.entity.ChallengeStatus.ACTIVE;
 import static com.gathering.challenge.model.entity.ChallengeStatus.COMPLETED;
-import static com.gathering.common.base.response.BaseResponseStatus.USER_NOT_IN_CHALLENGE;
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Getter
 @Entity
@@ -34,7 +25,7 @@ public class Challenge extends BaseTimeEntity {
     @Column(name = "challenge_id")
     private Long id;
 
-    @OneToMany(mappedBy = "challenge")
+    @OneToMany(mappedBy = "challenge", orphanRemoval = true)
     private List<ChallengeUser> challengeUsers = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -48,17 +39,12 @@ public class Challenge extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ReadingTimeGoal readingTimeGoal;
 
-    public static void leave(Challenge challenge, UserDomain user) {
-        List<ChallengeUser> challengeUsers = challenge.getChallengeUsers();
-        ChallengeUser challengeUser = challengeUsers.stream()
-                .filter(cu -> cu.getUser().getId() == user.getId())
-                .findFirst()
-                .orElseThrow(() -> new BaseException(USER_NOT_IN_CHALLENGE));
-        challengeUsers.remove(challengeUser);
+    public void start() {
+        this.challengeStatus = ACTIVE;
     }
 
-    public static void join(Challenge challenge, ChallengeUser challengeUser) {
-        challenge.addChallengeUser(challengeUser);
+    public void end() {
+        this.challengeStatus = COMPLETED;
     }
 
     public static Challenge fromEntity(ChallengeDomain challenge) {
@@ -72,26 +58,20 @@ public class Challenge extends BaseTimeEntity {
         return challengeEntity;
     }
 
-    public void start() {
-        this.challengeStatus = ACTIVE;
-    }
-
-    public void end() {
-        this.challengeStatus = COMPLETED;
-    }
-
     public ChallengeDomain toEntity() {
-        return ChallengeDomain.builder()
+        ChallengeDomain.ChallengeDomainBuilder builder = ChallengeDomain.builder()
                 .id(id)
                 .challengeStatus(challengeStatus)
                 .completeRate(completeRate)
                 .startDate(startDate)
                 .endDate(endDate)
-                .readingTimeGoal(readingTimeGoal)
-                .build();
+                .readingTimeGoal(readingTimeGoal);
+
+        if (challengeUsers != null && getPersistenceUtil().isLoaded(challengeUsers)) {
+            builder.challengeUsers(challengeUsers.stream().map(ChallengeUser::toEntity).collect(Collectors.toList()));
+        }
+
+        return builder.build();
     }
 
-    public void addChallengeUser(ChallengeUser challengeUser) {
-        challengeUsers.add(challengeUser);
-    }
 }

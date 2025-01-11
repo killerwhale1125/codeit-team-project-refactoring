@@ -14,4 +14,14 @@ public class GatheringUserRepositoryImpl implements GatheringUserRepository {
     public GatheringUserDomain save(GatheringUserDomain gatheringUserDomain) {
         return gatheringUserJpaRepository.save(GatheringUser.fromEntity(gatheringUserDomain)).toEntity();
     }
+
+    @Override
+    public void deleteById(Long gatheringUserId) {
+        gatheringUserJpaRepository.deleteById(gatheringUserId);
+    }
+
+    @Override
+    public void join(GatheringUserDomain gatheringUserDomain) {
+        gatheringUserJpaRepository.save(GatheringUser.fromEntity(gatheringUserDomain));
+    }
 }

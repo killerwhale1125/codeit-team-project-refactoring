@@ -51,10 +51,8 @@ public class GatheringController {
     }
 
     @PostMapping("/{gatheringId}/leave")
-    public BaseResponse<Void> leave(@PathVariable Long gatheringId,
-                                    @RequestBody GatheringRequest gatheringRequest,
-                                   @AuthenticationPrincipal UserDetails userDetails) {
-        gatheringService.leave(gatheringId, userDetails.getUsername(), gatheringRequest.getGatheringUserStatus());
+    public BaseResponse<Void> leave(@PathVariable Long gatheringId, @AuthenticationPrincipal UserDetails userDetails) {
+        gatheringService.leave(gatheringId, userDetails.getUsername());
         return new BaseResponse<>();
     }
 
@@ -66,9 +64,8 @@ public class GatheringController {
     }
 
     @GetMapping("/{gatheringId}/users")
-    public BaseResponse<List<UserResponseDto>> findGatheringWithUsersByIdAndStatus(@PathVariable Long gatheringId,
-                                                                                   @RequestParam GatheringUserStatus gatheringUserStatus) {
-        return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId, gatheringUserStatus));
+    public BaseResponse<List<UserResponseDto>> findGatheringWithUsersByIdAndStatus(@PathVariable Long gatheringId) {
+        return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId));
     }
 
     @PostMapping("/{gatheringId}/wish")

@@ -26,8 +26,4 @@ public class ChallengeUserDomain {
                 .user(userDomain)
                 .build();
     }
-
-    public void addChallenge(ChallengeDomain challenge) {
-        this.challenge = challenge;
-    }
 }

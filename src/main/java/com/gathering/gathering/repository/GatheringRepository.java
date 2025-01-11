@@ -15,9 +15,9 @@ public interface GatheringRepository {
 
     void delete(Gathering gathering);
 
-    Gathering findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringStatus);
+    GatheringDomain findByIdWithGatheringUsersAndChallenge(Long gatheringId);
 
-    GatheringDomain getGatheringAndGatheringUsersById(Long gatheringId);
+    GatheringDomain getByIdWithGatheringUsersAndChallenge(Long gatheringId);
 
     List<Gathering> findByIdIn(List<Long> gatheringIds);
 
@@ -30,4 +30,6 @@ public interface GatheringRepository {
     long getMyCreatedCount(String userName);
 
     long getMyWishedCountByGatheringIds(Set<Long> wishGatheringIds);
+
+    void join(GatheringDomain gathering);
 }

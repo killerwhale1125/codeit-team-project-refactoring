@@ -4,13 +4,14 @@ import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+
+import static com.gathering.util.entity.EntityUtils.nullableEntity;
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Getter
 @Entity
@@ -33,13 +34,8 @@ public class ChallengeUser extends BaseTimeEntity {
     private double attendanceRate;  // 출석률
     private double readingRate; // 독서 달성률
 
-    public static ChallengeUser createChallengeUser(UserDomain user) {
-//        ChallengeUser challengeUser = new ChallengeUser();
-//        challengeUser.attendanceDate = null;
-//        challengeUser.attendanceRate = 0.0;
-//        challengeUser.readingRate = 0.0;
-//        challengeUser.addUser(user);
-        return null;
+    public void updateReadingRate(GatheringWeek gatheringWeek, long userAttendanceCount) {
+        this.readingRate = userAttendanceCount / gatheringWeek.getWeek() * 100;
     }
 
     public static ChallengeUser fromEntity(ChallengeUserDomain challengeUser) {
@@ -48,35 +44,34 @@ public class ChallengeUser extends BaseTimeEntity {
         challengeUserEntity.attendanceDate = challengeUser.getAttendanceDate();
         challengeUserEntity.attendanceRate = challengeUser.getAttendanceRate();
         challengeUserEntity.readingRate = challengeUser.getReadingRate();
-        challengeUserEntity.user = User.fromEntity(challengeUser.getUser());
-        Challenge challenge = Challenge.fromEntity(challengeUser.getChallenge());
-        challengeUserEntity.challenge = challenge;
-        challenge.addChallengeUser(challengeUserEntity);
+
+        User user = nullableEntity(User::fromEntity, challengeUser.getUser());
+        if(user != null) {
+            challengeUserEntity.user = user;
+            user.getChallengeUsers().add(challengeUserEntity);
+        }
+
+        Challenge challenge = nullableEntity(Challenge::fromEntity, challengeUser.getChallenge());
+        if(challenge != null) {
+            challengeUserEntity.challenge = challenge;
+            challenge.getChallengeUsers().add(challengeUserEntity);
+        }
 
         return challengeUserEntity;
     }
 
-    public void addChallenge(Challenge challenge) {
-        this.challenge = challenge;
-    }
-
-    public void addUser(User user) {
-        this.user = user;
-        user.getChallengeUsers().add(this);
-    }
-
-    public void updateReadingRate(GatheringWeek gatheringWeek, long userAttendanceCount) {
-        this.readingRate = userAttendanceCount / gatheringWeek.getWeek() * 100;
-    }
-
     public ChallengeUserDomain toEntity() {
-        return ChallengeUserDomain.builder()
+        ChallengeUserDomain.ChallengeUserDomainBuilder builder = ChallengeUserDomain.builder()
                 .id(id)
                 .user(user.toEntity())
                 .attendanceDate(attendanceDate)
                 .attendanceRate(attendanceRate)
-                .readingRate(readingRate)
-                .challenge(challenge.toEntity())
-                .build();
+                .readingRate(readingRate);
+
+        if (user != null && getPersistenceUtil().isLoaded(user)) {
+            builder.user(user.toEntity());
+        }
+
+        return builder.build();
     }
 }
