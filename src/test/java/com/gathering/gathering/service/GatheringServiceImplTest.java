@@ -21,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 
 import static com.gathering.challenge.model.entity.ChallengeStatus.INACTIVE;
@@ -73,6 +74,7 @@ class GatheringServiceImplTest {
                 .email("killerwhale1125@naver.com")
                 .profile("userProfile")
                 .roles("USER")
+                .wishGatheringIds(new HashSet<>())
                 .build();
 
         final UserDomain user2 = UserDomain.builder()
@@ -82,6 +84,7 @@ class GatheringServiceImplTest {
                 .email("killerwhale2@naver.com")
                 .profile("userProfile")
                 .roles("USER")
+                .wishGatheringIds(new HashSet<>())
                 .build();
 
         fakeUserRepository.save(user1);
@@ -404,6 +407,48 @@ class GatheringServiceImplTest {
         assertThat(userResponses.get(0).getEmail()).isEqualTo("killerwhale1125@naver.com");
         assertThat(userResponses.get(0).getProfile()).isEqualTo("userProfile");
         assertThat(userResponses.get(0).getRoles()).isEqualTo("USER");
+    }
+
+    @Test
+    @DisplayName("사용자는 모임을 찜하지 않았다면 찜한 모임 리스트에 추가한다.")
+    void wishAdd() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), username);
+
+        /* when */
+        gatheringService.wish(gathering.getId(), username);
+
+        /* then */
+        assertThat(gathering.getGatheringUsers().get(0).getUser().getWishGatheringIds()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("사용자는 이미 찜한 모임을 또 찜한다면 찜 리스트에서 해당 모임을 삭제한다")
+    void wishDelete() {
+        /* given */
+        final String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), username);
+
+        gatheringService.wish(gathering.getId(), username);
+
+        /* when */
+        gatheringService.wish(gathering.getId(), username);
+
+        /* then */
+        assertThat(gathering.getGatheringUsers().get(0).getUser().getWishGatheringIds()).hasSize(0);
     }
 
     private static TestMultipartFile getTestMultipartFile() {

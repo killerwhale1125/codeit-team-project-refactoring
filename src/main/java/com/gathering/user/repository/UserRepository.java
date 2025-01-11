@@ -4,7 +4,6 @@ import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.model.entitiy.UserAttendance;
 
 import java.time.LocalDate;

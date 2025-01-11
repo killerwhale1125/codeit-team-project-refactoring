@@ -1,12 +1,10 @@
 package com.gathering.mock.fake.repository;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.model.entitiy.UserAttendance;
 import com.gathering.user.repository.UserRepository;
 
@@ -17,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.gathering.common.base.response.BaseResponseStatus.*;
+import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
 
 public class FakeUserRepository implements UserRepository {
 
@@ -96,4 +94,5 @@ public class FakeUserRepository implements UserRepository {
     public List<UserAttendance> getUserAttendancesByUserIdAndDate(Long id, LocalDate startDate, LocalDate endDate) {
         return null;
     }
+
 }

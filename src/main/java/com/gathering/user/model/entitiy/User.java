@@ -67,15 +67,6 @@ public class User extends BaseTimeEntity {
     @Column(name = "gathering_id")
     private Set<Long> wishGatheringIds = new HashSet<>();
 
-    public static void addWish(UserDomain user, Long gatheringId) {
-        Set<Long> gatheringIds = user.getWishGatheringIds();
-        if(gatheringIds.contains(gatheringId)) {
-            gatheringIds.remove(gatheringId);
-        } else {
-            gatheringIds.add(gatheringId);
-        }
-    }
-
     public List<String> getRoleList() {
         if(this.roles.length() > 0) {
             return Arrays.asList(this.roles.split(","));
@@ -121,6 +112,7 @@ public class User extends BaseTimeEntity {
                 .email(email)
                 .profile(profile)
                 .roles(roles)
+                .wishGatheringIds(wishGatheringIds)
                 .build();
     }
 }

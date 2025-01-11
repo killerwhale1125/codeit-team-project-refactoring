@@ -54,7 +54,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UserDomain findByUsername(String username) {
-        return userJpaRepository.findByUserName(username).orElseThrow(() -> new BaseException(NOT_EXISTED_USER)).toEntity();
+        return userJpaRepository.findByUserName(username)
+                .orElseThrow(() -> new BaseException(NOT_EXISTED_USER))
+                .toEntity();
     }
 
     @Override

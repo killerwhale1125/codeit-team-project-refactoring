@@ -23,7 +23,6 @@ import com.gathering.image.model.entity.EntityType;
 import com.gathering.image.service.ImageService;
 import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.response.UserResponseDto;
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.string.UUIDUtils;
 import lombok.Builder;
@@ -106,7 +105,8 @@ public class GatheringServiceImpl implements GatheringService {
     @Transactional
     public void wish(Long gatheringId, String username) {
         UserDomain user = userRepository.findByUsername(username);
-        User.addWish(user, gatheringRepository.findIdById(gatheringId));
+        Long findGatheringId = gatheringRepository.findIdById(gatheringId);
+        UserDomain.wishGathering(user, findGatheringId);
         userRepository.save(user);
     }
 

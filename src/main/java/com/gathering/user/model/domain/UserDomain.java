@@ -5,13 +5,10 @@ import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewLikes;
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.model.entitiy.UserAttendance;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,11 +32,20 @@ public class UserDomain {
 
     private List<ReviewLikes> reviewLikes;
 
-    private List<GatheringUser> gatheringUsers = new ArrayList<>();
+    private List<GatheringUser> gatheringUsers;
 
-    private List<ChallengeUser> challengeUsers = new ArrayList<>();
+    private List<ChallengeUser> challengeUsers;
 
-    private List<BookReview> reviews = new ArrayList<>();
+    private List<BookReview> reviews;
 
-    private Set<Long> wishGatheringIds = new HashSet<>();
+    private Set<Long> wishGatheringIds;
+
+    public static void wishGathering(UserDomain user, Long gatheringId) {
+        Set<Long> gatheringIds = user.getWishGatheringIds();
+        if(gatheringIds.contains(gatheringId)) {
+            gatheringIds.remove(gatheringId);
+        } else {
+            gatheringIds.add(gatheringId);
+        }
+    }
 }

@@ -3,7 +3,6 @@ package com.gathering.user.controller;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.service.search.GatheringSearchService;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
@@ -12,13 +11,10 @@ import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
 import com.gathering.user.redis.UserRedisKey;
 import com.gathering.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +24,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -40,16 +35,14 @@ import static com.gathering.user.util.Validator.isValidEmail;
 @RestController
 @RequestMapping("/api/auths")
 @RequiredArgsConstructor
-@Tag(name = "사용자 API", description = "사용자 응답 관련 api")
-@ApiResponse(responseCode = "200", description = "success")
 @Validated  // 파라미터의 유효성 검사를 활성화
 public class UserController {
 
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final GatheringSearchService gatheringSearchService;
+
     @RequestMapping(value = "/getAccessToken", method = RequestMethod.POST)
-    @Operation(summary = "토큰 발급(임시)", description = "개발용 토큰 발급 api")
     public BaseResponse<String> getAccessToken(
             @RequestBody GetAccessTokenDto getAccessTokenDto
             ){
@@ -59,7 +52,6 @@ public class UserController {
     }
 
     @RequestMapping(value = "/signIn", method = RequestMethod.POST)
-    @Operation(summary = "로그인", description = "사용자 로그인")
     public BaseResponse<UserDto> signIn(
             @Valid @RequestBody SignInRequestDto requestDto,
             HttpServletRequest request,
@@ -79,7 +71,6 @@ public class UserController {
     }
 
     @RequestMapping(value = "/signUp", method = RequestMethod.POST)
-    @Operation(summary = "회원가입", description = "signUp")
     public BaseResponse<Void> signUp(
             @Valid @RequestBody SignUpRequestDto signUpRequestDto  // JSON 데이터
     ) {
@@ -120,7 +111,6 @@ public class UserController {
     }
 
     @RequestMapping(value = "/signOut", method = RequestMethod.POST)
-    @Operation(summary = "사용자 로그아웃", description = "사용자 로그아웃 ")
     public BaseResponse<Void> signout(
             HttpServletRequest request, HttpServletResponse response
     ) {
@@ -139,7 +129,6 @@ public class UserController {
     }
 
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
-    @Operation(summary = "마이 프로필", description = "사용자 정보 제공")
     public BaseResponse<UserDto> myprofile(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
@@ -157,9 +146,6 @@ public class UserController {
     *  4. 이후 서베에 파일 저장, 사용자 정보 업데이트
     */
     @RequestMapping(value = "/edit/user", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정<br>" +
-            "비밀번호의 경우 변경시 받고 없으면 제외하고 전송하면 됩니다.<br>" +
-            "변경여부 상관없이 아이디랑 이메일 값을 전송 하시면 됩니다.<br>")
     public BaseResponse<UserDto> editUser(
             @RequestPart("data") @Valid EditUserRequestDto editUserRequestDto,   // JSON 데이터
             @RequestPart(value = "file" ,required = false) MultipartFile file,
@@ -182,7 +168,6 @@ public class UserController {
     }
 
     @RequestMapping(value = "/password/check", method = RequestMethod.POST)
-    @Operation(summary = "패스워드 확인", description = "패스워드 확인")
     public BaseResponse<Void> passwordCheck(
             @RequestBody @Valid PasswordCheckDto passwordCheckDto,
             @AuthenticationPrincipal UserDetails userDetails
@@ -200,7 +185,6 @@ public class UserController {
 
     }
     @RequestMapping(value = "/refresh", method = RequestMethod.POST)
-    @Operation(summary = "토큰 재발급", description = "Notion 참고")
     public BaseResponse<UserDto> reissueToken(
             HttpServletRequest request, HttpServletResponse response
     ) {
@@ -215,7 +199,6 @@ public class UserController {
      * 달력의 날짜 별 내가 읽었던 책 기록
      */
     @RequestMapping(value = "/myBookCalendar", method = RequestMethod.GET)
-    @Operation(summary = "독서 기록 달력", description = "Notion 참고")
     public BaseResponse<List<UserAttendanceBookResponse>> getBooksByCalendarDate(@AuthenticationPrincipal UserDetails userDetails,
                                                                                  @RequestParam YearMonth yearMonth) {
         return new BaseResponse<>(userService.getBooksByCalendarDate(userDetails.getUsername(), yearMonth));
