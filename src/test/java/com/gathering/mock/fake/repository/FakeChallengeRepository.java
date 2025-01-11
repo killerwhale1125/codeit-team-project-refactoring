@@ -38,8 +38,8 @@ public class FakeChallengeRepository implements ChallengeRepository {
     }
 
     @Override
-    public Challenge getChallengeUsersById(Long id) {
-        return null;
+    public ChallengeDomain getByIdWithChallengeUsers(Long challengeId) {
+        return data.stream().filter(item -> item.getId() == challengeId).findFirst().get();
     }
 
     @Override

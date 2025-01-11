@@ -33,4 +33,14 @@ public class FakeGatheringUserRepository implements GatheringUserRepository {
             return gatheringUser;
         }
     }
+
+    @Override
+    public void deleteById(Long gatheringUserId) {
+
+    }
+
+    @Override
+    public void join(GatheringUserDomain gatheringUserDomain) {
+
+    }
 }

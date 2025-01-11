@@ -56,15 +56,15 @@ public class FakeGatheringRepository implements GatheringRepository {
 
     }
 
+    // 챌린지 정보와 gatheringUser 의 상태가 참여중인 정보를 필터링하여 조회한다.
     @Override
-    public Gathering findGatheringWithUsersByIdAndStatus(Long gatheringId, GatheringUserStatus gatheringStatus) {
-        return null;
+    public GatheringDomain findByIdWithGatheringUsersAndChallenge(Long gatheringId) {
+        return data.stream().filter(gathering -> gathering.getId() == gatheringId).findFirst().get();
     }
 
     @Override
-    public GatheringDomain getGatheringAndGatheringUsersById(Long gatheringId) {
-        GatheringDomain gatheringDomain = data.stream().filter(gathering -> gathering.getId() == gatheringId).findFirst().get();
-        return gatheringDomain;
+    public GatheringDomain getByIdWithGatheringUsersAndChallenge(Long gatheringId) {
+        return data.stream().filter(gathering -> gathering.getId() == gatheringId).findFirst().get();
     }
 
     @Override
@@ -95,5 +95,10 @@ public class FakeGatheringRepository implements GatheringRepository {
     @Override
     public long getMyWishedCountByGatheringIds(Set<Long> wishGatheringIds) {
         return 0;
+    }
+
+    @Override
+    public void join(GatheringDomain gathering) {
+
     }
 }

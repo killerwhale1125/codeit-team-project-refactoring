@@ -38,4 +38,14 @@ public class FakeChallengeUserRepository implements ChallengeUserRepository {
             return challengeUser;
         }
     }
+
+    @Override
+    public void deleteById(Long challengeUserId) {
+
+    }
+
+    @Override
+    public void join(ChallengeUserDomain challengeUserDomain) {
+
+    }
 }

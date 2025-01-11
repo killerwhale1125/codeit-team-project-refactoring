@@ -4,6 +4,7 @@ import com.gathering.book.model.domain.BookDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.gathering.model.dto.GatheringRequest;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.model.entity.ReadingTimeGoal;
@@ -234,7 +235,7 @@ class GatheringServiceImplTest {
     
     @Test
     @DisplayName("사용자는 아직 챌린지가 시작하지 않은 모임에 참여할 수 있다.")
-    void joinSuccess() {
+    void join() {
         /* given */
         String owner = "범고래1";
         final LocalDate startDate = LocalDate.now().plusDays(1);
@@ -311,7 +312,32 @@ class GatheringServiceImplTest {
                 .isInstanceOf(BaseException.class);
     }
 
-    
+    @Test
+    @DisplayName("사용자는 아직 챌린지가 시작하지 않은 모임에 참여할 수 있다.")
+    void leaveSuccess() {
+        /* given */
+        // 모임 생성
+        String owner = "범고래1";
+        final LocalDate startDate = LocalDate.now().plusDays(1);
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), owner);
+
+        // 모임 참여
+        Long gatheringId = gathering.getId();
+        String joinUsername = "범고래2";
+        gatheringService.join(gatheringId, joinUsername);
+
+        /* when */
+        gatheringService.leave(gatheringId, joinUsername);
+
+        /* then */
+        assertThat(gathering.getCurrentCapacity()).isEqualTo(1);
+        assertThat(gathering.getGatheringUsers()).hasSize(1);
+        assertThat(gathering.getChallenge().getChallengeUsers()).hasSize(1);
+    }
 
     private static TestMultipartFile getTestMultipartFile() {
         final TestMultipartFile file = new TestMultipartFile(
