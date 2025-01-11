@@ -64,8 +64,9 @@ public class GatheringController {
     }
 
     @GetMapping("/{gatheringId}/users")
-    public BaseResponse<List<UserResponseDto>> findGatheringWithUsersByIdAndStatus(@PathVariable Long gatheringId) {
-        return new BaseResponse<>(gatheringService.findGatheringWithUsersByIdAndStatus(gatheringId));
+    public BaseResponse<List<UserResponseDto>> findByGatheringIdAndStatusWithUsers(@PathVariable Long gatheringId,
+                                                                          @RequestParam GatheringUserStatus gatheringUserStatus) {
+        return new BaseResponse<>(gatheringService.findByGatheringIdAndStatusWithUsers(gatheringId, gatheringUserStatus));
     }
 
     @PostMapping("/{gatheringId}/wish")

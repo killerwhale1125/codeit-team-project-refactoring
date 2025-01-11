@@ -59,7 +59,6 @@ public class GatheringUser extends BaseTimeEntity {
     public GatheringUserDomain toEntity() {
         GatheringUserDomain.GatheringUserDomainBuilder builder = GatheringUserDomain.builder()
                 .id(id)
-                .user(user.toEntity())
                 .gatheringUserStatus(gatheringUserStatus);
 
         if (user != null && getPersistenceUtil().isLoaded(user)) {

@@ -1,6 +1,7 @@
 package com.gathering.mock.fake.repository;
 
 import com.gathering.gathering.model.domain.GatheringDomain;
+import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
 import com.gathering.gatheringuser.repository.GatheringUserRepository;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class FakeGatheringUserRepository implements GatheringUserRepository {
 
@@ -42,5 +44,13 @@ public class FakeGatheringUserRepository implements GatheringUserRepository {
     @Override
     public void join(GatheringUserDomain gatheringUserDomain) {
 
+    }
+
+    @Override
+    public List<GatheringUserDomain> findByGatheringIdAndStatusWithUsers(Long gatheringId, GatheringUserStatus gatheringUserStatus) {
+        return data.stream()
+                .filter(item ->
+                        item.getId() == gatheringId && item.getGatheringUserStatus().equals(gatheringUserStatus))
+                .collect(Collectors.toList());
     }
 }

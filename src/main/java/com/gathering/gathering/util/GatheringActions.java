@@ -2,16 +2,12 @@ package com.gathering.gathering.util;
 
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.repository.GatheringRepository;
-import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.user.model.domain.UserDomain;
-import com.gathering.user.model.dto.response.UserResponseDto;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,12 +15,6 @@ public class GatheringActions {
 
     private final GatheringRepository gatheringRepository;
     private final UserRepository userRepository;
-
-    public List<UserResponseDto> mapToUserResponseDtos(List<GatheringUser> gatheringUsers) {
-        return gatheringUsers.stream()
-                .map(gatheringUser -> UserResponseDto.fromEntity(gatheringUser.getUser()))
-                .collect(Collectors.toList());
-    }
 
     public MyPageGatheringsCountResponse getMyPageGatheringsCount(UserDomain user) {
 

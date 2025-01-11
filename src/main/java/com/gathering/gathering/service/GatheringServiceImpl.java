@@ -10,12 +10,14 @@ import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
 import com.gathering.gathering.model.dto.GatheringUpdate;
 import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
+import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.repository.GatheringRepository;
 import com.gathering.gathering.util.GatheringActions;
 import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
 import com.gathering.gatheringuser.repository.GatheringUserRepository;
+import com.gathering.gatheringuser.util.GatheringUserDtoMapper;
 import com.gathering.image.model.domain.ImageDomain;
 import com.gathering.image.model.entity.EntityType;
 import com.gathering.image.service.ImageService;
@@ -131,10 +133,9 @@ public class GatheringServiceImpl implements GatheringService {
     }
 
     @Override
-    public List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId) {
-//        List<GatheringUser> gatheringUsers = gatheringRepository.findByIdWithGatheringUsersAndChallenge(gatheringId).getGatheringUsers();
-//        return gatheringActions.mapToUserResponseDtos(gatheringUsers);
-        return null;
+    public List<UserResponseDto> findByGatheringIdAndStatusWithUsers(Long gatheringId, GatheringUserStatus gatheringUserStatus) {
+        List<GatheringUserDomain> gatheringUser = gatheringUserRepository.findByGatheringIdAndStatusWithUsers(gatheringId, gatheringUserStatus);
+        return GatheringUserDtoMapper.mapToUserResponseDtos(gatheringUser);
     }
 
     private GatheringDomain createGatheringAndSave(GatheringCreate gatheringCreate, UserDomain user, ChallengeDomain challenge, BookDomain book, List<ImageDomain> images, GatheringValidator gatheringValidator) {

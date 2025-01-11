@@ -19,7 +19,7 @@ public interface GatheringService {
 
     void delete(Long gatheringId, String username);
 
-    List<UserResponseDto> findGatheringWithUsersByIdAndStatus(Long gatheringId);
+    List<UserResponseDto> findByGatheringIdAndStatusWithUsers(Long gatheringId, GatheringUserStatus gatheringUserStatus);
 
     void leave(Long gatheringId, String username);
 
