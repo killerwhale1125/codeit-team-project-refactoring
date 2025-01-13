@@ -1,6 +1,6 @@
 package com.gathering.common.config;
 
-import com.gathering.gathering.redis.GatheringMessageListener;
+import com.gathering.gathering.infrastructure.redis.GatheringMessageListener;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -2,7 +2,7 @@ package com.gathering.user.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
-import com.gathering.gatheringuser.model.entity.GatheringUser;
+import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewLikes;
 import com.gathering.user_attendance.model.entity.UserAttendance;

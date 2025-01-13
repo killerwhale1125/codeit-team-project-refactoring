@@ -1,7 +1,7 @@
 package com.gathering.gathering.util;
 
-import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
-import com.gathering.gathering.repository.GatheringRepository;
+import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse;
+import com.gathering.gathering.service.port.GatheringRepository;
 import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

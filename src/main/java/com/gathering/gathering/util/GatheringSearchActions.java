@@ -1,11 +1,15 @@
 package com.gathering.gathering.util;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.gathering.model.dto.GatheringResponse;
-import com.gathering.gathering.model.dto.GatheringResultPageResponse;
-import com.gathering.gathering.model.dto.GatheringSearchResponse;
-import com.gathering.gathering.model.entity.*;
-import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
+import com.gathering.gathering.domain.GatheringStatus;
+import com.gathering.gathering.domain.GatheringWeek;
+import com.gathering.gathering.domain.ReadingTimeGoal;
+import com.gathering.gathering.controller.response.GatheringResponse;
+import com.gathering.gathering.controller.response.GatheringResultPageResponse;
+import com.gathering.gathering.controller.response.GatheringSearchResponse;
+import com.gathering.gathering.infrastructure.entity.Gathering;
+import com.gathering.gathering.infrastructure.entity.SearchType;
+import com.gathering.gathering.infrastructure.GatheringSearchJpaRepository;
 import com.gathering.review.model.dto.BookReviewDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

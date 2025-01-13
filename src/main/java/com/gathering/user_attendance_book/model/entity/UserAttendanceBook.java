@@ -2,7 +2,7 @@ package com.gathering.user_attendance_book.model.entity;
 
 import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.user_attendance.model.entity.UserAttendance;
 import com.gathering.user_attendance_book.model.domain.UserAttendanceBookDomain;
 import jakarta.persistence.*;

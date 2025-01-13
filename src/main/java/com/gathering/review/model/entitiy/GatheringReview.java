@@ -1,7 +1,7 @@
 package com.gathering.review.model.entitiy;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.CreateReviewDto;
 import com.gathering.user.model.entitiy.User;

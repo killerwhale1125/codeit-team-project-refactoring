@@ -1,14 +1,12 @@
 package com.gathering.gathering.controller;
 
 import com.gathering.common.base.response.BaseResponse;
-import com.gathering.gathering.model.domain.GatheringDomain;
-import com.gathering.gathering.model.dto.GatheringCreate;
-import com.gathering.gathering.model.dto.GatheringRequest;
-import com.gathering.gathering.model.dto.GatheringUpdate;
-import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
-import com.gathering.gathering.model.entity.GatheringUserStatus;
-import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.gathering.service.GatheringService;
+import com.gathering.gathering.domain.GatheringDomain;
+import com.gathering.gathering.domain.GatheringCreate;
+import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse;
+import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gathering.domain.GatheringWeek;
+import com.gathering.gathering.controller.port.GatheringService;
 import com.gathering.user.model.dto.response.UserResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

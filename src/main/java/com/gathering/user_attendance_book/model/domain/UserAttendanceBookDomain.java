@@ -1,7 +1,7 @@
 package com.gathering.user_attendance_book.model.domain;
 
 import com.gathering.book.model.domain.BookDomain;
-import com.gathering.gathering.model.domain.GatheringDomain;
+import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.user_attendance.model.domain.UserAttendanceDomain;
 import lombok.Builder;
 import lombok.Getter;

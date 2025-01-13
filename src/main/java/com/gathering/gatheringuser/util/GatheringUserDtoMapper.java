@@ -1,6 +1,6 @@
 package com.gathering.gatheringuser.util;
 
-import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
+import com.gathering.gatheringuser.domain.GatheringUserDomain;
 import com.gathering.user.model.dto.response.UserResponseDto;
 
 import java.util.List;

@@ -1,14 +1,14 @@
 package com.gathering.gathering.controller;
 
 import com.gathering.common.base.response.BaseResponse;
-import com.gathering.gathering.model.dto.GatheringResponse;
-import com.gathering.gathering.model.dto.GatheringSearch;
-import com.gathering.gathering.model.dto.GatheringSearchResponse;
-import com.gathering.gathering.model.entity.GatheringReviewSortType;
-import com.gathering.gathering.model.entity.GatheringStatus;
-import com.gathering.gathering.model.entity.GatheringUserStatus;
-import com.gathering.gathering.model.entity.SearchType;
-import com.gathering.gathering.service.search.GatheringSearchService;
+import com.gathering.gathering.controller.response.GatheringResponse;
+import com.gathering.gathering.domain.GatheringSearch;
+import com.gathering.gathering.controller.response.GatheringSearchResponse;
+import com.gathering.gathering.infrastructure.entity.GatheringReviewSortType;
+import com.gathering.gathering.domain.GatheringStatus;
+import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gathering.infrastructure.entity.SearchType;
+import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.util.web.UserSessionKeyGenerator;
 import io.swagger.v3.oas.annotations.Operation;

@@ -3,7 +3,7 @@ package com.gathering.user.controller;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.gathering.service.search.GatheringSearchService;
+import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.user.model.constant.SingUpType;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.*;

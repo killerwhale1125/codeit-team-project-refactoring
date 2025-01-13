@@ -1,7 +1,7 @@
 package com.gathering.challengeuser.model.domain;
 
 import com.gathering.challenge.model.domain.ChallengeDomain;
-import com.gathering.gathering.model.entity.GatheringWeek;
+import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.user.model.domain.UserDomain;
 import lombok.Builder;
 import lombok.Getter;

@@ -2,7 +2,7 @@ package com.gathering.user.model.entitiy;
 
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.gatheringuser.model.entity.GatheringUser;
+import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewLikes;
 import com.gathering.user.model.domain.UserDomain;
@@ -15,9 +15,6 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
 import java.util.*;
-
-import static com.gathering.util.entity.EntityUtils.nullableEntity;
-import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Entity
 @Getter
