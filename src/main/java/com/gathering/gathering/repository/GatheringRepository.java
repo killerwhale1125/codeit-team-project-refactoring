@@ -23,9 +23,9 @@ public interface GatheringRepository {
 
     Long findIdById(Long gatheringId);
 
-    long getActiveAndParticipatingCount(long id);
+    long getActiveAndParticipatingCount(long userId);
 
-    long getCompletedCount(long id);
+    long getCompletedCount(long userId);
 
     long getMyCreatedCount(String userName);
 

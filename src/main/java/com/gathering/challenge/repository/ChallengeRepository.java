@@ -14,7 +14,7 @@ public interface ChallengeRepository {
 
     Challenge findById(Long challengeId);
 
-    Challenge findGatheringAndChallengeById(Long challengeId);
+    ChallengeDomain findGatheringAndChallengeById(Long challengeId);
 
     List<Long> findByStartDate(LocalDate today);
 

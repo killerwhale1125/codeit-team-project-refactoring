@@ -76,9 +76,6 @@ public class Gathering extends BaseTimeEntity {
 
     public void end() {
         this.gatheringStatus = COMPLETED;
-        for(GatheringUser gatheringUser : gatheringUsers) {
-            gatheringUser.endGatheringStatus();
-        }
     }
 
     public static Gathering fromEntity(GatheringDomain gathering) {

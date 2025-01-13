@@ -101,6 +101,7 @@ public class User extends BaseTimeEntity {
         userEntity.email = user.getEmail();
         userEntity.profile = user.getProfile();
         userEntity.roles = user.getRoles();
+        userEntity.wishGatheringIds = user.getWishGatheringIds();
         return userEntity;
     }
 

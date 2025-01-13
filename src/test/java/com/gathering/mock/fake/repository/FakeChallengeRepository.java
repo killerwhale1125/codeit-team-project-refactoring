@@ -4,6 +4,8 @@ import com.gathering.challenge.model.domain.ChallengeDomain;
 import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
+import com.gathering.common.base.exception.BaseException;
+import com.gathering.common.base.response.BaseResponseStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -48,8 +50,11 @@ public class FakeChallengeRepository implements ChallengeRepository {
     }
 
     @Override
-    public Challenge findGatheringAndChallengeById(Long challengeId) {
-        return null;
+    public ChallengeDomain findGatheringAndChallengeById(Long challengeId) {
+        return data.stream()
+                .filter(item -> item.getId() == challengeId)
+                .findFirst()
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_IN_CHALLENGE));
     }
 
     @Override

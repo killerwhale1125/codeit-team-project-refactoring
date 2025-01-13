@@ -3,6 +3,8 @@ package com.gathering.mock.fake.repository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.model.entity.GatheringStatus;
+import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
+import static com.gathering.gathering.model.entity.GatheringStatus.*;
+import static com.gathering.gathering.model.entity.GatheringUserStatus.*;
 
 public class FakeGatheringRepository implements GatheringRepository {
 
@@ -63,14 +67,14 @@ public class FakeGatheringRepository implements GatheringRepository {
     // 챌린지 정보와 gatheringUser 의 상태가 참여중인 정보를 필터링하여 조회한다.
     @Override
     public GatheringDomain findByIdWithGatheringUsersAndChallenge(Long gatheringId) {
-        return data.stream().filter(gathering -> gathering.getId() == gatheringId)
+        return data.stream().filter(gathering -> Objects.equals(gathering.getId(), gatheringId))
                 .findFirst()
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
 
     @Override
     public GatheringDomain getByIdWithGatheringUsersAndChallenge(Long gatheringId) {
-        return data.stream().filter(gathering -> gathering.getId() == gatheringId)
+        return data.stream().filter(gathering -> Objects.equals(gathering.getId(), gatheringId))
                 .findFirst()
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
@@ -86,23 +90,49 @@ public class FakeGatheringRepository implements GatheringRepository {
     }
 
     @Override
-    public long getActiveAndParticipatingCount(long id) {
-        return 0;
+    public long getActiveAndParticipatingCount(long userId) {
+        return data.stream()
+                .filter(gathering ->
+                        gathering.getGatheringUsers().stream()
+                                .anyMatch(gatheringUser ->
+                                        Objects.equals(gatheringUser.getUser().getId(), userId)
+                                                && Objects.equals(gatheringUser.getGatheringUserStatus(), PARTICIPATING)
+                                )
+                )
+                .filter(gathering ->
+                        !Objects.equals(gathering.getGatheringStatus(), DELETED) &&
+                                !Objects.equals(gathering.getGatheringStatus(), COMPLETED)
+                )
+                .count();
     }
 
     @Override
-    public long getCompletedCount(long id) {
-        return 0;
+    public long getCompletedCount(long userId) {
+        return data.stream()
+                .filter(gathering ->
+                        gathering.getGatheringUsers().stream()
+                            .anyMatch(gatheringUser -> Objects.equals(gatheringUser.getUser().getId(), userId)
+                                    && Objects.equals(gatheringUser.getGatheringUserStatus(), NOT_PARTICIPATING)
+                            )
+                )
+                .filter(gathering -> !Objects.equals(gathering.getGatheringStatus(), DELETED) &&
+                        Objects.equals(gathering.getGatheringStatus(), COMPLETED)
+                )
+                .count();
     }
 
     @Override
     public long getMyCreatedCount(String userName) {
-        return 0;
+        return data.stream()
+                .filter(item -> Objects.equals(item.getOwner(), userName))
+                .count();
     }
 
     @Override
     public long getMyWishedCountByGatheringIds(Set<Long> wishGatheringIds) {
-        return 0;
+        return data.stream()
+                .filter(gathering -> wishGatheringIds.contains(gathering.getId()))
+                .count();
     }
 
     @Override

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
 
@@ -82,7 +83,11 @@ public class FakeUserRepository implements UserRepository {
 
     @Override
     public Set<Long> findWishGatheringIdsByUserName(String username) {
-        return null;
+        return data.stream()
+                .filter(item -> Objects.equals(item.getUserName(), username))
+                .findFirst()
+                .get()
+                .getWishGatheringIds();
     }
 
     @Override

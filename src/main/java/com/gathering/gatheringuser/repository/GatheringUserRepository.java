@@ -13,4 +13,6 @@ public interface GatheringUserRepository {
     void join(GatheringUserDomain gatheringUserDomain);
 
     List<GatheringUserDomain> findByGatheringIdAndStatusWithUsers(Long gatheringId, GatheringUserStatus gatheringUserStatus);
+
+    void saveAll(List<GatheringUserDomain> gatheringUsers);
 }

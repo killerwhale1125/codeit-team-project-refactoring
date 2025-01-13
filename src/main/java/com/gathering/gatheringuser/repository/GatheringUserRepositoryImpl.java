@@ -35,4 +35,9 @@ public class GatheringUserRepositoryImpl implements GatheringUserRepository {
                 .map(GatheringUser::toEntity)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void saveAll(List<GatheringUserDomain> gatheringUsers) {
+        gatheringUserJpaRepository.saveAll(gatheringUsers.stream().map(GatheringUser::fromEntity).collect(Collectors.toList()));
+    }
 }

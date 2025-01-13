@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Builder
@@ -105,8 +106,8 @@ public class GatheringServiceImpl implements GatheringService {
     @Transactional
     public void wish(Long gatheringId, String username) {
         UserDomain user = userRepository.findByUsername(username);
-        Long findGatheringId = gatheringRepository.findIdById(gatheringId);
-        UserDomain.wishGathering(user, findGatheringId);
+        GatheringDomain gathering = gatheringRepository.getById(gatheringId);
+        UserDomain.wishGathering(user, gathering.getId());
         userRepository.save(user);
     }
 
@@ -123,7 +124,34 @@ public class GatheringServiceImpl implements GatheringService {
     @Override
     public MyPageGatheringsCountResponse getMyPageGatheringsCount(String username) {
         UserDomain user = userRepository.findByUsername(username);
-        return gatheringActions.getMyPageGatheringsCount(user);
+
+        long participatingCount = gatheringRepository.getActiveAndParticipatingCount(user.getId());
+        long completedCount = gatheringRepository.getCompletedCount(user.getId());
+        long myCreatedCount = gatheringRepository.getMyCreatedCount(user.getUserName());
+
+        Set<Long> wishGatheringIds = userRepository.findWishGatheringIdsByUserName(user.getUserName());
+//        long myWishedCount = gatheringRepository.getMyWishedCountByGatheringIds(wishGatheringIds);
+        long myWishedCount = wishGatheringIds.size();
+
+        return MyPageGatheringsCountResponse.fromEntity(participatingCount, completedCount, myCreatedCount, myWishedCount);
+    }
+
+    @Override
+    public void end(Long gatheringId) {
+        GatheringDomain gathering = gatheringRepository.findByIdWithGatheringUsersAndChallenge(gatheringId);
+        GatheringDomain.end(gathering);
+
+//        ChallengeDomain challenge = challengeRepository.findGatheringAndChallengeById(challengeId);
+
+        ChallengeDomain challenge = gathering.getChallenge();
+        ChallengeDomain.end(gathering.getChallenge());
+
+        List<GatheringUserDomain> gatheringUsers = gathering.getGatheringUsers();
+        GatheringUserDomain.end(gatheringUsers);
+
+        challengeRepository.save(challenge);
+        gatheringRepository.save(gathering);
+        gatheringUserRepository.saveAll(gatheringUsers);
     }
 
     @Override

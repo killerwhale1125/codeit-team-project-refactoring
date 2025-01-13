@@ -4,6 +4,7 @@ import com.gathering.book.model.domain.BookDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.dto.GatheringCreate;
+import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
@@ -65,6 +66,7 @@ class GatheringServiceImplTest {
                 .uuidUtils(testUUIDUtils)
                 .gatheringValidator(testGatheringValidator)
                 .build();
+
         
         // 테스트 유저 생성
         final UserDomain user1 = UserDomain.builder()
@@ -449,6 +451,64 @@ class GatheringServiceImplTest {
 
         /* then */
         assertThat(gathering.getGatheringUsers().get(0).getUser().getWishGatheringIds()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("모임(챌린지) 시작일과 진행일(주단위)로 모임(챌린지) 종료일을 계산한다.")
+    void calculateEndDate() {
+        /* given */
+        final LocalDate startDate = LocalDate.now();
+        final GatheringWeek gatheringWeek = ONE_WEEK;
+
+        /* when */
+        final LocalDate endDate = gatheringService.calculateEndDate(startDate, gatheringWeek);
+
+        /* then */
+        assertThat(endDate).isEqualTo(startDate.plusDays(gatheringWeek.getWeek()));
+    }
+    
+    @Test
+    @DisplayName("사용자 이름으로 마이페이지 모임 정보들의 갯수를 구한다.")
+    void getMyPageGatheringsCount() {
+        /* given */
+        final String username1 = "범고래1";
+        final String username2 = "범고래2";
+        final TestMultipartFile file = getTestMultipartFile();
+
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(ONE_WEEK.getWeek());
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+
+        final LocalDate startDate2 = LocalDate.now().plusDays(1);
+        final LocalDate endDate2 = startDate2.plusDays(ONE_WEEK.getWeek());
+        final GatheringCreate gatheringCreate2 =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate2, endDate2, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+
+
+        // 내가 만든 모임
+        gatheringService.create(gatheringCreate, List.of(file), username1);
+
+        // 참여중인 모임
+        GatheringDomain participatingGathering = gatheringService.create(gatheringCreate2, List.of(file), username2);
+        gatheringService.join(participatingGathering.getId(), username1);
+
+        // 완료된 모임
+        GatheringDomain completedGathering = gatheringService.create(gatheringCreate, List.of(file), username1);
+        gatheringService.end(completedGathering.getId());
+
+        // 내가 찜한 모임
+        final GatheringDomain wishedGathering = gatheringService.create(gatheringCreate, List.of(file), username2);
+        gatheringService.wish(wishedGathering.getId(), username1);
+
+        /* when */
+        MyPageGatheringsCountResponse myPageGatheringsCount = gatheringService.getMyPageGatheringsCount(username1);
+
+        /* then */
+        assertThat(myPageGatheringsCount.getMyCreatedCount()).isEqualTo(2L);
+        assertThat(myPageGatheringsCount.getParticipatingCount()).isEqualTo(2L);
+        assertThat(myPageGatheringsCount.getCompletedCount()).isEqualTo(1L);
+        assertThat(myPageGatheringsCount.getMyWishedCount()).isEqualTo(1L);
     }
 
     private static TestMultipartFile getTestMultipartFile() {

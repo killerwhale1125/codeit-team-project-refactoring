@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gathering.challenge.model.entity.ChallengeStatus.COMPLETED;
 import static com.gathering.challenge.model.entity.ChallengeStatus.INACTIVE;
 import static com.gathering.common.base.response.BaseResponseStatus.USER_NOT_IN_CHALLENGE;
 
@@ -50,5 +51,9 @@ public class ChallengeDomain {
                 .orElseThrow(() -> new BaseException(USER_NOT_IN_CHALLENGE));
         challengeUsers.remove(challengeUser);
         return challengeUser;
+    }
+
+    public static void end(ChallengeDomain challenge) {
+        challenge.challengeStatus = COMPLETED;
     }
 }

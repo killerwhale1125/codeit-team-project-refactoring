@@ -36,8 +36,10 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     }
 
     @Override
-    public Challenge findGatheringAndChallengeById(Long challengeId) {
-        return challengeJpaRepository.findGatheringAndChallengeById(challengeId).orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE));
+    public ChallengeDomain findGatheringAndChallengeById(Long challengeId) {
+        return challengeJpaRepository.findGatheringAndChallengeById(challengeId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE))
+                .toEntity();
     }
 
     @Override
