@@ -1,19 +1,19 @@
-package com.gathering.gathering.service;
+package com.gathering.gathering.util;
 
 import com.gathering.gathering.redis.GatheringRedisKey;
 import com.gathering.gathering.redis.GatheringRedisTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
 import static com.gathering.gathering.redis.GatheringRedisKey.GATHERING_INCREMENT_VIEW_COUNT_EXPIRATION;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class GatheringSearchAsync {
+public class GatheringAsyncImpl implements GatheringAsync {
     private final GatheringRedisTemplate gatheringRedisTemplate;
 
     @Async

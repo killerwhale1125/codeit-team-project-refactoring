@@ -41,10 +41,10 @@ public class GatheringSearchController {
      */
     @GetMapping("/filtering")
     @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
-    public BaseResponse<GatheringSearchResponse> findGatherings(@ModelAttribute GatheringSearch gatheringSearch,
+    public BaseResponse<GatheringSearchResponse> findGatheringsByFilters(@ModelAttribute GatheringSearch gatheringSearch,
                                                                 @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        return new BaseResponse<>(gatheringSearchService.findGatherings(gatheringSearch, pageable, userDetails));
+        return new BaseResponse<>(gatheringSearchService.findGatheringsByFilters(gatheringSearch, pageable, userDetails));
     }
 
     @GetMapping("/joinable")

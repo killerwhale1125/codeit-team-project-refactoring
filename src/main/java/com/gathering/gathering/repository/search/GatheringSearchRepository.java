@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface GatheringSearchRepository {
@@ -24,4 +25,6 @@ public interface GatheringSearchRepository {
     ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, Pageable pageable);
 
     Slice<Gathering> findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable);
+
+    Optional<Gathering> getGatheringWithChallengeAndBook(Long gatheringId);
 }

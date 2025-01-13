@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, Long>, GatheringSearchRepository {
+public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, Long> {
 
     @EntityGraph(attributePaths = {"challenge", "book", "image"})
     @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")

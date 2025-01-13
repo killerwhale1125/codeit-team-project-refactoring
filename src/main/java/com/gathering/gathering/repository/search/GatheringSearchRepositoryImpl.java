@@ -7,7 +7,6 @@ import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.search.util.GatheringSearchConditionBuilder;
 import com.gathering.gathering.repository.search.util.GatheringSortUtil;
-import com.gathering.gatheringuser.model.entity.QGatheringUser;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
@@ -18,18 +17,18 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
 import static com.gathering.gathering.model.entity.QGathering.gathering;
-import static com.gathering.gatheringuser.model.entity.QGatheringUser.*;
+import static com.gathering.gatheringuser.model.entity.QGatheringUser.gatheringUser;
 import static com.gathering.image.model.entity.QImage.image;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 import static com.gathering.user.model.entitiy.QUser.user;
@@ -41,7 +40,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
     private final JPAQueryFactory queryFactory;
     private final GatheringSearchConditionBuilder gatheringSearchConditionBuilder;
-    private final EntityManager entityManager;
+    private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
 
     // 무한스크롤 전용
     @Override
@@ -119,6 +118,11 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
         // 꼭 필요할 때만 count 쿼리 실행
         return new SliceImpl<>(contents, pageable, hasNext);
+    }
+
+    @Override
+    public Optional<Gathering> getGatheringWithChallengeAndBook(Long gatheringId) {
+        return Optional.empty();
     }
 
     @Override

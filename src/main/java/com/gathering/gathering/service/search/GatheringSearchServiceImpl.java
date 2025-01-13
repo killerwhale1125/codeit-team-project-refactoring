@@ -1,24 +1,25 @@
 package com.gathering.gathering.service.search;
 
 import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.challenge.repository.ChallengeRepository;
+import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.dto.GatheringResponse;
 import com.gathering.gathering.model.dto.GatheringSearch;
 import com.gathering.gathering.model.dto.GatheringSearchResponse;
 import com.gathering.gathering.model.entity.*;
-import com.gathering.gathering.repository.search.GatheringSearchJpaRepository;
-import com.gathering.gathering.service.GatheringSearchAsync;
+import com.gathering.gathering.repository.search.GatheringSearchRepository;
+import com.gathering.gathering.util.GatheringAsync;
+import com.gathering.gathering.util.GatheringAsyncImpl;
 import com.gathering.gathering.util.GatheringSearchActions;
 import com.gathering.review.model.dto.BookReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.review.repository.ReviewRepository;
 import com.gathering.user.model.domain.UserDomain;
-import com.gathering.user.model.entitiy.User;
 import com.gathering.user.repository.UserRepository;
 import com.gathering.util.string.FullTextIndexParser;
 import com.gathering.util.string.StringUtil;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,19 +38,20 @@ import static com.gathering.common.base.response.BaseResponseStatus.INVALID_SEAR
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 
 @Service
+@Builder
 @RequiredArgsConstructor
 public class GatheringSearchServiceImpl implements GatheringSearchService {
 
-    private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
-    private final GatheringSearchAsync gatheringSearchAsync;
+    private final GatheringSearchRepository gatheringSearchRepository;
+    private final GatheringAsync gatheringAsync;
     private final GatheringSearchActions gatheringSearchActions;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final ChallengeRepository challengeRepository;
 
     @Override
-    public GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
-        Slice<Gathering> slice = gatheringSearchJpaRepository.findGatherings(gatheringSearch, pageable);
+    public GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
+        Slice<Gathering> slice = gatheringSearchRepository.findGatherings(gatheringSearch, pageable);
 
         Set<Long> wishGatheringIds
                 = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
@@ -59,7 +61,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     @Override
     public GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
-        Slice<Gathering> slice = gatheringSearchJpaRepository.findJoinableGatherings(gatheringSearch, pageable);
+        Slice<Gathering> slice = gatheringSearchRepository.findJoinableGatherings(gatheringSearch, pageable);
 
         Set<Long> wishGatheringIds
                 = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
@@ -69,11 +71,11 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     @Override
     public GatheringResponse getById(Long gatheringId, String userKey, UserDetails userDetails) {
-        Gathering gathering = gatheringSearchJpaRepository.getGatheringWithChallengeAndBook(gatheringId)
+        Gathering gathering = gatheringSearchRepository.getGatheringWithChallengeAndBook(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
 
         // 조회수 비동기 처리
-        gatheringSearchAsync.incrementViewCount(gathering.getId(), userKey);
+        gatheringAsync.incrementViewCount(gathering.getId(), userKey);
 
         Set<Long> wishGatheringIds
                 = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
@@ -83,7 +85,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     @Override
     public GatheringSearchResponse findMyGatherings(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
-        Page<Gathering> result = gatheringSearchJpaRepository.findGatheringsForUserByUsername(username, pageable, gatheringStatus, gatheringUserStatus);
+        Page<Gathering> result = gatheringSearchRepository.findGatheringsForUserByUsername(username, pageable, gatheringStatus, gatheringUserStatus);
 
         Map<Long, Double> challengeReadingRateMap = getReadingRateMap(username, result);
 
@@ -93,7 +95,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     @Override
     public GatheringSearchResponse findMyCreated(String username, Pageable pageable) {
         UserDomain user = userRepository.findByUsername(username);
-        Page<Gathering> result = gatheringSearchJpaRepository.findMyCreated(user.getUserName(), pageable);
+        Page<Gathering> result = gatheringSearchRepository.findMyCreated(user.getUserName(), pageable);
 
         Map<Long, Double> challengeReadingRateMap = getReadingRateMap(username, result);
 
@@ -108,7 +110,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
             return GatheringSearchResponse.empty();
         }
 
-        Page<Gathering> result = gatheringSearchJpaRepository.findMyWishes(wishGatheringIds, pageable);
+        Page<Gathering> result = gatheringSearchRepository.findMyWishes(wishGatheringIds, pageable);
 
         Map<Long, Double> challengeReadingRateMap = getReadingRateMap(username, result);
 
@@ -117,7 +119,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     @Override
     public GatheringResponse introduce(Long gatheringId) {
-        Gathering gathering = gatheringSearchJpaRepository.getGatheringWithChallengeAndBook(gatheringId)
+        Gathering gathering = gatheringSearchRepository.getGatheringWithChallengeAndBook(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
 
         UserDomain user = userRepository.findByUsername(gathering.getOwner());
@@ -127,7 +129,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     @Override
     public ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, Pageable pageable) {
-        return gatheringSearchJpaRepository.getGatheringReviewList(gatheringId, sort, pageable);
+        return gatheringSearchRepository.getGatheringReviewList(gatheringId, sort, pageable);
     }
 
     /**

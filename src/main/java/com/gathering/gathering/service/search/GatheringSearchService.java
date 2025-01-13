@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface GatheringSearchService {
-    GatheringSearchResponse findGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails);
+    GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails);
 
     GatheringResponse getById(Long gatheringId, String userKey, UserDetails userDetails);
 
