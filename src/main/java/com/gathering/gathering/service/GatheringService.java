@@ -7,6 +7,7 @@ import com.gathering.gathering.model.dto.MyPageGatheringsCountResponse;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.user.model.dto.response.UserResponseDto;
+import com.gathering.user_attendance_book.model.domain.UserAttendanceBookDomain;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -31,7 +32,7 @@ public interface GatheringService {
 
     void end(Long challengeId);
 
-    void readBookCompleted(String username, Long gatheringId);
+    UserAttendanceBookDomain readBookCompleted(String username, Long gatheringId);
 
 //    void incrementViewCountAsync(Long gatheringId);
 }

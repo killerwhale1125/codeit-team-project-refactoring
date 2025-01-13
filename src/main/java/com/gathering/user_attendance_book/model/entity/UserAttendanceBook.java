@@ -44,7 +44,13 @@ public class UserAttendanceBook extends BaseTimeEntity {
     public static UserAttendanceBook fromEntity(UserAttendanceBookDomain userAttendanceBook) {
         UserAttendanceBook userAttendanceBookEntity = new UserAttendanceBook();
         userAttendanceBookEntity.id = userAttendanceBook.getId();
+
         UserAttendance userAttendance = nullableEntity(UserAttendance::fromEntity, userAttendanceBook.getUserAttendance());
+        if(userAttendance != null) {
+            userAttendanceBookEntity.userAttendance = userAttendance;
+            userAttendance.getUserAttendanceBooks().add(userAttendanceBookEntity);
+        }
+
 
         if(userAttendance != null) {
             userAttendanceBookEntity.userAttendance = userAttendance;

@@ -153,7 +153,10 @@ public class FakeGatheringRepository implements GatheringRepository {
 
     @Override
     public GatheringDomain findByIdWithBookAndChallenge(Long gatheringId) {
-        return null;
+        return data.stream()
+                .filter(item -> Objects.equals(item.getId(), gatheringId))
+                .findAny()
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING));
     }
 
     @Override

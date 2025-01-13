@@ -3,6 +3,8 @@ package com.gathering.mock.fake.repository;
 import com.gathering.challenge.model.domain.ChallengeDomain;
 import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.challengeuser.repository.ChallengeUserRepository;
+import com.gathering.common.base.exception.BaseException;
+import com.gathering.common.base.response.BaseResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +50,15 @@ public class FakeChallengeUserRepository implements ChallengeUserRepository {
 
     @Override
     public ChallengeUserDomain getByChallengeIdAndUserId(Long challengeId, Long userId) {
-        return null;
+        return data.stream().filter(item -> Objects.equals(item.getChallenge().getId(), challengeId)
+                && Objects.equals(item.getUser().getId(), userId))
+                .findFirst()
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_CHALLENGE_USER));
     }
 
     @Override
     public void readBookCompleted(ChallengeUserDomain challengeUser) {
-
+        data.removeIf(item -> Objects.equals(item.getId(), challengeUser));
+        data.add(challengeUser);
     }
 }
