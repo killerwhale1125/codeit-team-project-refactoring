@@ -9,7 +9,6 @@ import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.gathering.validator.GatheringValidator;
 import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
-import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.image.model.domain.ImageDomain;
 import com.gathering.user.model.domain.UserDomain;
 import lombok.Builder;

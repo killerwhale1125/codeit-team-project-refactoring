@@ -3,7 +3,7 @@ package com.gathering.book.model.entity;
 import com.gathering.book.model.domain.BookDomain;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.review.model.entitiy.BookReview;
-import com.gathering.user.model.entitiy.UserAttendanceBook;
+import com.gathering.user_attendance_book.model.entity.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.Getter;
 

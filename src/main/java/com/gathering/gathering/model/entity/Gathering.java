@@ -7,7 +7,7 @@ import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.image.model.entity.Image;
 import com.gathering.review.model.entitiy.GatheringReview;
-import com.gathering.user.model.entitiy.UserAttendanceBook;
+import com.gathering.user_attendance_book.model.entity.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.Getter;
 

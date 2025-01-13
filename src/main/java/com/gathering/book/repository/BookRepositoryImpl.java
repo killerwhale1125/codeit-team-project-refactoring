@@ -73,4 +73,9 @@ public class BookRepositoryImpl implements BookRepository {
         }
         return bookJpaRepository.searchBooksBySearchWord(FullTextIndexParser.formatForFullTextQuery(searchWord));
     }
+
+    @Override
+    public void updateSelectedCount(BookDomain book) {
+        bookJpaRepository.updateSelectedCount(book.getId(), book.getSelectedCount());
+    }
 }

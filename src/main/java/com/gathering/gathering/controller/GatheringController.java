@@ -34,12 +34,6 @@ public class GatheringController {
         return new BaseResponse<>(gatheringService.create(gatheringCreate, files, userDetails.getUsername()));
     }
 
-    @PatchMapping("/{gatheringId}")
-    public BaseResponse<Void> update(@RequestBody @Valid GatheringUpdate gatheringUpdate, @AuthenticationPrincipal UserDetails userDetails) {
-        gatheringService.update(gatheringUpdate, userDetails.getUsername());
-        return null;
-    }
-
     /**
      * TODO - 참여 클릭 시 동시성 제어 추후 필요
      */
@@ -88,7 +82,7 @@ public class GatheringController {
 
     @PostMapping("/{gatheringId}/read-book")
     public BaseResponse<Void> readBook(
-            @PathVariable long gatheringId,
+            @PathVariable Long gatheringId,
             @AuthenticationPrincipal UserDetails userDetails) {
         gatheringService.readBook(userDetails.getUsername(), gatheringId);
         return new BaseResponse<>();

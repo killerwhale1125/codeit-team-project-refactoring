@@ -1,9 +1,12 @@
 package com.gathering.gathering.repository;
 
+import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.entity.Gathering;
+import com.gathering.gathering.model.entity.GatheringStatus;
 import com.gathering.gathering.model.entity.GatheringUserStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -46,4 +49,17 @@ public interface GatheringJpaRepository extends JpaRepository<Gathering, Long> {
     @Query("SELECT COUNT(g.id) FROM Gathering g WHERE g.id IN :wishGatheringIds")
     long getMyWishedCountByGatheringIds(@Param("wishGatheringIds") Set<Long> wishGatheringIds);
 
+    @EntityGraph(attributePaths = {"gatheringUsers"})
+    @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
+    Optional<Gathering> findByIdWithGatheringUsers(@Param("gatheringId") long gatheringId);
+
+    @EntityGraph(attributePaths = {"book", "challenge"})
+    @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
+    Optional<Gathering> findByIdWithBookAndChallenge(@Param("gatheringId") Long gatheringId);
+
+    @Modifying
+    @Query("UPDATE Gathering g SET g.currentCapacity = :currentCapacity, g.gatheringStatus = :gatheringStatus WHERE g.id = :gatheringId")
+    void updateCurrentCapacityAndStatus(@Param("gatheringId") Long gatheringId,
+                                        @Param("currentCapacity") int currentCapacity,
+                                        @Param("gatheringStatus") GatheringStatus gatheringStatus);
 }

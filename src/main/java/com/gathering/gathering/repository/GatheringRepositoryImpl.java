@@ -39,6 +39,25 @@ public class GatheringRepositoryImpl implements GatheringRepository {
     }
 
     @Override
+    public GatheringDomain findByIdWithGatheringUsers(long gatheringId) {
+        return gatheringJpaRepository
+                .findByIdWithGatheringUsers(gatheringId).orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING))
+                .toEntity();
+    }
+
+    @Override
+    public GatheringDomain findByIdWithBookAndChallenge(Long gatheringId) {
+        return gatheringJpaRepository.findByIdWithBookAndChallenge(gatheringId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING))
+                .toEntity();
+    }
+
+    @Override
+    public void leave(GatheringDomain gathering) {
+        gatheringJpaRepository.updateCurrentCapacityAndStatus(gathering.getId(), gathering.getCurrentCapacity(), gathering.getGatheringStatus());
+    }
+
+    @Override
     public GatheringDomain findByIdWithGatheringUsersAndChallenge(Long gatheringId) {
         return gatheringJpaRepository.findByIdWithGatheringUsersAndChallenge(gatheringId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_GATHERING)).toEntity();
@@ -83,7 +102,7 @@ public class GatheringRepositoryImpl implements GatheringRepository {
 
     @Override
     public void join(GatheringDomain gathering) {
-        gatheringJpaRepository.save(Gathering.fromEntity(gathering));
+        gatheringJpaRepository.updateCurrentCapacityAndStatus(gathering.getId(), gathering.getCurrentCapacity(), gathering.getGatheringStatus());
     }
 
 }

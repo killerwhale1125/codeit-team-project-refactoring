@@ -2,6 +2,7 @@ package com.gathering.challenge.repository;
 
 import com.gathering.challenge.model.domain.ChallengeDomain;
 import com.gathering.challenge.model.entity.Challenge;
+import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ public interface ChallengeRepository {
 
     List<Long> findByStartDate(LocalDate today);
 
-    ChallengeUser getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId);
+    ChallengeUserDomain getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId);
 
     List<Challenge> getByIdsIn(List<Long> challengeIds);
 

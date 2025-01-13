@@ -22,4 +22,6 @@ public interface BookRepository {
     List<BookSearchResponse> findPopularBooks(Pageable pageable);
 
     List<Book> searchBooksBySearchWord(String title);
+
+    void updateSelectedCount(BookDomain book);
 }

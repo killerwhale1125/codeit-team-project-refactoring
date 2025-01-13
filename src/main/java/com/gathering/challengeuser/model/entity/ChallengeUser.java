@@ -34,10 +34,6 @@ public class ChallengeUser extends BaseTimeEntity {
     private double attendanceRate;  // 출석률
     private double readingRate; // 독서 달성률
 
-    public void updateReadingRate(GatheringWeek gatheringWeek, long userAttendanceCount) {
-        this.readingRate = userAttendanceCount / gatheringWeek.getWeek() * 100;
-    }
-
     public static ChallengeUser fromEntity(ChallengeUserDomain challengeUser) {
         ChallengeUser challengeUserEntity = new ChallengeUser();
         challengeUserEntity.id = challengeUser.getId();

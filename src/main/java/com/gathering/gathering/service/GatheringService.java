@@ -33,7 +33,7 @@ public interface GatheringService {
 
     void end(Long challengeId);
 
-    void readBook(String username, long gatheringId);
+    void readBook(String username, Long gatheringId);
 
 //    void incrementViewCountAsync(Long gatheringId);
 }

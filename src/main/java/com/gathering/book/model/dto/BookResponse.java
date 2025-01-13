@@ -2,7 +2,7 @@ package com.gathering.book.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.book.model.entity.Book;
-import com.gathering.user.model.entitiy.UserAttendanceBook;
+import com.gathering.user_attendance_book.model.entity.UserAttendanceBook;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

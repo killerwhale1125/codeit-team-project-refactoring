@@ -34,4 +34,10 @@ public interface GatheringRepository {
     void join(GatheringDomain gathering);
 
     void deleteById(Long gatheringId);
+
+    GatheringDomain findByIdWithGatheringUsers(long gatheringId);
+
+    GatheringDomain findByIdWithBookAndChallenge(Long gatheringId);
+
+    void leave(GatheringDomain gathering);
 }

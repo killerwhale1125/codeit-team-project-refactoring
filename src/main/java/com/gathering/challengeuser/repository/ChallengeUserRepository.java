@@ -8,4 +8,6 @@ public interface ChallengeUserRepository {
     void deleteById(Long challengeUserId);
 
     void join(ChallengeUserDomain challengeUserDomain);
+
+    ChallengeUserDomain getByChallengeIdAndUserId(Long challengeId, Long userId);
 }

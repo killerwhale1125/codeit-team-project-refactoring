@@ -2,6 +2,7 @@ package com.gathering.challenge.repository;
 
 import com.gathering.challenge.model.domain.ChallengeDomain;
 import com.gathering.challenge.model.entity.Challenge;
+import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,10 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     }
 
     @Override
-    public ChallengeUser getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId) {
-        return challengeJpaRepository.getChallengeUserByChallengeIdAndUserId(challengeId, userId).orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE));
+    public ChallengeUserDomain getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId) {
+        return challengeJpaRepository.getChallengeUserByChallengeIdAndUserId(challengeId, userId)
+                .orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE))
+                .toEntity();
     }
 
     @Override

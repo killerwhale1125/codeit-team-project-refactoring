@@ -29,6 +29,8 @@ public enum BaseResponseStatus {
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DATABASE_ERROR", "Database error"),
     EDIT_USER_FAIL(HttpStatus.BAD_REQUEST, "EDIT_USER_FAIL", "Edit user fail"),
     PASSWORD_MISMATCHED(HttpStatus.UNAUTHORIZED, "PASSWORD_MISMATCHED", "Password mismatched"),
+    // UserAttendance
+    NON_EXISTED_USER_ATTENDANCE(HttpStatus.NOT_FOUND, "NON_EXISTED_USER_ATTENDANCE", "This userAttendance does not exist"),
     // Gathering & CHALLENGE
     NON_EXISTED_GATHERING(HttpStatus.NOT_FOUND, "NON_EXISTED_GATHERING", "This gathering does not exist"),
     NON_EXISTED_CHALLENGE(HttpStatus.NOT_FOUND, "NON_EXISTED_CHALLENGE", "This challenge does not exist"),

@@ -1,6 +1,7 @@
 package com.gathering.challengeuser.model.domain;
 
 import com.gathering.challenge.model.domain.ChallengeDomain;
+import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.user.model.domain.UserDomain;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,5 +26,9 @@ public class ChallengeUserDomain {
                 .readingRate(0.0)
                 .user(userDomain)
                 .build();
+    }
+
+    public void updateReadingRate(GatheringWeek gatheringWeek, long userAttendanceCount) {
+        this.readingRate = ((double) userAttendanceCount / gatheringWeek.getWeek()) * 100;
     }
 }

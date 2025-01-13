@@ -3,7 +3,7 @@ package com.gathering.book.model.domain;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.book.model.entity.BookCategory;
 import com.gathering.review.model.entitiy.BookReview;
-import com.gathering.user.model.entitiy.UserAttendanceBook;
+import com.gathering.user_attendance_book.model.entity.UserAttendanceBook;
 import lombok.Builder;
 import lombok.Getter;
 

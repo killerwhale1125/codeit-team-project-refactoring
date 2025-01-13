@@ -1,10 +1,12 @@
 package com.gathering.book.repository;
 
+import com.gathering.book.model.domain.BookDomain;
 import com.gathering.book.model.entity.Book;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.user.model.entitiy.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -27,4 +29,8 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
     default Book findByIdOrThrow(long id) {
         return  findById(id).orElseThrow(() -> new BaseException(BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND));
     }
+
+    @Modifying
+    @Query("UPDATE Book b SET b.selectedCount = :selectedCount WHERE b.id = :bookId")
+    void updateSelectedCount(@Param("bookId") Long bookId, @Param("selectedCount") long selectedCount);
 }
