@@ -113,16 +113,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserAttendanceBookResponse> getBooksByCalendarDate(String username, YearMonth yearMonth) {
-        UserDomain user = userRepository.findByUsername(username);
-        
-        // yyyy-mm 으로 받은 것 중 시작일과 종료일 계산
-        LocalDate startDate = dateCalculateUtils.getStartOfMonth(yearMonth);
-        LocalDate endDate = dateCalculateUtils.getEndOfMonth(yearMonth);
-        
-        // 시작일 종료일 기준으로 출석 엔티티 조회
-        return userRepository.getUserAttendancesByUserIdAndDate(user.getId(), startDate, endDate).stream()
-                .map(UserAttendanceBookResponse::fromEntity)
-                .collect(Collectors.toList());
+//        UserDomain user = userRepository.findByUsername(username);
+//
+//        // yyyy-mm 으로 받은 것 중 시작일과 종료일 계산
+//        LocalDate startDate = dateCalculateUtils.getStartOfMonth(yearMonth);
+//        LocalDate endDate = dateCalculateUtils.getEndOfMonth(yearMonth);
+//
+//        // 시작일 종료일 기준으로 출석 엔티티 조회
+//        return userRepository.getUserAttendancesByUserIdAndDate(user.getId(), startDate, endDate).stream()
+//                .map(UserAttendanceBookResponse::fromEntity)
+//                .collect(Collectors.toList());
+        return null;
     }
 
     @Override

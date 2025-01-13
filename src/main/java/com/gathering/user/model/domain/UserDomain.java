@@ -5,7 +5,7 @@ import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.gatheringuser.model.entity.GatheringUser;
 import com.gathering.review.model.entitiy.BookReview;
 import com.gathering.review.model.entitiy.ReviewLikes;
-import com.gathering.user.model.entitiy.UserAttendance;
+import com.gathering.user_attendance.model.entity.UserAttendance;
 import lombok.Builder;
 import lombok.Getter;
 

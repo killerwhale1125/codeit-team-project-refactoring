@@ -7,7 +7,7 @@ import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.entitiy.QUser;
 import com.gathering.user.model.entitiy.User;
-import com.gathering.user.model.entitiy.UserAttendance;
+import com.gathering.user_attendance.model.entity.UserAttendance;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -130,11 +130,6 @@ public class UserRepositoryImpl implements UserRepository {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public List<UserAttendance> getUserAttendancesByUserIdAndDate(Long userId, LocalDate startDate, LocalDate endDate) {
-        return userAttendanceJpaRepository.getUserAttendancesByUserIdAndDate(userId, startDate, endDate);
     }
 
 }

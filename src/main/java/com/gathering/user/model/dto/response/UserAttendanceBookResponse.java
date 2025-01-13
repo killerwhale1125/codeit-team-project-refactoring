@@ -1,7 +1,7 @@
 package com.gathering.user.model.dto.response;
 
 import com.gathering.book.model.dto.BookResponse;
-import com.gathering.user.model.entitiy.UserAttendance;
+import com.gathering.user_attendance.model.entity.UserAttendance;
 import lombok.Builder;
 import lombok.Getter;
 

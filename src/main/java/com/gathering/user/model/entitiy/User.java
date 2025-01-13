@@ -8,12 +8,16 @@ import com.gathering.review.model.entitiy.ReviewLikes;
 import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
+import com.gathering.user_attendance.model.entity.UserAttendance;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
 import java.util.*;
+
+import static com.gathering.util.entity.EntityUtils.nullableEntity;
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Entity
 @Getter
@@ -101,19 +105,21 @@ public class User extends BaseTimeEntity {
         userEntity.email = user.getEmail();
         userEntity.profile = user.getProfile();
         userEntity.roles = user.getRoles();
-        userEntity.wishGatheringIds = user.getWishGatheringIds();
         return userEntity;
     }
 
     public UserDomain toEntity() {
-        return UserDomain.builder()
+        UserDomain.UserDomainBuilder builder = UserDomain.builder()
                 .id(id)
                 .userName(userName)
                 .password(password)
                 .email(email)
                 .profile(profile)
-                .roles(roles)
-                .wishGatheringIds(wishGatheringIds)
-                .build();
+                .roles(roles);
+
+        if (wishGatheringIds != null) {
+            builder.wishGatheringIds(wishGatheringIds);
+        }
+        return builder.build();
     }
 }
