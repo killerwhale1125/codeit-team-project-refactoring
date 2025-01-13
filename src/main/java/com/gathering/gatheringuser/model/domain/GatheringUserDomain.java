@@ -30,9 +30,10 @@ public class GatheringUserDomain {
                 .build();
     }
 
-    public static void end(List<GatheringUserDomain> gatheringUsers) {
+    public static List<GatheringUserDomain> end(List<GatheringUserDomain> gatheringUsers) {
         for(GatheringUserDomain gatheringUser : gatheringUsers) {
             gatheringUser.gatheringUserStatus = NOT_PARTICIPATING;
         }
+        return gatheringUsers;
     }
 }

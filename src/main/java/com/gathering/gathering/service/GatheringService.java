@@ -25,15 +25,13 @@ public interface GatheringService {
 
     void wish(Long gatheringId, String username);
 
-    void update(GatheringUpdate gatheringUpdate, String username);
-
     LocalDate calculateEndDate(LocalDate startDate, GatheringWeek gatheringWeek);
 
     MyPageGatheringsCountResponse getMyPageGatheringsCount(String username);
 
     void end(Long challengeId);
 
-    void readBook(String username, Long gatheringId);
+    void readBookCompleted(String username, Long gatheringId);
 
 //    void incrementViewCountAsync(Long gatheringId);
 }

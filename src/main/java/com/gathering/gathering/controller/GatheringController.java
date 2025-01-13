@@ -81,10 +81,10 @@ public class GatheringController {
     }
 
     @PostMapping("/{gatheringId}/read-book")
-    public BaseResponse<Void> readBook(
+    public BaseResponse<Void> readBookCompleted(
             @PathVariable Long gatheringId,
             @AuthenticationPrincipal UserDetails userDetails) {
-        gatheringService.readBook(userDetails.getUsername(), gatheringId);
+        gatheringService.readBookCompleted(userDetails.getUsername(), gatheringId);
         return new BaseResponse<>();
     }
 }

@@ -53,7 +53,8 @@ public class ChallengeDomain {
         return challengeUser;
     }
 
-    public static void end(ChallengeDomain challenge) {
+    public static ChallengeDomain end(ChallengeDomain challenge) {
         challenge.challengeStatus = COMPLETED;
+        return challenge;
     }
 }

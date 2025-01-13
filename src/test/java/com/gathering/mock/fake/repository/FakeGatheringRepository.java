@@ -3,8 +3,6 @@ package com.gathering.mock.fake.repository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.model.domain.GatheringDomain;
 import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.model.entity.GatheringStatus;
-import com.gathering.gathering.model.entity.GatheringUserStatus;
 import com.gathering.gathering.repository.GatheringRepository;
 
 import java.util.ArrayList;
@@ -14,8 +12,10 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
-import static com.gathering.gathering.model.entity.GatheringStatus.*;
-import static com.gathering.gathering.model.entity.GatheringUserStatus.*;
+import static com.gathering.gathering.model.entity.GatheringStatus.COMPLETED;
+import static com.gathering.gathering.model.entity.GatheringStatus.DELETED;
+import static com.gathering.gathering.model.entity.GatheringUserStatus.NOT_PARTICIPATING;
+import static com.gathering.gathering.model.entity.GatheringUserStatus.PARTICIPATING;
 
 public class FakeGatheringRepository implements GatheringRepository {
 
@@ -137,11 +137,28 @@ public class FakeGatheringRepository implements GatheringRepository {
 
     @Override
     public void join(GatheringDomain gathering) {
-
+        data.removeIf(item -> Objects.equals(item.getId(), gathering.getId()));
+        data.add(gathering);
     }
 
     @Override
     public void deleteById(Long gatheringId) {
         data.removeIf(item -> Objects.equals(item.getId(), gatheringId));
+    }
+
+    @Override
+    public GatheringDomain findByIdWithGatheringUsers(long gatheringId) {
+        return null;
+    }
+
+    @Override
+    public GatheringDomain findByIdWithBookAndChallenge(Long gatheringId) {
+        return null;
+    }
+
+    @Override
+    public void leave(GatheringDomain gathering) {
+        data.removeIf(item -> Objects.equals(item.getId(), gathering.getId()));
+        data.add(gathering);
     }
 }

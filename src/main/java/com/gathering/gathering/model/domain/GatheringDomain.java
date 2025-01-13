@@ -74,7 +74,7 @@ public class GatheringDomain {
     public static void join(GatheringDomain gathering, UserDomain user, GatheringValidator gatheringValidator) {
         // 이미 참여한 유저인지 검증
         gatheringValidator.validateAlreadyJoinedUser(gathering.getGatheringUsers(), user);
-        // 모임(챌린지) 시작일 보다 참여하려는 날짜가 더 나중일 경우 -> startDate < 참여일
+        // 모임(챌린지) 시작 전에만 참여할 수 있다.
         gatheringValidator.validateJoinDate(gathering.getStartDate(), LocalDate.now());
         // 모임에 참여 가능한지 검사
         gatheringValidator.validateCapacityLimit(gathering.getCurrentCapacity(), gathering.getMaxCapacity());
@@ -153,7 +153,8 @@ public class GatheringDomain {
         this.currentCapacity--;
     }
 
-    public static void end(GatheringDomain gathering) {
+    public static GatheringDomain end(GatheringDomain gathering) {
         gathering.gatheringStatus = COMPLETED;
+        return gathering;
     }
 }

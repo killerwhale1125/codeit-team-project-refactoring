@@ -5,7 +5,7 @@ import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
-import com.gathering.user.model.entitiy.UserAttendance;
+import com.gathering.user_attendance.model.entity.UserAttendance;
 import com.gathering.user.repository.UserRepository;
 
 import java.time.LocalDate;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
 
@@ -88,16 +87,6 @@ public class FakeUserRepository implements UserRepository {
                 .findFirst()
                 .get()
                 .getWishGatheringIds();
-    }
-
-    @Override
-    public boolean existsByUserName(String username) {
-        return false;
-    }
-
-    @Override
-    public List<UserAttendance> getUserAttendancesByUserIdAndDate(Long id, LocalDate startDate, LocalDate endDate) {
-        return null;
     }
 
 }

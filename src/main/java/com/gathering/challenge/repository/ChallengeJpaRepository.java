@@ -17,16 +17,6 @@ public interface ChallengeJpaRepository extends JpaRepository<Challenge, Long> {
     @Query("SELECT c FROM Challenge c WHERE c.id = :challengeId")
     Optional<Challenge> getByIdWithChallengeUsers(@Param("challengeId") Long challengeId);
 
-    @EntityGraph(attributePaths = {"gathering", "gathering.gatheringUsers"})
-    @Query("SELECT c FROM Challenge c WHERE c.id = :challengeId")
-    Optional<Challenge> findGatheringAndChallengeById(@Param("challengeId") Long challengeId);
-
-    @Query("SELECT c.id FROM Challenge c WHERE c.startDate = :today")
-    List<Long> findByStartDate(@Param("today") LocalDate today);
-
-    @Query("SELECT cu FROM Challenge c INNER JOIN c.challengeUsers cu WHERE c.id = :challengeId AND cu.user.id = :userId")
-    Optional<ChallengeUser> getChallengeUserByChallengeIdAndUserId(@Param("challengeId") Long challengeId, @Param("userId") Long userId);
-
     @EntityGraph(attributePaths = {"challengeUsers", "challengeUsers.user"})
     @Query("SELECT c FROM Challenge c WHERE c.id IN :challengeIds")
     List<Challenge> getByIdsIn(List<Long> challengeIds);

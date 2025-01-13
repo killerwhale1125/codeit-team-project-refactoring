@@ -3,11 +3,7 @@ package com.gathering.mock.fake.repository;
 import com.gathering.challenge.model.domain.ChallengeDomain;
 import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challenge.repository.ChallengeRepository;
-import com.gathering.challengeuser.model.entity.ChallengeUser;
-import com.gathering.common.base.exception.BaseException;
-import com.gathering.common.base.response.BaseResponseStatus;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,24 +42,6 @@ public class FakeChallengeRepository implements ChallengeRepository {
 
     @Override
     public Challenge findById(Long challengeId) {
-        return null;
-    }
-
-    @Override
-    public ChallengeDomain findGatheringAndChallengeById(Long challengeId) {
-        return data.stream()
-                .filter(item -> item.getId() == challengeId)
-                .findFirst()
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_IN_CHALLENGE));
-    }
-
-    @Override
-    public List<Long> findByStartDate(LocalDate today) {
-        return null;
-    }
-
-    @Override
-    public ChallengeUser getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId) {
         return null;
     }
 

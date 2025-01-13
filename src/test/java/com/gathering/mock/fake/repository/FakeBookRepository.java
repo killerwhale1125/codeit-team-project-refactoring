@@ -55,6 +55,11 @@ public class FakeBookRepository implements BookRepository {
         return null;
     }
 
+    @Override
+    public void updateSelectedCount(BookDomain book) {
+
+    }
+
     public BookDomain saveBook(BookDomain bookDomain) {
         if (Objects.isNull(bookDomain.getId())) {
             final BookDomain createBook = BookDomain.builder()

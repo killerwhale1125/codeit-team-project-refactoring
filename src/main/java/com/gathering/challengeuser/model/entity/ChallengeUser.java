@@ -3,7 +3,6 @@ package com.gathering.challengeuser.model.entity;
 import com.gathering.challenge.model.entity.Challenge;
 import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.gathering.model.entity.GatheringWeek;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
 import lombok.Getter;

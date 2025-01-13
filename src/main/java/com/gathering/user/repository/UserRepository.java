@@ -32,6 +32,4 @@ public interface UserRepository {
 
     Set<Long> findWishGatheringIdsByUserName(String username);
 
-    boolean existsByUserName(String username);
-
 }

@@ -253,8 +253,10 @@ class GatheringServiceImplTest {
 
         final Long gatheringId = gathering.getId();
         final String joinUsername = "범고래2";
+
         /* when */
         gatheringService.join(gatheringId, joinUsername);
+
         /* then */
         assertThat(gathering.getCurrentCapacity()).isEqualTo(2);
         assertThat(gathering.getGatheringUsers()).hasSize(2);
@@ -343,6 +345,24 @@ class GatheringServiceImplTest {
         assertThat(gathering.getCurrentCapacity()).isEqualTo(1);
         assertThat(gathering.getGatheringUsers()).hasSize(1);
         assertThat(gathering.getChallenge().getChallengeUsers()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("모임장은 모임을 떠날 수 없다.")
+    void ownerCannotLeave() {
+        /* given */
+        // 모임 생성
+        String owner = "범고래1";
+        final LocalDate startDate = LocalDate.now().plusDays(1);
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringCreate gatheringCreate =
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+        final TestMultipartFile file = getTestMultipartFile();
+        final GatheringDomain gathering = gatheringService.create(gatheringCreate, List.of(file), owner);
+
+        /* when then */
+        assertThatThrownBy(() -> gatheringService.leave(gathering.getId(), owner))
+                .isInstanceOf(BaseException.class);
     }
 
     @Test

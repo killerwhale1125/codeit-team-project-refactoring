@@ -123,13 +123,4 @@ public class UserRepositoryImpl implements UserRepository {
     public Set<Long> findWishGatheringIdsByUserName(String username) {
         return userJpaRepository.findWishGatheringIdsByUserName(username);
     }
-
-    @Override
-    public boolean existsByUserName(String username) {
-        if(!userJpaRepository.existsByUserName(username)) {
-            return false;
-        }
-        return true;
-    }
-
 }

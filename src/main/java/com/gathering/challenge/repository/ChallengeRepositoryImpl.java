@@ -37,25 +37,6 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     }
 
     @Override
-    public ChallengeDomain findGatheringAndChallengeById(Long challengeId) {
-        return challengeJpaRepository.findGatheringAndChallengeById(challengeId)
-                .orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE))
-                .toEntity();
-    }
-
-    @Override
-    public List<Long> findByStartDate(LocalDate today) {
-        return challengeJpaRepository.findByStartDate(today);
-    }
-
-    @Override
-    public ChallengeUserDomain getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId) {
-        return challengeJpaRepository.getChallengeUserByChallengeIdAndUserId(challengeId, userId)
-                .orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE))
-                .toEntity();
-    }
-
-    @Override
     public List<Challenge> getByIdsIn(List<Long> challengeIds) {
         return challengeJpaRepository.getByIdsIn(challengeIds);
     }

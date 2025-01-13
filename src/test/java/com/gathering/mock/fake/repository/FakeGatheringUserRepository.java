@@ -38,7 +38,7 @@ public class FakeGatheringUserRepository implements GatheringUserRepository {
 
     @Override
     public void deleteById(Long gatheringUserId) {
-
+        data.removeIf(item -> Objects.equals(item.getId(), gatheringUserId));
     }
 
     @Override

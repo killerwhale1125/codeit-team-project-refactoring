@@ -37,4 +37,9 @@ public class ChallengeUserRepositoryImpl implements ChallengeUserRepository {
                 .orElseThrow(() -> new BaseException(NON_EXISTED_CHALLENGE_USER))
                 .toEntity();
     }
+
+    @Override
+    public void readBookCompleted(ChallengeUserDomain challengeUser) {
+        challengeUserJpaRepository.updateReadingRate(challengeUser.getId(), challengeUser.getReadingRate());
+    }
 }

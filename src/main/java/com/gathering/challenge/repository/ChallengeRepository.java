@@ -15,12 +15,6 @@ public interface ChallengeRepository {
 
     Challenge findById(Long challengeId);
 
-    ChallengeDomain findGatheringAndChallengeById(Long challengeId);
-
-    List<Long> findByStartDate(LocalDate today);
-
-    ChallengeUserDomain getChallengeUserByChallengeIdAndUserId(Long challengeId, long userId);
-
     List<Challenge> getByIdsIn(List<Long> challengeIds);
 
 }

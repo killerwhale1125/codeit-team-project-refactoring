@@ -10,4 +10,7 @@ public interface ChallengeUserRepository {
     void join(ChallengeUserDomain challengeUserDomain);
 
     ChallengeUserDomain getByChallengeIdAndUserId(Long challengeId, Long userId);
+
+    void readBookCompleted(ChallengeUserDomain challengeUser);
+
 }

@@ -5,29 +5,24 @@ import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.image.model.entity.EntityType;
 import com.gathering.image.service.AwsS3Service;
 import com.gathering.security.jwt.JwtTokenUtil;
-import com.gathering.user.model.domain.UserDomain;
 import com.gathering.user.model.dto.UserDto;
 import com.gathering.user.model.dto.request.EditUserRequestDto;
 import com.gathering.user.model.dto.request.SignInRequestDto;
 import com.gathering.user.model.dto.request.SignUpRequestDto;
 import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
 import com.gathering.user.repository.UserRepository;
-import com.gathering.util.date.DateCalculateUtils;
 import com.gathering.util.image.SystemFileUtils;
 import com.gathering.util.string.UUIDUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
 
@@ -38,7 +33,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DateCalculateUtils dateCalculateUtils;
     private final AwsS3Service awsS3Service;
     private final RedisTemplate<String, String> redisTemplate;
     private final UUIDUtils uuidUtils;

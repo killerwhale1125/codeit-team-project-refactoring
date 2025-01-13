@@ -91,8 +91,7 @@ public class GatheringServiceImpl implements GatheringService {
         UserDomain user = userRepository.findByUsername(username);
 
         GatheringUserDomain gatheringUser = GatheringDomain.leave(gathering, user);
-        
-        // save 말고 update 필요 ( 어떠한 상태가 변경되었는지 명시적으로 modify 해야함 )
+
         gatheringRepository.leave(gathering);
         gatheringUserRepository.deleteById(gatheringUser.getId());
 
@@ -120,11 +119,6 @@ public class GatheringServiceImpl implements GatheringService {
     }
 
     @Override
-    public void update(GatheringUpdate gatheringUpdate, String username) {
-
-    }
-
-    @Override
     public LocalDate calculateEndDate(LocalDate startDate, GatheringWeek gatheringWeek) {
         return startDate.plusDays(gatheringWeek.getWeek());
     }
@@ -147,22 +141,14 @@ public class GatheringServiceImpl implements GatheringService {
     @Transactional
     public void end(Long gatheringId) {
         GatheringDomain gathering = gatheringRepository.findByIdWithGatheringUsersAndChallenge(gatheringId);
-        GatheringDomain.end(gathering);
-
-        ChallengeDomain challenge = gathering.getChallenge();
-        ChallengeDomain.end(gathering.getChallenge());
-
-        List<GatheringUserDomain> gatheringUsers = gathering.getGatheringUsers();
-        GatheringUserDomain.end(gatheringUsers);
-
-        challengeRepository.save(challenge);
-        gatheringRepository.save(gathering);
-        gatheringUserRepository.saveAll(gatheringUsers);
+        challengeRepository.save(ChallengeDomain.end(gathering.getChallenge()));
+        gatheringRepository.save(GatheringDomain.end(gathering));
+        gatheringUserRepository.saveAll(GatheringUserDomain.end(gathering.getGatheringUsers()));
     }
 
     @Override
     @Transactional
-    public void readBook(String username, Long gatheringId) {
+    public void readBookCompleted(String username, Long gatheringId) {
         UserDomain user = userRepository.findByUsername(username);
         GatheringDomain gathering = gatheringRepository.findByIdWithBookAndChallenge(gatheringId);
 
@@ -190,11 +176,10 @@ public class GatheringServiceImpl implements GatheringService {
         long userAttendanceCount = userAttendanceBookRepository.getByUserIdAndBetweenDate(user.getId(), gathering.getStartDate(), gathering.getEndDate(), gathering.getBook().getId());
 
         // 유저가 참여하고있는 모임의 챌린지 유저 정보를 가져온다.
-//        ChallengeUserDomain challengeUser = challengeRepository.getChallengeUserByChallengeIdAndUserId(gathering.getChallenge().getId(), user.getId());
         ChallengeUserDomain challengeUser = challengeUserRepository.getByChallengeIdAndUserId(gathering.getChallenge().getId(), user.getId());
         // 개개인의 독서 달성률을 새로 갱신시킨다. ( +1 은 save 되어도 바로 DB에 반영이 되지 않기 때문에 미리 카운트를 증가시키기 위함 )
         challengeUser.updateReadingRate(gathering.getGatheringWeek(), ++userAttendanceCount);
-        challengeUserRepository.save(challengeUser);
+        challengeUserRepository.readBookCompleted(challengeUser);
     }
 
     @Override
