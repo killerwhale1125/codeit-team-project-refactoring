@@ -2,10 +2,10 @@ package com.gathering.challenge.model.domain;
 
 import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.gathering.model.dto.GatheringCreate;
-import com.gathering.gathering.model.entity.GatheringStatus;
-import com.gathering.gathering.model.entity.GatheringWeek;
-import com.gathering.gathering.model.entity.ReadingTimeGoal;
+import com.gathering.gathering.domain.GatheringCreate;
+import com.gathering.gathering.domain.GatheringStatus;
+import com.gathering.gathering.domain.GatheringWeek;
+import com.gathering.gathering.domain.ReadingTimeGoal;
 import com.gathering.user.model.domain.UserDomain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static com.gathering.challenge.model.entity.ChallengeStatus.INACTIVE;
-import static com.gathering.gathering.model.entity.GatheringStatus.RECRUITING;
-import static com.gathering.gathering.model.entity.GatheringWeek.ONE_WEEK;
-import static com.gathering.gathering.model.entity.ReadingTimeGoal.ONE_HOUR;
+import static com.gathering.gathering.domain.GatheringStatus.RECRUITING;
+import static com.gathering.gathering.domain.GatheringWeek.ONE_WEEK;
+import static com.gathering.gathering.domain.ReadingTimeGoal.ONE_HOUR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

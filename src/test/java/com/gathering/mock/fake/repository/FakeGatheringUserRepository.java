@@ -1,9 +1,9 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.gathering.model.domain.GatheringDomain;
-import com.gathering.gathering.model.entity.GatheringUserStatus;
-import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
-import com.gathering.gatheringuser.repository.GatheringUserRepository;
+import com.gathering.gathering.domain.GatheringDomain;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
+import com.gathering.gatheringuser.domain.GatheringUserDomain;
+import com.gathering.gatheringuser.service.port.GatheringUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.gathering.mock.test;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.gathering.validator.GatheringValidator;
-import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
+import com.gathering.gathering.util.GatheringValidator;
+import com.gathering.gatheringuser.domain.GatheringUserDomain;
 import com.gathering.user.model.domain.UserDomain;
 
 import java.time.LocalDate;

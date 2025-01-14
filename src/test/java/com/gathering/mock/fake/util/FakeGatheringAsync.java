@@ -1,6 +1,6 @@
 package com.gathering.mock.fake.util;
 
-import com.gathering.gathering.util.GatheringAsync;
+import com.gathering.gathering.service.port.GatheringAsync;
 
 public class FakeGatheringAsync implements GatheringAsync {
     @Override

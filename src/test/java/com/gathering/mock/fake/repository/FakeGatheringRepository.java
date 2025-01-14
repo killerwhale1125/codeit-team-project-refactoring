@@ -1,9 +1,9 @@
 package com.gathering.mock.fake.repository;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.gathering.model.domain.GatheringDomain;
-import com.gathering.gathering.model.entity.Gathering;
-import com.gathering.gathering.repository.GatheringRepository;
+import com.gathering.gathering.domain.GatheringDomain;
+import com.gathering.gathering.infrastructure.entity.Gathering;
+import com.gathering.gathering.service.port.GatheringRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
-import static com.gathering.gathering.model.entity.GatheringStatus.COMPLETED;
-import static com.gathering.gathering.model.entity.GatheringStatus.DELETED;
-import static com.gathering.gathering.model.entity.GatheringUserStatus.NOT_PARTICIPATING;
-import static com.gathering.gathering.model.entity.GatheringUserStatus.PARTICIPATING;
+import static com.gathering.gathering.domain.GatheringStatus.COMPLETED;
+import static com.gathering.gathering.domain.GatheringStatus.DELETED;
+import static com.gathering.gatheringuser.domain.GatheringUserStatus.NOT_PARTICIPATING;
+import static com.gathering.gatheringuser.domain.GatheringUserStatus.PARTICIPATING;
 
 public class FakeGatheringRepository implements GatheringRepository {
 

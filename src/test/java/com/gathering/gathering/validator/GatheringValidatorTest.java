@@ -1,7 +1,8 @@
 package com.gathering.gathering.validator;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.gatheringuser.model.domain.GatheringUserDomain;
+import com.gathering.gathering.util.GatheringValidator;
+import com.gathering.gatheringuser.domain.GatheringUserDomain;
 import com.gathering.mock.test.TestGatheringValidator;
 import com.gathering.user.model.domain.UserDomain;
 import org.junit.jupiter.api.BeforeEach;
