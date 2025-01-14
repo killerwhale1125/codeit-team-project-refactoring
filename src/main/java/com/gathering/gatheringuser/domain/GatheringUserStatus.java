@@ -1,4 +1,4 @@
-package com.gathering.gathering.infrastructure.entity;
+package com.gathering.gatheringuser.domain;
 
 public enum GatheringUserStatus {
     PARTICIPATING,  // 참여 중

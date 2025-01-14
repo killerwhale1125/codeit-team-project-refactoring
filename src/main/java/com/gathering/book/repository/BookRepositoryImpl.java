@@ -17,7 +17,7 @@ import java.util.List;
 
 import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.common.base.response.BaseResponseStatus.*;
-import static com.gathering.gathering.model.entity.QGathering.gathering;
+import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
 
 @Repository
 @RequiredArgsConstructor

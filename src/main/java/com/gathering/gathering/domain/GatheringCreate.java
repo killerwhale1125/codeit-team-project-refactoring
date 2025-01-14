@@ -1,8 +1,5 @@
 package com.gathering.gathering.domain;
 
-import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.domain.GatheringWeek;
-import com.gathering.gathering.domain.ReadingTimeGoal;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -1,10 +1,11 @@
 package com.gathering.gathering.service.port;
 
+import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSearch;
-import com.gathering.gathering.infrastructure.entity.Gathering;
-import com.gathering.gathering.infrastructure.entity.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gathering.infrastructure.entity.Gathering;
+import com.gathering.gathering.service.dto.GatheringSliceResponse;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.review.model.dto.ReviewListDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface GatheringSearchRepository {
-    Slice<Gathering> findGatherings(GatheringSearch gatheringSearch, Pageable pageable);
+    GatheringSliceResponse findGatherings(GatheringSearch gatheringSearch, int page, int size);
 
     Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
 

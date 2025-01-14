@@ -1,7 +1,7 @@
 package com.gathering.review.repository;
 
 import com.gathering.book.model.dto.BookResponse;
-import com.gathering.gathering.infrastructure.entity.SearchType;
+import com.gathering.gathering.domain.SearchType;
 import com.gathering.review.model.constant.BookReviewTagType;
 import com.gathering.review.model.constant.ReviewType;
 import com.gathering.review.model.dto.*;

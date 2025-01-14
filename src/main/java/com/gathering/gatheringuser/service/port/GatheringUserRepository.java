@@ -1,6 +1,6 @@
 package com.gathering.gatheringuser.service.port;
 
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
 
 import java.util.List;

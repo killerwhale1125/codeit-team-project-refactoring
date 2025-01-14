@@ -1,13 +1,15 @@
 package com.gathering.gathering.infrastructure;
 
+import com.gathering.gathering.domain.GatheringDomain;
+import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSearch;
-import com.gathering.gathering.infrastructure.entity.Gathering;
-import com.gathering.gathering.infrastructure.entity.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gathering.infrastructure.entity.Gathering;
+import com.gathering.gathering.service.dto.GatheringSliceResponse;
 import com.gathering.gathering.service.port.GatheringSearchRepository;
 import com.gathering.gathering.util.GatheringSearchConditionBuilder;
 import com.gathering.gathering.util.GatheringSortUtil;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.review.model.constant.StatusType;
 import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
@@ -25,11 +27,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.gathering.book.model.entity.QBook.book;
 import static com.gathering.challenge.model.entity.QChallenge.challenge;
-import static com.gathering.gathering.model.entity.QGathering.gathering;
-import static com.gathering.gatheringuser.model.entity.QGatheringUser.gatheringUser;
+import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
+import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
 import static com.gathering.image.model.entity.QImage.image;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 import static com.gathering.user.model.entitiy.QUser.user;
@@ -45,7 +48,8 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
     // 무한스크롤 전용
     @Override
-    public Slice<Gathering> findGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
+    public GatheringSliceResponse findGatherings(GatheringSearch gatheringSearch, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         // 조건 생성
         BooleanBuilder builder = gatheringSearchConditionBuilder.buildConditionAll(gatheringSearch);
         // Query 생성
@@ -65,7 +69,9 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         query.offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1);
 
-        List<Gathering> contents = query.fetch();
+        List<GatheringDomain> contents = query.fetch().stream()
+                .map(Gathering::toEntity)
+                .collect(Collectors.toList());
 
         /**
          * hasNext true -> 요청한 size 외에 데이터가 더 존재함
@@ -79,7 +85,12 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         }
         
         // 꼭 필요할 때만 count 쿼리 실행
-        return new SliceImpl<>(contents, pageable, hasNext);
+        SliceImpl<GatheringDomain> slice = new SliceImpl<>(contents, pageable, hasNext);
+
+        return GatheringSliceResponse.builder()
+                .gatherings(slice.getContent())
+                .hasNext(hasNext)
+                .build();
     }
 
     @Override

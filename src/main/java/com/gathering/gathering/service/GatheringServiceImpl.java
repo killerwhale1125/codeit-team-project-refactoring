@@ -11,7 +11,7 @@ import com.gathering.gathering.controller.port.GatheringService;
 import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringCreate;
 import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.gathering.service.port.GatheringRepository;
 import com.gathering.gathering.util.GatheringActions;

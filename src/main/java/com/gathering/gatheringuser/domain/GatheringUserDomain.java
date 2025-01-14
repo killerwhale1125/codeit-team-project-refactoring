@@ -2,15 +2,14 @@ package com.gathering.gatheringuser.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.domain.GatheringDomain;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
 import com.gathering.user.model.domain.UserDomain;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 
-import static com.gathering.gathering.infrastructure.entity.GatheringUserStatus.NOT_PARTICIPATING;
-import static com.gathering.gathering.infrastructure.entity.GatheringUserStatus.PARTICIPATING;
+import static com.gathering.gatheringuser.domain.GatheringUserStatus.NOT_PARTICIPATING;
+import static com.gathering.gatheringuser.domain.GatheringUserStatus.PARTICIPATING;
 
 @Getter
 @Builder

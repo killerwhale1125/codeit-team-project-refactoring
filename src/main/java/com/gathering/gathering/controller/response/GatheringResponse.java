@@ -1,6 +1,7 @@
 package com.gathering.gathering.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.ReadingTimeGoal;
@@ -52,7 +53,7 @@ public class GatheringResponse {
     private List<String> userProfiles;
     private double readingRate;
 
-    public static GatheringResponse fromEntity(Gathering gathering, boolean isWish) {
+    public static GatheringResponse from(GatheringDomain gathering, boolean isWish) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .owner(gathering.getOwner())
@@ -67,8 +68,6 @@ public class GatheringResponse {
                 .maxCapacity(gathering.getMaxCapacity())
                 .currentCapacity(gathering.getCurrentCapacity())
                 .gatheringStatus(gathering.getGatheringStatus())
-                .createdTime(gathering.getCreatedTime())
-                .updatedTime(gathering.getModifiedTime())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
                 .publisher(gathering.getBook().getPublisher())

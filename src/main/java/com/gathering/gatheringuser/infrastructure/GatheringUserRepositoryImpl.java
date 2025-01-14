@@ -1,6 +1,6 @@
 package com.gathering.gatheringuser.infrastructure;
 
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
 import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
 import com.gathering.gatheringuser.service.port.GatheringUserRepository;

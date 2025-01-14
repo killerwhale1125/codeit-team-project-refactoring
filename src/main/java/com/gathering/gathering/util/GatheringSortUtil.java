@@ -1,10 +1,10 @@
 package com.gathering.gathering.util;
 
-import com.gathering.gathering.infrastructure.entity.GatheringReviewSortType;
+import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSortType;
 import com.querydsl.jpa.impl.JPAQuery;
 
-import static com.gathering.gathering.model.entity.QGathering.gathering;
+import static com.gathering.gathering.infrastructure.entity.QGathering.*;
 import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
 
 public class GatheringSortUtil {

@@ -2,13 +2,13 @@ package com.gathering.gatheringuser.infrastructure.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.infrastructure.entity.Gathering;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
 import com.gathering.user.model.entitiy.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import static com.gathering.gathering.infrastructure.entity.GatheringUserStatus.NOT_PARTICIPATING;
+import static com.gathering.gatheringuser.domain.GatheringUserStatus.NOT_PARTICIPATING;
 import static com.gathering.util.entity.EntityUtils.nullableEntity;
 import static jakarta.persistence.Persistence.getPersistenceUtil;
 

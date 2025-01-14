@@ -3,16 +3,16 @@ package com.gathering.gathering.controller.port;
 import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
-import com.gathering.gathering.infrastructure.entity.GatheringReviewSortType;
+import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
-import com.gathering.gathering.infrastructure.entity.SearchType;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
+import com.gathering.gathering.domain.SearchType;
 import com.gathering.review.model.dto.ReviewListDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface GatheringSearchService {
-    GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails);
+    GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, int page, int size, UserDetails userDetails);
 
     GatheringResponse getById(Long gatheringId, String userKey, UserDetails userDetails);
 

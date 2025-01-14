@@ -5,14 +5,13 @@ import com.gathering.challenge.repository.ChallengeRepository;
 import com.gathering.challengeuser.model.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.controller.port.GatheringSearchService;
-import com.gathering.gathering.domain.GatheringStatus;
+import com.gathering.gathering.domain.*;
 import com.gathering.gathering.controller.response.GatheringResponse;
-import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
 import com.gathering.gathering.infrastructure.entity.Gathering;
-import com.gathering.gathering.infrastructure.entity.GatheringReviewSortType;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
-import com.gathering.gathering.infrastructure.entity.SearchType;
+import com.gathering.gathering.service.dto.GatheringSliceResponse;
+import com.gathering.gathering.util.GatheringDtoMapper;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gathering.service.port.GatheringSearchRepository;
 import com.gathering.gathering.service.port.GatheringAsync;
 import com.gathering.gathering.util.GatheringSearchActions;
@@ -54,13 +53,13 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     private final ChallengeRepository challengeRepository;
 
     @Override
-    public GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
-        Slice<Gathering> slice = gatheringSearchRepository.findGatherings(gatheringSearch, pageable);
+    public GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, int page, int size, UserDetails userDetails) {
+        GatheringSliceResponse gatheringSliceResponse = gatheringSearchRepository.findGatherings(gatheringSearch, page, size);
 
         Set<Long> wishGatheringIds
-                = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
+                = userDetails != null ? userRepository.findWishGatheringIdsByUserName(userDetails.getUsername()) : new HashSet<>();
 
-        return gatheringSearchActions.convertToGatheringSearchResponse(slice, wishGatheringIds);
+        return GatheringDtoMapper.convertToGatheringSearchResponse(gatheringSliceResponse, wishGatheringIds);
     }
 
     @Override
@@ -70,7 +69,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         Set<Long> wishGatheringIds
                 = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
 
-        return gatheringSearchActions.convertToGatheringSearchJoinableResponse(slice, wishGatheringIds);
+        return GatheringDtoMapper.convertToGatheringSearchJoinableResponse(slice, wishGatheringIds);
     }
 
     @Override
@@ -84,7 +83,8 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         Set<Long> wishGatheringIds
                 = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
 
-        return GatheringResponse.fromEntity(gathering, wishGatheringIds.contains(gathering.getId()));
+//        return GatheringResponse.fromEntity(gathering, wishGatheringIds.contains(gathering.getId()));
+        return null;
     }
 
     @Override

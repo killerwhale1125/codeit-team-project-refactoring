@@ -8,7 +8,7 @@ import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.controller.response.GatheringResultPageResponse;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
 import com.gathering.gathering.infrastructure.entity.Gathering;
-import com.gathering.gathering.infrastructure.entity.SearchType;
+import com.gathering.gathering.domain.SearchType;
 import com.gathering.gathering.infrastructure.GatheringSearchJpaRepository;
 import com.gathering.review.model.dto.BookReviewDto;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +29,14 @@ public class GatheringSearchActions {
     private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
 
     public GatheringSearchResponse convertToGatheringSearchResponse(Slice<Gathering> slice, Set<Long> wishGatheringIds) {
-        List<GatheringResponse> gatheringResponses = slice.getContent().stream()
-                .map(gathering -> GatheringResponse.fromEntity(gathering, wishGatheringIds.contains(gathering.getId())))
-                .collect(Collectors.toList());
-
-        boolean hasNext = slice.hasNext();
-
-        return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
+//        List<GatheringResponse> gatheringResponses = slice.getContent().stream()
+//                .map(gathering -> GatheringResponse.fromEntity(gathering, wishGatheringIds.contains(gathering.getId())))
+//                .collect(Collectors.toList());
+//
+//        boolean hasNext = slice.hasNext();
+//
+//        return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
+        return null;
     }
 
     public GatheringSearchResponse convertToGatheringSearchJoinableResponse(Slice<Gathering> slice, Set<Long> wishGatheringIds) {

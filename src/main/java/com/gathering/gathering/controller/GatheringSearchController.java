@@ -4,10 +4,10 @@ import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
-import com.gathering.gathering.infrastructure.entity.GatheringReviewSortType;
+import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
-import com.gathering.gathering.infrastructure.entity.SearchType;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
+import com.gathering.gathering.domain.SearchType;
 import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.util.web.UserSessionKeyGenerator;
@@ -42,9 +42,10 @@ public class GatheringSearchController {
     @GetMapping("/filtering")
     @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findGatheringsByFilters(@ModelAttribute GatheringSearch gatheringSearch,
-                                                                @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable,
+                                                                @RequestParam("page") int page,
+                                                                @RequestParam("size") int size,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        return new BaseResponse<>(gatheringSearchService.findGatheringsByFilters(gatheringSearch, pageable, userDetails));
+        return new BaseResponse<>(gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, userDetails));
     }
 
     @GetMapping("/joinable")

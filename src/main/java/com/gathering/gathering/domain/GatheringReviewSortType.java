@@ -1,4 +1,4 @@
-package com.gathering.gathering.infrastructure.entity;
+package com.gathering.gathering.domain;
 
 public enum GatheringReviewSortType {
     DEADLINE_ASC,        // 최신순

@@ -1,6 +1,6 @@
 package com.gathering.gatheringuser.infrastructure;
 
-import com.gathering.gathering.infrastructure.entity.GatheringUserStatus;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.gathering.gathering.infrastructure.entity;
+package com.gathering.gathering.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
