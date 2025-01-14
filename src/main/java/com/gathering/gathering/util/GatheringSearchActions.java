@@ -28,27 +28,6 @@ public class GatheringSearchActions {
 
     private final GatheringSearchJpaRepository gatheringSearchJpaRepository;
 
-    public GatheringSearchResponse convertToGatheringSearchResponse(Slice<Gathering> slice, Set<Long> wishGatheringIds) {
-//        List<GatheringResponse> gatheringResponses = slice.getContent().stream()
-//                .map(gathering -> GatheringResponse.fromEntity(gathering, wishGatheringIds.contains(gathering.getId())))
-//                .collect(Collectors.toList());
-//
-//        boolean hasNext = slice.hasNext();
-//
-//        return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
-        return null;
-    }
-
-    public GatheringSearchResponse convertToGatheringSearchJoinableResponse(Slice<Gathering> slice, Set<Long> wishGatheringIds) {
-        List<GatheringResponse> gatheringResponses = slice.getContent().stream()
-                .map(gathering -> GatheringResponse.joinableGatherings(gathering, wishGatheringIds.contains(gathering.getId())))
-                .collect(Collectors.toList());
-
-        boolean hasNext = slice.hasNext();
-
-        return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
-    }
-
     public GatheringSearchResponse convertToMyGatheringPage(Page<Gathering> result, Map<Long, Double> challengeReadingRateMap) {
         List<GatheringResponse> gatheringResponses = result.getContent().stream()
                 .map(gathering -> GatheringResponse.myGatheringFromEntity(gathering, challengeReadingRateMap))

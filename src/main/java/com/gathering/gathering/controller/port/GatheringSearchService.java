@@ -32,5 +32,5 @@ public interface GatheringSearchService {
 
     GatheringSearchResponse getReviewsBySearchWordAndType(String searchWord, SearchType searchType, Pageable pageable, String username);
 
-    GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails);
+    GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size, UserDetails userDetails);
 }

@@ -22,12 +22,12 @@ public class GatheringDtoMapper {
         return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
     }
 
-    public static GatheringSearchResponse convertToGatheringSearchJoinableResponse(Slice<Gathering> slice, Set<Long> wishGatheringIds) {
-        List<GatheringResponse> gatheringResponses = slice.getContent().stream()
+    public static GatheringSearchResponse convertToGatheringSearchJoinableResponse(GatheringSliceResponse gatheringSliceResponse, Set<Long> wishGatheringIds) {
+        List<GatheringResponse> gatheringResponses = gatheringSliceResponse.getGatherings().stream()
                 .map(gathering -> GatheringResponse.joinableGatherings(gathering, wishGatheringIds.contains(gathering.getId())))
                 .collect(Collectors.toList());
 
-        boolean hasNext = slice.hasNext();
+        boolean hasNext = gatheringSliceResponse.isHasNext();
 
         return GatheringSearchResponse.fromEntity(gatheringResponses, hasNext);
     }

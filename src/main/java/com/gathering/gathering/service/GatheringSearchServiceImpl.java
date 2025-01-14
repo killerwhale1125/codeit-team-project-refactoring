@@ -63,13 +63,13 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
     }
 
     @Override
-    public GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable, UserDetails userDetails) {
-        Slice<Gathering> slice = gatheringSearchRepository.findJoinableGatherings(gatheringSearch, pageable);
+    public GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size, UserDetails userDetails) {
+        GatheringSliceResponse gatheringSliceResponse = gatheringSearchRepository.findJoinableGatherings(gatheringSearch, page, size);
 
         Set<Long> wishGatheringIds
                 = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
 
-        return GatheringDtoMapper.convertToGatheringSearchJoinableResponse(slice, wishGatheringIds);
+        return GatheringDtoMapper.convertToGatheringSearchJoinableResponse(gatheringSliceResponse, wishGatheringIds);
     }
 
     @Override

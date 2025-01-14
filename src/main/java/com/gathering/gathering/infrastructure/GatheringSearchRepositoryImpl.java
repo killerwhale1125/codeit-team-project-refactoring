@@ -94,9 +94,10 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
     }
 
     @Override
-    public Slice<Gathering> findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
+    public GatheringSliceResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size) {
         // 조건 생성
         BooleanBuilder builder = gatheringSearchConditionBuilder.buildConditionAll(gatheringSearch);
+        Pageable pageable = PageRequest.of(page, size);
         // Query 생성
         JPAQuery<Gathering> query = queryFactory.selectFrom(gathering)
                 .leftJoin(gathering.challenge, challenge).fetchJoin()
@@ -115,7 +116,9 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         query.offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1);
 
-        List<Gathering> contents = query.fetch();
+        List<GatheringDomain> contents = query.fetch().stream()
+                .map(Gathering::toEntity)
+                .collect(Collectors.toList());
 
         /**
          * hasNext true -> 요청한 size 외에 데이터가 더 존재함
@@ -129,7 +132,12 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         }
 
         // 꼭 필요할 때만 count 쿼리 실행
-        return new SliceImpl<>(contents, pageable, hasNext);
+        SliceImpl<GatheringDomain> slice = new SliceImpl<>(contents, pageable, hasNext);
+
+        return GatheringSliceResponse.builder()
+                .gatherings(slice.getContent())
+                .hasNext(hasNext)
+                .build();
     }
 
     @Override

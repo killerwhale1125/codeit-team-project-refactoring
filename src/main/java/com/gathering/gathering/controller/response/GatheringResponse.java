@@ -78,7 +78,7 @@ public class GatheringResponse {
                 .build();
     }
 
-    public static GatheringResponse joinableGatherings(Gathering gathering, boolean isWish) {
+    public static GatheringResponse joinableGatherings(GatheringDomain gathering, boolean isWish) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .name(gathering.getName())
@@ -91,8 +91,6 @@ public class GatheringResponse {
                 .maxCapacity(gathering.getMaxCapacity())
                 .currentCapacity(gathering.getCurrentCapacity())
                 .gatheringStatus(gathering.getGatheringStatus())
-                .createdTime(gathering.getCreatedTime())
-                .updatedTime(gathering.getModifiedTime())
                 .bookTitle(gathering.getBook().getTitle())
                 .bookImage(gathering.getBook().getImage())
                 .publishDate(gathering.getBook().getPublishDate())

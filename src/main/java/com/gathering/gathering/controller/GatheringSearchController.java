@@ -51,9 +51,10 @@ public class GatheringSearchController {
     @GetMapping("/joinable")
     @Operation(summary = "참여 가능한 모임 조회", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findJoinableGatherings(@ModelAttribute GatheringSearch gatheringSearch,
-                                                                @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable,
+                                                                        @RequestParam("page") int page,
+                                                                        @RequestParam("size") int size,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        return new BaseResponse<>(gatheringSearchService.findJoinableGatherings(gatheringSearch, pageable, userDetails));
+        return new BaseResponse<>(gatheringSearchService.findJoinableGatherings(gatheringSearch, page, size, userDetails));
     }
 
     @GetMapping("/participating")
