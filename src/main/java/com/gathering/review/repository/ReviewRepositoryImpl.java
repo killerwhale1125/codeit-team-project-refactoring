@@ -4,6 +4,7 @@ import com.gathering.book.controller.response.BookResponse;
 import com.gathering.book.infrastructure.entity.Book;
 import com.gathering.book.infrastructure.BookJpaRepository;
 import com.gathering.book_review.infrastructure.BookReviewJpaRepository;
+import com.gathering.book_review.infrastructure.entity.QBookReview;
 import com.gathering.challenge.infrastructure.entity.ChallengeStatus;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
@@ -24,10 +25,9 @@ import com.gathering.book_review.domain.BookReviewTagType;
 import com.gathering.review.domain.ReviewType;
 import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.*;
-import com.gathering.review.model.entitiy.*;
 import com.gathering.review.service.port.ReviewRepository;
 import com.gathering.review.util.ReviewQueryBuilder;
-import com.gathering.user.model.entitiy.QUser;
+import com.gathering.user.infrastructure.entitiy.QUser;
 import com.gathering.user.infrastructure.entitiy.User;
 import com.gathering.user.infrastructure.UserJpaRepository;
 import com.querydsl.core.BooleanBuilder;
@@ -49,17 +49,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gathering.book.model.entity.QBook.book;
-import static com.gathering.challenge.model.entity.QChallenge.challenge;
+import static com.gathering.book.infrastructure.entity.QBook.book;
+import static com.gathering.book_review.infrastructure.entity.QBookReview.bookReview;
+import static com.gathering.challenge.infrastructure.entity.QChallenge.challenge;
 import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
 import static com.gathering.gathering.infrastructure.entity.QGatheringBookReview.gatheringBookReview;
+import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
 import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
 import static com.gathering.review.model.dto.ReviewListDto.fromGatheringReviews;
-import static com.gathering.review.model.entitiy.QBookReview.bookReview;
-import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
-import static com.gathering.review.model.entitiy.QReviewComment.reviewComment;
-import static com.gathering.review.model.entitiy.QReviewLikes.reviewLikes;
-import static com.gathering.user.model.entitiy.QUser.user;
+import static com.gathering.review_comment.infrastructure.entity.QReviewComment.reviewComment;
+import static com.gathering.review_like.infrastructure.entity.QReviewLikes.reviewLikes;
+import static com.gathering.user.infrastructure.entitiy.QUser.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Repository
@@ -259,7 +259,7 @@ public class ReviewRepositoryImpl implements ReviewRepository {
                             .select(bookReview.count())
                             .from(bookReview)
                             .where(bookReview.user.id.eq(QUser.user.id))
-                    ,QUser.user.userName
+                    , QUser.user.userName
                     ,QUser.user.profile
                     ,likeUserCk(user)
             ));
@@ -678,13 +678,13 @@ public class ReviewRepositoryImpl implements ReviewRepository {
                         ,JPAExpressions
                                 .select(bookReview.count())
                                 .from(bookReview)
-                                .where(bookReview.user.id.eq(QUser.user.id))
-                        ,QUser.user.userName
-                        ,QUser.user.profile
+                                .where(bookReview.user.id.eq(user.id))
+                        , user.userName
+                        , user.profile
                 ))
                 .from(bookReview)
-                .leftJoin(QUser.user).on(bookReview.user.id.eq(QUser.user.id))
-                .where(bookReview.user.id.eq(QUser.user.id).and(bookReview.status.eq(StatusType.Y)))
+                .leftJoin(user).on(bookReview.user.id.eq(user.id))
+                .where(bookReview.user.id.eq(user.id).and(bookReview.status.eq(StatusType.Y)))
                 .orderBy(bookReview.likes.desc())
                 .limit(cnt);
     };

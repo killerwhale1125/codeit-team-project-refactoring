@@ -1,8 +1,8 @@
 package com.gathering.book.infrastructure;
 
-import com.gathering.book.domain.BookDomain;
 import com.gathering.book.controller.response.BookSearchResponse;
-import com.gathering.book.model.dto.QBookSearchResponse;
+import com.gathering.book.controller.response.QBookSearchResponse;
+import com.gathering.book.domain.BookDomain;
 import com.gathering.book.infrastructure.entity.Book;
 import com.gathering.book.service.port.BookRepository;
 import com.gathering.common.base.exception.BaseException;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.gathering.book.model.entity.QBook.book;
+import static com.gathering.book.infrastructure.entity.QBook.book;
 import static com.gathering.common.base.response.BaseResponseStatus.*;
 import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
 

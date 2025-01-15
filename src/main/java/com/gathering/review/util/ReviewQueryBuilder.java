@@ -5,7 +5,8 @@ import com.gathering.review.domain.StatusType;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.stereotype.Component;
 
-import static com.gathering.review.model.entitiy.QBookReview.bookReview;
+import static com.gathering.book_review.infrastructure.entity.QBookReview.bookReview;
+
 
 @Component
 public class ReviewQueryBuilder {

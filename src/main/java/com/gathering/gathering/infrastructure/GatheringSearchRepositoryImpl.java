@@ -16,6 +16,7 @@ import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
+import com.gathering.user.infrastructure.entitiy.QUser;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
@@ -31,13 +32,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.gathering.book.model.entity.QBook.book;
-import static com.gathering.challenge.model.entity.QChallenge.challenge;
+import static com.gathering.book.infrastructure.entity.QBook.book;
+import static com.gathering.challenge.infrastructure.entity.QChallenge.challenge;
 import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
+import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
 import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
-import static com.gathering.image.model.entity.QImage.image;
-import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
-import static com.gathering.user.model.entitiy.QUser.user;
+import static com.gathering.image.infrastructure.entity.QImage.image;
+import static com.gathering.user.infrastructure.entitiy.QUser.*;
 
 
 @Repository

@@ -28,11 +28,11 @@ public class BookDomain {
 
     private int totalPage;
 
-    List<BookCategory> bookCategories = new ArrayList<>();
+    List<BookCategory> bookCategories;
 
-    List<BookReview> reviews = new ArrayList<>();
+    List<BookReview> reviews;
 
-    List<UserAttendanceBook> userAttendanceBooks = new ArrayList<>();
+    List<UserAttendanceBook> userAttendanceBooks;
 
     // 모임에 책이 선택될 때마다 카운트를 증가 ( Best 독서 모임 조회용 )
     public void incrementSelectedCount() {

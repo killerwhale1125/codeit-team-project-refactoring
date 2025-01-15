@@ -5,7 +5,7 @@ import com.gathering.gathering.domain.GatheringSortType;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import static com.gathering.gathering.infrastructure.entity.QGathering.*;
-import static com.gathering.review.model.entitiy.QGatheringReview.gatheringReview;
+import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
 
 public class GatheringSortUtil {
     public static void applySorting(JPAQuery<?> query, GatheringSortType gatheringSortType) {

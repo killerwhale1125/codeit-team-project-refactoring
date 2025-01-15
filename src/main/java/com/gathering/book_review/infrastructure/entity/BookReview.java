@@ -2,13 +2,16 @@ package com.gathering.book_review.infrastructure.entity;
 
 import com.gathering.book.infrastructure.entity.Book;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.review_comment.infrastructure.entity.ReviewComment;
-import com.gathering.review_like.infrastructure.entity.ReviewLikes;
 import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.CreateReviewDto;
+import com.gathering.review_comment.infrastructure.entity.ReviewComment;
+import com.gathering.review_like.infrastructure.entity.ReviewLikes;
 import com.gathering.user.infrastructure.entitiy.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
@@ -19,7 +22,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class BookReview extends BaseTimeEntity {
 
     @Id
@@ -74,15 +76,16 @@ public class BookReview extends BaseTimeEntity {
     }
 
     public static BookReview createEntity(Book book, User user, CreateReviewDto createReviewDto) {
-        return BookReview.builder()
-                .user(user)
-                .book(book)
-                .title(createReviewDto.getTitle())
-                .apprCd(createReviewDto.getApprCd())
-                .tagCd(createReviewDto.getTag())
-                .content(createReviewDto.getContent())
-                .likes(0)
-                .status(createReviewDto.getTmprStrgYN().equals("Y") ? StatusType.T : StatusType.Y) // T = 임시저장, Y= '저장' , N = 삭제'
-                .build();
+        return null;
+//        return BookReview.builder()
+//                .user(user)
+//                .book(book)
+//                .title(createReviewDto.getTitle())
+//                .apprCd(createReviewDto.getApprCd())
+//                .tagCd(createReviewDto.getTag())
+//                .content(createReviewDto.getContent())
+//                .likes(0)
+//                .status(createReviewDto.getTmprStrgYN().equals("Y") ? StatusType.T : StatusType.Y) // T = 임시저장, Y= '저장' , N = 삭제'
+//                .build();
     }
 }
