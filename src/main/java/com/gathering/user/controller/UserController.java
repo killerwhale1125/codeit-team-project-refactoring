@@ -3,13 +3,10 @@ package com.gathering.user.controller;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.gathering.controller.port.GatheringSearchService;
-import com.gathering.user.model.constant.SingUpType;
-import com.gathering.user.model.dto.UserDto;
-import com.gathering.user.model.dto.request.*;
-import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
-import com.gathering.user.redis.UserRedisKey;
-import com.gathering.user.service.UserService;
+import com.gathering.user.controller.port.UserService;
+import com.gathering.user.domain.*;
+import com.gathering.user.infrastructure.UserRedisKey;
+import com.gathering.user_attendance_book.controller.response.UserAttendanceBookResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +27,7 @@ import java.util.List;
 import static com.gathering.common.base.response.BaseResponseStatus.*;
 import static com.gathering.security.jwt.JwtTokenUtil.createRefreshToken;
 import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
-import static com.gathering.user.util.Validator.isValidEmail;
+import static com.gathering.user.util.EmailValidator.isValidEmail;
 
 @RestController
 @RequestMapping("/api/auths")
@@ -40,13 +37,11 @@ public class UserController {
 
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    private final GatheringSearchService gatheringSearchService;
 
     @RequestMapping(value = "/getAccessToken", method = RequestMethod.POST)
     public BaseResponse<String> getAccessToken(
             @RequestBody GetAccessTokenDto getAccessTokenDto
             ){
-//        String accessToken = userService.getAccessToken(getAccessTokenDto);
         String accessToken = generateToken(getAccessTokenDto.getUserId());
         return new BaseResponse<>(accessToken);
     }
@@ -147,14 +142,14 @@ public class UserController {
     */
     @RequestMapping(value = "/edit/user", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<UserDto> editUser(
-            @RequestPart("data") @Valid EditUserRequestDto editUserRequestDto,   // JSON 데이터
+            @RequestPart("data") @Valid UserUpdate userUpdate,   // JSON 데이터
             @RequestPart(value = "file" ,required = false) MultipartFile file,
             @AuthenticationPrincipal UserDetails userDetails
     )throws RuntimeException {
 
         UserDto user = null;
         try {
-            user = userService.editUser(editUserRequestDto, file, userDetails.getUsername());
+            user = userService.editUser(userUpdate, file, userDetails.getUsername());
             if(user != null) {
                 String accessToken = generateToken(user.getUserName());
                 user.setToken(accessToken);
@@ -169,7 +164,7 @@ public class UserController {
 
     @RequestMapping(value = "/password/check", method = RequestMethod.POST)
     public BaseResponse<Void> passwordCheck(
-            @RequestBody @Valid PasswordCheckDto passwordCheckDto,
+            @RequestBody @Valid PasswordCheck passwordCheck,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
@@ -177,7 +172,7 @@ public class UserController {
 
         UserDto userDto = userService.selectUserInfo(username);
 
-        if (passwordEncoder.matches(passwordCheckDto.getPassword(), userDto.getPassword())) {
+        if (passwordEncoder.matches(passwordCheck.getPassword(), userDto.getPassword())) {
             return new BaseResponse<>();
         } else {
             return new BaseResponse<>(BaseResponseStatus.PASSWORD_MISMATCHED);

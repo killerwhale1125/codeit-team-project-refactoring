@@ -2,7 +2,7 @@ package com.gathering.gatheringuser.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.domain.GatheringDomain;
-import com.gathering.user.model.domain.UserDomain;
+import com.gathering.user.domain.UserDomain;
 import lombok.Builder;
 import lombok.Getter;
 

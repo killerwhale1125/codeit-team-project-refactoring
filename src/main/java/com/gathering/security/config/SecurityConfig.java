@@ -1,7 +1,7 @@
 package com.gathering.security.config;
 
 import com.gathering.security.jwt.JwtAuthorizationFilter;
-import com.gathering.user.repository.UserJpaRepository;
+import com.gathering.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

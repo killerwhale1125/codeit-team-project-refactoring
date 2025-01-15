@@ -1,15 +1,15 @@
 package com.gathering.gathering.infrastructure.entity;
 
-import com.gathering.book.model.entity.Book;
-import com.gathering.challenge.model.entity.Challenge;
+import com.gathering.book.infrastructure.entity.Book;
+import com.gathering.challenge.infrastructure.entity.Challenge;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
-import com.gathering.image.model.entity.Image;
-import com.gathering.review.model.entitiy.GatheringReview;
-import com.gathering.user_attendance_book.model.entity.UserAttendanceBook;
+import com.gathering.image.infrastructure.entity.Image;
+import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
+import com.gathering.user_attendance_book.infrastructure.entity.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.Getter;
 

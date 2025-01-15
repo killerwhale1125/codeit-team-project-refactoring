@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.gathering.common.properties.AwsS3Properties;
-import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.util.image.SystemFileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,8 +1,8 @@
 package com.gathering.security.auth;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.user.model.entitiy.User;
-import com.gathering.user.repository.UserJpaRepository;
+import com.gathering.user.infrastructure.entitiy.User;
+import com.gathering.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

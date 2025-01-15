@@ -4,7 +4,7 @@ import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
-import com.gathering.user.model.entitiy.User;
+import com.gathering.user.infrastructure.entitiy.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 

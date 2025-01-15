@@ -1,12 +1,12 @@
 package com.gathering.review.controller;
 
-import com.gathering.book.model.dto.BookResponse;
+import com.gathering.book.controller.response.BookResponse;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.review.model.constant.BookReviewTagType;
-import com.gathering.review.model.constant.ReviewType;
+import com.gathering.book_review.domain.BookReviewTagType;
+import com.gathering.review.domain.ReviewType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -120,14 +120,15 @@ public class ReviewConroller {
             @RequestParam @Valid SearchType type,
             @RequestParam String searchParam,
             @AuthenticationPrincipal UserDetails userDetails,
-            @PageableDefault(page = 0, size = 5, sort = "id,desc") Pageable pageable) {
+            @RequestParam int page,
+            @RequestParam int size) {
 
         String username = null;
         if(userDetails != null) {
             username = userDetails.getUsername();
         }
 
-        return new BaseResponse<>(reviewService.searchReviews(type, searchParam, pageable, username));
+        return new BaseResponse<>(reviewService.searchReviews(type, searchParam, page, size, username));
     }
 
 

@@ -1,6 +1,6 @@
 package com.gathering.image.service;
 
-import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.infrastructure.entity.EntityType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package com.gathering.gathering.util;
 
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
-import com.gathering.user.model.domain.UserDomain;
+import com.gathering.user.domain.UserDomain;
 
 import java.time.LocalDate;
 import java.util.List;

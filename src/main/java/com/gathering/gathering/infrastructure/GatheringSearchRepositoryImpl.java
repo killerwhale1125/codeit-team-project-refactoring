@@ -1,16 +1,19 @@
 package com.gathering.gathering.infrastructure;
 
+import com.gathering.common.base.exception.BaseException;
+import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.infrastructure.entity.Gathering;
+import com.gathering.gathering.service.dto.GatheringPageResponse;
 import com.gathering.gathering.service.dto.GatheringSliceResponse;
 import com.gathering.gathering.service.port.GatheringSearchRepository;
 import com.gathering.gathering.util.GatheringSearchConditionBuilder;
 import com.gathering.gathering.util.GatheringSortUtil;
 import com.gathering.gatheringuser.domain.GatheringUserStatus;
-import com.gathering.review.model.constant.StatusType;
+import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.querydsl.core.BooleanBuilder;
@@ -25,7 +28,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -141,12 +143,45 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
     }
 
     @Override
-    public Optional<Gathering> getGatheringWithChallengeAndBook(Long gatheringId) {
-        return Optional.empty();
+    public GatheringDomain getByIdWithChallengeAndBook(Long gatheringId) {
+        return gatheringSearchJpaRepository.getByIdWithChallengeAndBook(gatheringId)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_GATHERING))
+                .toEntity();
     }
 
     @Override
-    public Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
+    public GatheringPageResponse findGatheringsBySearchWordAndTypeTitle(String searchWord, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> gatherings = gatheringSearchJpaRepository.findGatheringsBySearchWordAndTypeTitle(searchWord, pageable);
+        return GatheringPageResponse.builder()
+                .objects(gatherings.getContent())
+                .totalCount(gatherings.getTotalElements())
+                .build();
+    }
+
+    @Override
+    public GatheringPageResponse findGatheringsBySearchWordAndTypeContent(String searchWord, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> gatherings = gatheringSearchJpaRepository.findGatheringsBySearchWordAndTypeContent(searchWord, pageable);
+        return GatheringPageResponse.builder()
+                .objects(gatherings.getContent())
+                .totalCount(gatherings.getTotalElements())
+                .build();
+    }
+
+    @Override
+    public GatheringPageResponse findGatheringsBySearchWordAndTypeBookName(String searchWord, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> gatherings = gatheringSearchJpaRepository.findGatheringsBySearchWordAndTypeBookName(searchWord, pageable);
+        return GatheringPageResponse.builder()
+                .objects(gatherings.getContent())
+                .totalCount(gatherings.getTotalElements())
+                .build();
+    }
+
+    @Override
+    public GatheringPageResponse findGatheringsForUserByUsername(String username, int page, int size, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
+        Pageable pageable = PageRequest.of(page, size);
         BooleanBuilder builder = gatheringSearchConditionBuilder.buildGatheringAndUserStatus(gatheringStatus, gatheringUserStatus);
 
         JPAQuery<Gathering> query = queryFactory.select(gathering)
@@ -157,9 +192,9 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .leftJoin(gathering.book, book).fetchJoin()
                 .where(gatheringUser.user.userName.eq(username).and(builder));
 
-        List<Gathering> result = query.offset(pageable.getOffset())  // 페이지 시작 위치
+        List<GatheringDomain> result = query.offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기
-                .fetch();
+                .fetch().stream().map(Gathering::toEntity).collect(Collectors.toList());
 
         long totalCount = queryFactory.select(gathering.id)
                 .from(gathering)
@@ -167,13 +202,20 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .where(gatheringUser.user.userName.eq(username).and(builder))
                 .fetchCount();
 
-        return new PageImpl<>(result, pageable, totalCount);
+        Page<GatheringDomain> gatherings = new PageImpl<>(result, pageable, totalCount);
+
+        return GatheringPageResponse.builder()
+                .gatherings(gatherings.getContent())
+                .totalCount(totalCount)
+                .build();
+
     }
 
     // 내가 만든 모임
     @Override
-    public Page<Gathering> findMyCreated(String username, Pageable pageable) {
-        List<Gathering> result = queryFactory.select(gathering)
+    public GatheringPageResponse findMyCreated(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<GatheringDomain> result = queryFactory.select(gathering)
                 .from(gathering)
                 .leftJoin(gathering.challenge, challenge).fetchJoin()
                 .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
@@ -182,18 +224,25 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .where(gathering.owner.eq(username))
                 .offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기
-                .fetch();
+                .fetch().stream().map(Gathering::toEntity).collect(Collectors.toList());
 
         long totalCount = queryFactory.select(gathering.id)
                 .from(gathering)
                 .where(gathering.owner.eq(username))
                 .fetchCount();
-        return new PageImpl<>(result, pageable, totalCount);
+
+        Page<GatheringDomain> gatherings = new PageImpl<>(result, pageable, totalCount);
+
+        return GatheringPageResponse.builder()
+                .gatherings(gatherings.getContent())
+                .totalCount(totalCount)
+                .build();
     }
 
     @Override
-    public Page<Gathering> findMyWishes(Set<Long> wishGatheringIds, Pageable pageable) {
-        List<Gathering> result = queryFactory.select(gathering)
+    public GatheringPageResponse findMyWishes(Set<Long> wishGatheringIds, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<GatheringDomain> result = queryFactory.select(gathering)
                 .from(gathering)
                 .leftJoin(gathering.challenge, challenge).fetchJoin()
                 .leftJoin(gathering.book, book).fetchJoin()
@@ -202,18 +251,24 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .where(gathering.id.in(wishGatheringIds))
                 .offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기
-                .fetch();
+                .fetch().stream().map(Gathering::toEntity).collect(Collectors.toList());
 
         long totalCount = queryFactory.select(gathering.id)
                 .from(gathering)
                 .where(gathering.id.in(wishGatheringIds))
                 .fetchCount();
 
-        return new PageImpl<>(result, pageable, totalCount);
+        Page<GatheringDomain> gatherings = new PageImpl<>(result, pageable, totalCount);
+
+        return GatheringPageResponse.builder()
+                .gatherings(gatherings.getContent())
+                .totalCount(totalCount)
+                .build();
     }
 
     @Override
-    public ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, Pageable pageable) {
+    public ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         // 리뷰 목록
         JPAQuery<GatheringReviewDto> query = queryFactory
                 .select(Projections.constructor(GatheringReviewDto.class,

@@ -1,31 +1,34 @@
 package com.gathering.gathering.service.port;
 
+import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.infrastructure.entity.Gathering;
+import com.gathering.gathering.service.dto.GatheringPageResponse;
 import com.gathering.gathering.service.dto.GatheringSliceResponse;
 import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.review.model.dto.ReviewListDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
-import java.util.Optional;
 import java.util.Set;
 
 public interface GatheringSearchRepository {
     GatheringSliceResponse findGatherings(GatheringSearch gatheringSearch, int page, int size);
 
-    Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
+    GatheringPageResponse findGatheringsForUserByUsername(String username, int page, int size, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus);
 
-    Page<Gathering> findMyCreated(String username, Pageable pageable);
+    GatheringPageResponse findMyCreated(String username, int page, int size);
 
-    Page<Gathering> findMyWishes(Set<Long> wishGatheringIds, Pageable pageable);
+    GatheringPageResponse findMyWishes(Set<Long> wishGatheringIds, int page, int size);
 
-    ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, Pageable pageable);
+    ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, int page, int size);
 
     GatheringSliceResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size);
 
-    Optional<Gathering> getGatheringWithChallengeAndBook(Long gatheringId);
+    GatheringDomain getByIdWithChallengeAndBook(Long gatheringId);
+
+    GatheringPageResponse findGatheringsBySearchWordAndTypeTitle(String searchWord, int page, int size);
+
+    GatheringPageResponse findGatheringsBySearchWordAndTypeContent(String searchWord, int page, int size);
+
+    GatheringPageResponse findGatheringsBySearchWordAndTypeBookName(String searchWord, int page, int size);
 }

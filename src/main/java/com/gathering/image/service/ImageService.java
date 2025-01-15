@@ -1,7 +1,7 @@
 package com.gathering.image.service;
 
-import com.gathering.image.model.domain.ImageDomain;
-import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.domain.ImageDomain;
+import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.util.string.UUIDUtils;
 import org.springframework.web.multipart.MultipartFile;
 

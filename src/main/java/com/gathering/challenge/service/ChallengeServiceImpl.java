@@ -1,6 +1,7 @@
 package com.gathering.challenge.service;
 
-import com.gathering.challenge.repository.ChallengeRepository;
+import com.gathering.challenge.controller.port.ChallengeService;
+import com.gathering.challenge.service.port.ChallengeRepository;
 import com.gathering.gathering.service.port.GatheringRepository;
 import com.gathering.gatheringuser.service.port.GatheringUserRepository;
 import lombok.Builder;

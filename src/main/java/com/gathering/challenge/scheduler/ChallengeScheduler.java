@@ -1,7 +1,7 @@
 package com.gathering.challenge.scheduler;
 
-import com.gathering.challenge.repository.ChallengeRepository;
-import com.gathering.challenge.service.ChallengeService;
+import com.gathering.challenge.service.port.ChallengeRepository;
+import com.gathering.challenge.controller.port.ChallengeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

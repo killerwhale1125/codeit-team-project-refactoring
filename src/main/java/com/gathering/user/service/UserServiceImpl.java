@@ -2,15 +2,16 @@ package com.gathering.user.service;
 
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.image.service.AwsS3Service;
 import com.gathering.security.jwt.JwtTokenUtil;
-import com.gathering.user.model.dto.UserDto;
-import com.gathering.user.model.dto.request.EditUserRequestDto;
-import com.gathering.user.model.dto.request.SignInRequestDto;
-import com.gathering.user.model.dto.request.SignUpRequestDto;
-import com.gathering.user.model.dto.response.UserAttendanceBookResponse;
-import com.gathering.user.repository.UserRepository;
+import com.gathering.user.controller.port.UserService;
+import com.gathering.user.domain.UserDto;
+import com.gathering.user.domain.UserUpdate;
+import com.gathering.user.domain.SignInRequestDto;
+import com.gathering.user.domain.SignUpRequestDto;
+import com.gathering.user_attendance_book.controller.response.UserAttendanceBookResponse;
+import com.gathering.user.service.port.UserRepository;
 import com.gathering.util.image.SystemFileUtils;
 import com.gathering.util.string.UUIDUtils;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto editUser(EditUserRequestDto editUserRequestDto, MultipartFile file, String userName) {
+    public UserDto editUser(UserUpdate userUpdate, MultipartFile file, String userName) {
 
         String fileName = "";
         String filepath = "";
@@ -96,11 +97,11 @@ public class UserServiceImpl implements UserService {
             }
         }
         // 비밀번호 암호화
-        if(editUserRequestDto.getPassword() != null) {
-            editUserRequestDto.setPassword(passwordEncoder.encode(editUserRequestDto.getPassword()));
+        if(userUpdate.getPassword() != null) {
+            userUpdate.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
         }
 
-        UserDto result = userRepository.editUser(editUserRequestDto, filepath, userDto.getUsersId());
+        UserDto result = userRepository.editUser(userUpdate, filepath, userDto.getUsersId());
 
         return result;
     }

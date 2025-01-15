@@ -1,15 +1,13 @@
 package com.gathering.util.image;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.util.string.UUIDUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.gathering.common.base.response.BaseResponseStatus.UNSUPPORTED_FILETYPE;
 

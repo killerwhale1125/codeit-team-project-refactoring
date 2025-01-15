@@ -2,8 +2,8 @@ package com.gathering.gathering.util;
 
 import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse;
 import com.gathering.gathering.service.port.GatheringRepository;
-import com.gathering.user.model.domain.UserDomain;
-import com.gathering.user.repository.UserRepository;
+import com.gathering.user.domain.UserDomain;
+import com.gathering.user.service.port.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

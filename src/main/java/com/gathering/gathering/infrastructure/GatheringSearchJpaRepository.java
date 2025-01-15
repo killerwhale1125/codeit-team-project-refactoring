@@ -14,7 +14,7 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
 
     @EntityGraph(attributePaths = {"challenge", "book", "image"})
     @Query("SELECT g FROM Gathering g WHERE g.id = :gatheringId")
-    Optional<Gathering> getGatheringWithChallengeAndBook(@Param("gatheringId") Long gatheringId);
+    Optional<Gathering> getByIdWithChallengeAndBook(@Param("gatheringId") Long gatheringId);
 
     @Query(value = "SELECT " +
             "g.GATHERING_ID, g.NAME, g.CURRENT_CAPACITY, g.MAX_CAPACITY, g.GATHERING_WEEK, g.GATHERING_STATUS, g.START_DATE, c.READING_TIME_GOAL, i.IMAGE_URL, b.BOOK_ID, b.TITLE, b.IMAGE " +

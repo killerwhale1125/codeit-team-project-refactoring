@@ -1,7 +1,7 @@
 package com.gathering.gatheringuser.util;
 
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
-import com.gathering.user.model.dto.response.UserResponseDto;
+import com.gathering.user.controller.response.UserResponseDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

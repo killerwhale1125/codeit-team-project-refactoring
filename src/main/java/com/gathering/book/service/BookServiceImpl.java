@@ -1,10 +1,10 @@
 package com.gathering.book.service;
 
-import com.gathering.book.model.dto.BookResponse;
-import com.gathering.book.model.dto.BookSearchResponse;
-import com.gathering.book.repository.BookRepository;
+import com.gathering.book.controller.port.BookService;
+import com.gathering.book.controller.response.BookResponse;
+import com.gathering.book.controller.response.BookSearchResponse;
+import com.gathering.book.service.port.BookRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +17,8 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     @Override
-    public List<BookSearchResponse> findPopularBooks(Pageable pageable) {
-        return bookRepository.findPopularBooks(pageable);
+    public List<BookSearchResponse> findPopularBooks(int page, int size) {
+        return bookRepository.findPopularBooks(page, size);
     }
 
     @Override

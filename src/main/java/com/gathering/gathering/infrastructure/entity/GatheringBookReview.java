@@ -1,8 +1,8 @@
 package com.gathering.gathering.infrastructure.entity;
 
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.review.model.constant.StatusType;
-import com.gathering.review.model.entitiy.BookReview;
+import com.gathering.review.domain.StatusType;
+import com.gathering.book_review.infrastructure.entity.BookReview;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;

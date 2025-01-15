@@ -2,7 +2,7 @@ package com.gathering.gathering.util;
 
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
-import com.gathering.user.model.domain.UserDomain;
+import com.gathering.user.domain.UserDomain;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

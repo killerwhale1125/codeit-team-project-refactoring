@@ -1,6 +1,6 @@
 package com.gathering.security.auth;
 
-import com.gathering.user.model.entitiy.User;
+import com.gathering.user.infrastructure.entitiy.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

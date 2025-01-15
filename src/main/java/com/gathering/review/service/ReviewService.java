@@ -1,9 +1,9 @@
 package com.gathering.review.service;
 
-import com.gathering.book.model.dto.BookResponse;
+import com.gathering.book.controller.response.BookResponse;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.review.model.constant.BookReviewTagType;
-import com.gathering.review.model.constant.ReviewType;
+import com.gathering.book_review.domain.BookReviewTagType;
+import com.gathering.review.domain.ReviewType;
 import com.gathering.review.model.dto.*;
 import org.springframework.data.domain.Pageable;
 
@@ -30,7 +30,7 @@ public interface ReviewService {
     ReviewDto selectBookReviewDetail(long reviewId, String username);
 
     // 리뷰 검색 (상세 페이지 사이드바 및 통합 검색)
-    ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable, String username);
+    ReviewListDto searchReviews(SearchType type, String searchParam, int page, int size, String username);
 
     int DeleteReview(long reviewId,ReviewType type, String username);
 

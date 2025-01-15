@@ -7,7 +7,7 @@ import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse
 import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.gathering.controller.port.GatheringService;
-import com.gathering.user.model.dto.response.UserResponseDto;
+import com.gathering.user.controller.response.UserResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

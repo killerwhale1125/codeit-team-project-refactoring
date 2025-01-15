@@ -1,11 +1,11 @@
 package com.gathering.review.service;
 
-import com.gathering.book.model.dto.BookResponse;
+import com.gathering.book.controller.response.BookResponse;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.review.model.constant.BookReviewTagType;
-import com.gathering.review.model.constant.ReviewType;
+import com.gathering.book_review.domain.BookReviewTagType;
+import com.gathering.review.domain.ReviewType;
 import com.gathering.review.model.dto.*;
-import com.gathering.review.repository.ReviewRepository;
+import com.gathering.review.service.port.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,8 +49,8 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewListDto searchReviews(SearchType type, String searchParam, Pageable pageable, String username) {
-        return reviewRepository.searchReviews(type, searchParam, pageable, username);
+    public ReviewListDto searchReviews(SearchType type, String searchParam, int page, int size, String username) {
+        return reviewRepository.searchReviews(type, searchParam, page, size, username);
     }
 
     @Override

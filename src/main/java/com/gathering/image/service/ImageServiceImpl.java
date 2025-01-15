@@ -1,11 +1,11 @@
 package com.gathering.image.service;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.model.DefaultMultipartFile;
-import com.gathering.image.model.domain.ImageDomain;
-import com.gathering.image.model.entity.EntityType;
-import com.gathering.image.repository.ImageJdbcRepository;
-import com.gathering.image.repository.ImageRepository;
+import com.gathering.image.infrastructure.DefaultMultipartFile;
+import com.gathering.image.domain.ImageDomain;
+import com.gathering.image.infrastructure.entity.EntityType;
+import com.gathering.image.infrastructure.ImageJdbcRepository;
+import com.gathering.image.service.port.ImageRepository;
 import com.gathering.util.image.SystemFileUtils;
 import com.gathering.util.string.UUIDUtils;
 import lombok.RequiredArgsConstructor;

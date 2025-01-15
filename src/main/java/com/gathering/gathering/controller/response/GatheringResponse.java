@@ -2,10 +2,9 @@ package com.gathering.gathering.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.gathering.domain.GatheringDomain;
-import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.ReadingTimeGoal;
-import com.gathering.user.model.domain.UserDomain;
+import com.gathering.user.domain.UserDomain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -105,7 +104,7 @@ public class GatheringResponse {
     /**
      * 마이페이지 모임 리스트 조회
      */
-    public static GatheringResponse myGatheringFromEntity(Gathering gathering, Map<Long, Double> challengeReadingRateMap) {
+    public static GatheringResponse myGatheringFromEntity(GatheringDomain gathering, Map<Long, Double> challengeReadingRateMap) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .name(gathering.getName())
@@ -126,7 +125,7 @@ public class GatheringResponse {
     /**
      * 모임 소개
      */
-    public static GatheringResponse introduceFromEntity(Gathering gathering, UserDomain user) {
+    public static GatheringResponse introduceFromEntity(GatheringDomain gathering, UserDomain user) {
         return GatheringResponse.builder()
                 .id(gathering.getId())
                 .owner(gathering.getOwner())

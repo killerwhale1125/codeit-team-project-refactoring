@@ -1,9 +1,10 @@
 package com.gathering.review.repository;
 
-import com.gathering.book.model.dto.BookResponse;
-import com.gathering.book.model.entity.Book;
-import com.gathering.book.repository.BookJpaRepository;
-import com.gathering.challenge.model.entity.ChallengeStatus;
+import com.gathering.book.controller.response.BookResponse;
+import com.gathering.book.infrastructure.entity.Book;
+import com.gathering.book.infrastructure.BookJpaRepository;
+import com.gathering.book_review.infrastructure.BookReviewJpaRepository;
+import com.gathering.challenge.infrastructure.entity.ChallengeStatus;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.controller.response.GatheringResponse;
@@ -12,15 +13,23 @@ import com.gathering.gathering.infrastructure.GatheringJpaRepository;
 import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.gathering.infrastructure.entity.GatheringBookReview;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.review.model.constant.BookReviewTagType;
-import com.gathering.review.model.constant.ReviewType;
-import com.gathering.review.model.constant.StatusType;
+import com.gathering.book_review.infrastructure.entity.BookReview;
+import com.gathering.gathering_review.infrastructure.GatheringReviewJpaRepository;
+import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
+import com.gathering.review_comment.infrastructure.ReviewCommentJpaRepository;
+import com.gathering.review_comment.infrastructure.entity.ReviewComment;
+import com.gathering.review_like.infrastructure.ReviewLikesJpaRepository;
+import com.gathering.review_like.infrastructure.entity.ReviewLikes;
+import com.gathering.book_review.domain.BookReviewTagType;
+import com.gathering.review.domain.ReviewType;
+import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.model.entitiy.*;
+import com.gathering.review.service.port.ReviewRepository;
 import com.gathering.review.util.ReviewQueryBuilder;
 import com.gathering.user.model.entitiy.QUser;
-import com.gathering.user.model.entitiy.User;
-import com.gathering.user.repository.UserJpaRepository;
+import com.gathering.user.infrastructure.entitiy.User;
+import com.gathering.user.infrastructure.UserJpaRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -32,6 +41,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -55,7 +65,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Repository
 @RequiredArgsConstructor
 @Transactional
-public class ReviewRepositoryImpl implements ReviewRepository{
+public class ReviewRepositoryImpl implements ReviewRepository {
 
     private final BookReviewJpaRepository bookReviewJpaRepository;
     private final BookJpaRepository bookJpaRepository;
@@ -442,8 +452,8 @@ public class ReviewRepositoryImpl implements ReviewRepository{
      * @return
      */
     @Override
-    public ReviewListDto searchReviews(SearchType type, String param, Pageable pageable, String username) {
-
+    public ReviewListDto searchReviews(SearchType type, String param, int page, int size, String username) {
+        Pageable pageable = PageRequest.of(page, size);
         BooleanBuilder builder = queryBuilder.buildReviewSearch(type, param);
         // Query 생성
         JPAQuery<BookReviewDto> query = jpaQueryFactory

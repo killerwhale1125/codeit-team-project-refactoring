@@ -1,12 +1,11 @@
 package com.gathering.crawel;
 
-import com.gathering.book.model.domain.BookDomain;
-import com.gathering.book.model.entity.Book;
-import com.gathering.book.model.entity.BookCategory;
-import com.gathering.book.repository.BookRepository;
-import com.gathering.category.model.entity.Category;
-import com.gathering.category.repository.CategoryJpaRepository;
-import com.gathering.category.repository.CategoryRepository;
+import com.gathering.book.infrastructure.entity.Book;
+import com.gathering.book.infrastructure.entity.BookCategory;
+import com.gathering.book.service.port.BookRepository;
+import com.gathering.category.infrastructure.entity.Category;
+import com.gathering.category.infrastructure.CategoryJpaRepository;
+import com.gathering.category.service.port.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

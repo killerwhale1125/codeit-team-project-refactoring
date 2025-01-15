@@ -1,14 +1,14 @@
 package com.gathering.gathering.controller;
 
 import com.gathering.common.base.response.BaseResponse;
+import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.gathering.controller.response.GatheringResponse;
-import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
 import com.gathering.gathering.domain.GatheringReviewSortType;
+import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.gathering.controller.port.GatheringSearchService;
+import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.review.model.dto.ReviewListDto;
 import com.gathering.util.web.UserSessionKeyGenerator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,8 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -62,8 +60,9 @@ public class GatheringSearchController {
     public BaseResponse<GatheringSearchResponse> findMyGatherings(@AuthenticationPrincipal UserDetails userDetails,
                                                                   @RequestParam(required = false) GatheringUserStatus gatheringUserStatus,
                                                                   @RequestParam(required = false) GatheringStatus gatheringStatus,
-                                                                  @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.findMyGatherings(userDetails.getUsername(), pageable, gatheringStatus, gatheringUserStatus));
+                                                                  @RequestParam("page") int page,
+                                                                  @RequestParam("size") int size) {
+        return new BaseResponse<>(gatheringSearchService.findMyGatherings(userDetails.getUsername(), page, size, gatheringStatus, gatheringUserStatus));
     }
 
     /**
@@ -82,15 +81,17 @@ public class GatheringSearchController {
     @GetMapping("/my")
     @Operation(summary = "내가 만든 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> my(@AuthenticationPrincipal UserDetails userDetails,
-                                                    @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.findMyCreated(userDetails.getUsername(), pageable));
+                                                    @RequestParam("page") int page,
+                                                    @RequestParam("size") int size) {
+        return new BaseResponse<>(gatheringSearchService.findMyCreated(userDetails.getUsername(), page, size));
     }
 
     @GetMapping("/wishes")
     @Operation(summary = "내가 찜한 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> wishes(@AuthenticationPrincipal UserDetails userDetails,
-                                                        @PageableDefault(page = 0, size = 10, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.findMyWishes(userDetails.getUsername(), pageable));
+                                                        @RequestParam("page") int page,
+                                                        @RequestParam("size") int size) {
+        return new BaseResponse<>(gatheringSearchService.findMyWishes(userDetails.getUsername(), page, size));
     }
 
     @Operation(summary = "모임 소개", description = "상세 조건 Notion 참고")
@@ -103,8 +104,9 @@ public class GatheringSearchController {
     @GetMapping("/{gatheringId}/review")
     public BaseResponse<ReviewListDto> review(@PathVariable Long gatheringId,
                                               @RequestParam @Valid GatheringReviewSortType sort,
-                                              @PageableDefault(page = 0, size = 5, sort = "id,desc") Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.review(gatheringId, sort, pageable));
+                                              @RequestParam("page") int page,
+                                              @RequestParam("size") int size) {
+        return new BaseResponse<>(gatheringSearchService.review(gatheringId, sort, page, size));
     }
 
     /**
@@ -115,14 +117,15 @@ public class GatheringSearchController {
     public BaseResponse<GatheringSearchResponse> search(@RequestParam String searchWord,
                                                         @RequestParam SearchType searchType,
                                                         @AuthenticationPrincipal UserDetails userDetails,
-                                                        @PageableDefault(page = 0, size = 5) Pageable pageable) {
+                                                        @RequestParam("page") int page,
+                                                        @RequestParam("size") int size) {
 
         String username = null;
         if(userDetails != null) {
             username = userDetails.getUsername();
         }
 
-        return new BaseResponse<>(gatheringSearchService.getIntegratedResultBySearchWordAndType(searchWord, searchType, pageable, username));
+        return new BaseResponse<>(gatheringSearchService.getIntegratedResultBySearchWordAndType(searchWord, searchType, page, size, username));
     }
 
     /**
@@ -132,8 +135,9 @@ public class GatheringSearchController {
     @Operation(summary = "검색어로 검색 후 모임탭에서 페이징 조회", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> gatheringSearch(@RequestParam String searchWord,
                                                                  @RequestParam SearchType searchType,
-                                                                 @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, pageable));
+                                                                 @RequestParam("page") int page,
+                                                                 @RequestParam("size") int size) {
+        return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, page, size));
     }
 
     /**
@@ -144,12 +148,13 @@ public class GatheringSearchController {
     public BaseResponse<GatheringSearchResponse> reviewSearch(@RequestParam String searchWord,
                                                                  @RequestParam SearchType searchType,
                                                                  @AuthenticationPrincipal UserDetails userDetails,
-                                                                 @PageableDefault(page = 0, size = 5) Pageable pageable) {
+                                                              @RequestParam("page") int page,
+                                                              @RequestParam("size") int size) {
         String username = null;
         if(userDetails != null) {
             username = userDetails.getUsername();
         }
 
-        return new BaseResponse<>(gatheringSearchService.getReviewsBySearchWordAndType(searchWord, searchType, pageable, username));
+        return new BaseResponse<>(gatheringSearchService.getReviewsBySearchWordAndType(searchWord, searchType, page, size, username));
     }
 }

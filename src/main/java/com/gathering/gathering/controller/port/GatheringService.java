@@ -5,8 +5,8 @@ import com.gathering.gathering.domain.GatheringCreate;
 import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse;
 import com.gathering.gatheringuser.domain.GatheringUserStatus;
 import com.gathering.gathering.domain.GatheringWeek;
-import com.gathering.user.model.dto.response.UserResponseDto;
-import com.gathering.user_attendance_book.model.domain.UserAttendanceBookDomain;
+import com.gathering.user.controller.response.UserResponseDto;
+import com.gathering.user_attendance_book.domain.UserAttendanceBookDomain;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;

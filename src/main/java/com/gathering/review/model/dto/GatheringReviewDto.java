@@ -1,8 +1,8 @@
 package com.gathering.review.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.gathering.review.model.constant.StatusType;
-import com.gathering.review.model.entitiy.GatheringReview;
+import com.gathering.review.domain.StatusType;
+import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;

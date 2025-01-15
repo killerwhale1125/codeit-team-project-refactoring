@@ -1,7 +1,7 @@
 package com.gathering.review.util;
 
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.review.model.constant.StatusType;
+import com.gathering.review.domain.StatusType;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.stereotype.Component;
 
