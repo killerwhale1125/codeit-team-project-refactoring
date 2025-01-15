@@ -1,21 +1,16 @@
 package com.gathering.user.controller;
 
-import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
-import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.security.jwt.JwtProviderHolder;
 import com.gathering.user.controller.port.UserService;
 import com.gathering.user.domain.*;
-import com.gathering.user.infrastructure.UserRedisKey;
 import com.gathering.user_attendance_book.controller.response.UserAttendanceBookResponse;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.YearMonth;
 import java.util.List;
 
-import static com.gathering.common.base.response.BaseResponseStatus.*;
-import static com.gathering.security.jwt.JwtTokenUtil.createRefreshToken;
-import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
-import static com.gathering.user.util.EmailValidator.isValidEmail;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @RequestMapping("/api/auths")
@@ -35,160 +27,66 @@ import static com.gathering.user.util.EmailValidator.isValidEmail;
 @Validated  // 파라미터의 유효성 검사를 활성화
 public class UserController {
 
-    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final JwtProviderHolder jwtProviderHolder;
 
-    @RequestMapping(value = "/getAccessToken", method = RequestMethod.POST)
-    public BaseResponse<String> getAccessToken(
-            @RequestBody GetAccessTokenDto getAccessTokenDto
-            ){
-        String accessToken = generateToken(getAccessTokenDto.getUserId());
-        return new BaseResponse<>(accessToken);
-    }
-
-    @RequestMapping(value = "/signIn", method = RequestMethod.POST)
-    public BaseResponse<UserDto> signIn(
-            @Valid @RequestBody SignInRequestDto requestDto,
-            HttpServletRequest request,
-            HttpServletResponse response) {
-
-        UserDto userDto = userService.sginIn(requestDto);
-        // 토큰 발급
-        if(userDto != null) {
-
-            // 리프레시 토큰 redis 저장
-            userService.setRefreshTokenRedis(UserRedisKey.getUserRefreshTokenKey(request, response), createRefreshToken(userDto.getUserName()));
-
-            return new BaseResponse<>(userDto);
-        }
-
-        return new BaseResponse<>(SIGN_IN_FAIL);
-    }
-
-    @RequestMapping(value = "/signUp", method = RequestMethod.POST)
-    public BaseResponse<Void> signUp(
-            @Valid @RequestBody SignUpRequestDto signUpRequestDto  // JSON 데이터
-    ) {
-        try {
-            userService.signUp(signUpRequestDto);
-        } catch (Exception e) {
-            return new BaseResponse<>(DATABASE_ERROR);
-        }
-
+    @PostMapping("/signUp")
+    public BaseResponse<Void> signUp(@Valid @RequestBody UserSignUp userSignUp) {
+        userService.signUp(userSignUp);
         return new BaseResponse<>();
     }
 
-    @RequestMapping(value = "/check/{type}", method = RequestMethod.GET)
-    @Operation(summary = "email/userName 체크", description = "email/userName 체크 " +
-            "type이 email일 경우 이메일 체크" +
-            "type이 userName일 경우 아이디 체크 결과 반환")
-    public BaseResponse<Void> checkType(
-            @RequestParam String param,
-            @PathVariable String type
-    ) {
-
-        boolean typeBol = type.equals(SingUpType.EMAIL.getValue());
-
-        if (param == null || param.isBlank()) {
-            return new BaseResponse<>(INVALID_REQUEST);
-        }
-
-        // 이메일일 경우 이메일 유효성 검사
-        if (typeBol && !isValidEmail(param)) {
-            return new BaseResponse<>(INVALID_REQUEST);
-        }
-        boolean result = userService.checkType(param, typeBol);
-
-        if(result) {
-            return new BaseResponse<>();
-        }
-        return new BaseResponse<>(typeBol ? DUPLICATE_EMAIL : DUPLICATE_USERNAME);
+    @PostMapping("/login")
+    public BaseResponse<UserResponse> login(@Valid @RequestBody UserLogin userLogin) {
+        return new BaseResponse<>(userService.login(userLogin));
     }
 
-    @RequestMapping(value = "/signOut", method = RequestMethod.POST)
-    public BaseResponse<Void> signout(
-            HttpServletRequest request, HttpServletResponse response
-    ) {
-
-        // 로그아웃 처리
+    @PostMapping("/logout")
+    public BaseResponse<Void> logout(
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request, HttpServletResponse response) {
+        /* Security 로그아웃 */
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
         logoutHandler.logout(request, response, null);  // 로그아웃 처리
 
-        // 필요 시 세션 무효화
-        request.getSession().invalidate();
-
-        // 리프레시 토큰 삭제
-        userService.deleteRefreshTokenRedis(UserRedisKey.getUserRefreshTokenKey(request, response));
-
+        /* refresh 토큰 삭제 */
+        jwtProviderHolder.deleteRefreshToken(userDetails.getUsername());
         return new BaseResponse<>();
     }
 
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
-    public BaseResponse<UserDto> myprofile(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-
-        UserDto userDto = userService.selectUserInfo(userDetails.getUsername());
-        
-        return new BaseResponse<>(userDto);
+    public BaseResponse<UserResponse> myprofile(@AuthenticationPrincipal UserDetails userDetails) {
+        return new BaseResponse<>(userService.findByUsername(userDetails.getUsername()));
     }
 
-    /*
-    *  사용자 정보 수정
-    *  1. 변경 여부 상관 없이 아이디,이메일 값을 받음 (비밀번호의 경우 변경이 있으면 받고 없으면 받지 않음)
-    *  2. 프로필 사진에 변경이 있을경우 file을 받고 없을경우 받지 않음
-    *  3. 프로필 사진 변경시 기존 파일 삭제, 테이블 데이터 제거
-    *  4. 이후 서베에 파일 저장, 사용자 정보 업데이트
-    */
-    @RequestMapping(value = "/edit/user", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<UserDto> editUser(
-            @RequestPart("data") @Valid UserUpdate userUpdate,   // JSON 데이터
-            @RequestPart(value = "file" ,required = false) MultipartFile file,
-            @AuthenticationPrincipal UserDetails userDetails
-    )throws RuntimeException {
+    @PutMapping("/update")
+    public BaseResponse<UserResponse> update(
+            @RequestPart("data") @Valid UserUpdate userUpdate,
+             @RequestPart(value = "file" ,required = false) MultipartFile file,
+             @AuthenticationPrincipal UserDetails userDetails) {
+        return new BaseResponse<>(userService.update(userUpdate, file, userDetails.getUsername()));
+    }
 
-        UserDto user = null;
-        try {
-            user = userService.editUser(userUpdate, file, userDetails.getUsername());
-            if(user != null) {
-                String accessToken = generateToken(user.getUserName());
-                user.setToken(accessToken);
-            }
-            user.setPassword(null);
-        } catch (Exception e) {
-            throw new BaseException(EDIT_USER_FAIL);
-        }
-
-        return new BaseResponse<>(user);
+    @GetMapping("/verify/{type}")
+    public BaseResponse<Void> verifyUsernameOrEmail(@RequestParam String param,
+                                                    @PathVariable SingUpType type) {
+        userService.verifyUsernameOrEmail(param, type);
+        return new BaseResponse<>();
     }
 
     @RequestMapping(value = "/password/check", method = RequestMethod.POST)
-    public BaseResponse<Void> passwordCheck(
+    public BaseResponse<Void> verifyPassword(
             @RequestBody @Valid PasswordCheck passwordCheck,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-
-        String username = userDetails.getUsername();
-
-        UserDto userDto = userService.selectUserInfo(username);
-
-        if (passwordEncoder.matches(passwordCheck.getPassword(), userDto.getPassword())) {
-            return new BaseResponse<>();
-        } else {
-            return new BaseResponse<>(BaseResponseStatus.PASSWORD_MISMATCHED);
-        }
-
+            @AuthenticationPrincipal UserDetails userDetails) {
+        userService.verifyPassword(passwordCheck, userDetails.getUsername());
+        return new BaseResponse<>();
     }
+
     @RequestMapping(value = "/refresh", method = RequestMethod.POST)
-    public BaseResponse<UserDto> reissueToken(
-            HttpServletRequest request, HttpServletResponse response
-    ) {
-
-        UserDto userDto = userService.reissueToken(UserRedisKey.getUserRefreshTokenKey(request, response));
-
-        return new BaseResponse<>(userDto);
+    public BaseResponse<UserResponse> reissueToken(HttpServletRequest request) {
+        String refreshToken = jwtProviderHolder.resolveToken(request.getHeader(AUTHORIZATION));
+        return new BaseResponse<>(userService.reissueToken(refreshToken));
     }
-
 
     /**
      * 달력의 날짜 별 내가 읽었던 책 기록

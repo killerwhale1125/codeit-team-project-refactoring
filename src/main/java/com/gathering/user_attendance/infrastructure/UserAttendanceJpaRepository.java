@@ -13,10 +13,9 @@ import java.util.Optional;
 
 public interface UserAttendanceJpaRepository extends JpaRepository<UserAttendance, Long> {
     @Modifying
-    @Transactional
     @Query(value = "INSERT INTO USER_ATTENDANCE (USER_ID, CREATE_DATE) VALUES (:userId, DATE_FORMAT(NOW(), '%Y-%m-%d')) " +
             "ON DUPLICATE KEY UPDATE USER_ID = :userId", nativeQuery = true)
-    int insertAttendance(@Param("userId") Long userId);
+    int insert(@Param("userId") Long userId);
 
     Optional<UserAttendance> findByUserIdAndCreateDate(long userId, LocalDate today);
 

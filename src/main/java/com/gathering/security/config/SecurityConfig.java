@@ -1,6 +1,7 @@
 package com.gathering.security.config;
 
 import com.gathering.security.jwt.JwtAuthorizationFilter;
+import com.gathering.security.jwt.JwtProviderHolder;
 import com.gathering.user.infrastructure.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final UserDetailsService userDetailsService;
     private final UserJpaRepository userJpaRepository;
+    private final JwtProviderHolder jwtProviderHolder;
     @Value("${security.exclude.paths}")
     private List<String> excludePaths;
     @Value("${security.public.paths}")
@@ -47,7 +49,7 @@ public class SecurityConfig {
                 .addFilter(corsFilter) // @CrossOrigin(인증 x), 시큐리티 필터에 등록 인증 (O)
                 .formLogin(AbstractHttpConfigurer::disable) // 시큐리티 로그인 화면 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .addFilter(new JwtAuthorizationFilter(manager, userJpaRepository, excludePaths, publicPaths)) // AuthenticationManger
+                .addFilter(new JwtAuthorizationFilter(manager, userJpaRepository, excludePaths, publicPaths, jwtProviderHolder)) // AuthenticationManger
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 // 관리자 기능 구현 후 권한 관련 기능 활성화 필요

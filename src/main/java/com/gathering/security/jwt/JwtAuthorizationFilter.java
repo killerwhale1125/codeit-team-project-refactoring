@@ -6,8 +6,9 @@ import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.security.auth.PrincipalDetails;
-import com.gathering.user.infrastructure.entitiy.User;
 import com.gathering.user.infrastructure.UserJpaRepository;
+import com.gathering.user.infrastructure.entitiy.User;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,27 +26,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NOT_EXISTED_USER;
-import static com.gathering.security.jwt.JwtTokenUtil.extractUsername;
-import static com.gathering.security.jwt.JwtTokenUtil.validateToken;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /*
 * JWT 검증 필터
 * */
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public static final String header = "Authorization";
+    public static final String header = AUTHORIZATION;
     public static final String tokenPrefix = "Bearer ";
     private UserJpaRepository userJpaRepository;
     private List<String> excludePaths;
     private List<String> publicPaths;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JwtProviderHolder jwtProviderHolder;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserJpaRepository userJpaRepository,
-                                  List<String> excludePaths, List<String> publicPaths) {
+                                  List<String> excludePaths, List<String> publicPaths, JwtProviderHolder jwtProviderHolder) {
         super(authenticationManager);
         this.userJpaRepository = userJpaRepository;
         this.excludePaths = excludePaths;
         this.publicPaths = publicPaths;
+        this.jwtProviderHolder = jwtProviderHolder;
     }
 
     // 토큰 관련 오류 발생시 응답
@@ -67,7 +69,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     }
 
-
     // 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게 됨.
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -75,17 +76,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtHeader = request.getHeader(header);
         // 요청 경로가 제외된 경로 리스트에 포함되면 필터를 거치지 않음
         String requestUri = request.getRequestURI();
-        // 경로가 제외 목록에 있는지 확인
-//        boolean isExcluded = excludePaths.stream()
-//                .anyMatch(requestUri::equals);
 
+        // 경로가 제외 목록에 있는지 확인
         AntPathMatcher pathMatcher = new AntPathMatcher();
         boolean isExcluded = excludePaths.stream()
                 .anyMatch(path -> pathMatcher.match(path, requestUri));
 
         if(isExcluded || !requestUri.startsWith("/api") || requestUri.startsWith("/api/auths/check")) {
             chain.doFilter(request, response);
-            return;
         } else {
             boolean isPublic = publicPaths.stream()
                     .anyMatch(path -> pathMatcher.match(path, requestUri));
@@ -99,19 +97,18 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 return;
             }
 
-
             // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
             try {
                 String jwtToken = request.getHeader(header).replace(tokenPrefix, "");
                 String userName = null;
                 try {
-                    userName = extractUsername(jwtToken);
-                } catch (io.jsonwebtoken.SignatureException se) {
+                    userName = jwtProviderHolder.extractUsername(jwtToken);
+                } catch (SignatureException se) {
                     FailedAuthorizationToken(response, BaseResponseStatus.UNSUPPORTED_TOKEN);
                     return;
                 }
                 // 서명이 정상적으로 됨
-                if(userName != null && validateToken(jwtToken)) {
+                if(userName != null && jwtProviderHolder.validateToken(jwtToken)) {
                     User userEntity = userJpaRepository.findByUserName(userName).orElseThrow(() -> new BaseException(NOT_EXISTED_USER));
                     PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 

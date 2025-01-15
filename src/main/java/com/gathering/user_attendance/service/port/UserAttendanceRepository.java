@@ -7,4 +7,9 @@ import java.time.LocalDate;
 public interface UserAttendanceRepository {
 
     UserAttendanceDomain findByUserIdAndCreateDateWithAttendanceBooksAndGathering(long userId, LocalDate today);
+
+    UserAttendanceDomain findByUserIdAndCreateDate(Long userId, LocalDate today);
+
+    void insert(Long userId);
+
 }

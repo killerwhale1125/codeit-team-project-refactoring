@@ -1,10 +1,9 @@
 package com.gathering.image.service;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.infrastructure.DefaultMultipartFile;
 import com.gathering.image.domain.ImageDomain;
+import com.gathering.image.infrastructure.DefaultMultipartFile;
 import com.gathering.image.infrastructure.entity.EntityType;
-import com.gathering.image.infrastructure.ImageJdbcRepository;
 import com.gathering.image.service.port.ImageRepository;
 import com.gathering.util.image.SystemFileUtils;
 import com.gathering.util.string.UUIDUtils;
@@ -23,8 +22,6 @@ import static com.gathering.common.base.response.BaseResponseStatus.FILE_UPLOAD_
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
     private final AwsS3Service awsS3Service;
-    private final UUIDUtils uuidUtils;
-    private final ImageJdbcRepository imageJdbcRepository;
     private final ImageRepository imageRepository;
 
     @Override

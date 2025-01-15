@@ -1,25 +1,29 @@
 package com.gathering.user.infrastructure.entitiy;
 
+import com.gathering.book_review.infrastructure.entity.BookReview;
 import com.gathering.challengeuser.infrastructure.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
-import com.gathering.book_review.infrastructure.entity.BookReview;
+import com.gathering.image.infrastructure.entity.Image;
 import com.gathering.review_like.infrastructure.entity.ReviewLikes;
 import com.gathering.user.domain.UserDomain;
-import com.gathering.user.domain.UserDto;
-import com.gathering.user.domain.SignUpRequestDto;
 import com.gathering.user_attendance.infrastructure.entity.UserAttendance;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
 import java.util.*;
 
+import static com.gathering.util.entity.EntityUtils.nullableEntity;
+import static jakarta.persistence.Persistence.getPersistenceUtil;
+
 @Entity
 @Getter
 @Table(name = "users")
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class User extends BaseTimeEntity {
@@ -47,6 +51,10 @@ public class User extends BaseTimeEntity {
     @ColumnDefault("'USER'")
     @Comment("권한")
     private String roles; // USER, ADMIN
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAttendance> userAttendances;
@@ -76,24 +84,6 @@ public class User extends BaseTimeEntity {
         return new ArrayList<>();
     }
 
-    public static User createUser(SignUpRequestDto dto) {
-        return User.builder()
-                .roles("USER")
-                .userName(dto.getUserName())
-                .password(dto.getPassword())
-                .email(dto.getEmail())
-                .build();
-    }
-
-    public static User fromDto(UserDto userDto) {
-        return User.builder()
-                .roles("USER")
-                .userName(userDto.getUserName())
-                .password(userDto.getPassword())
-                .email(userDto.getEmail())
-                .build();
-    }
-
     public static User fromEntity(UserDomain user) {
         User userEntity = new User();
         userEntity.id = user.getId();
@@ -102,6 +92,8 @@ public class User extends BaseTimeEntity {
         userEntity.email = user.getEmail();
         userEntity.profile = user.getProfile();
         userEntity.roles = user.getRoles();
+        userEntity.image = nullableEntity(Image::fromEntity, user.getImage());
+
         return userEntity;
     }
 
@@ -112,10 +104,16 @@ public class User extends BaseTimeEntity {
                 .password(password)
                 .email(email)
                 .profile(profile)
-                .roles(roles);
+                .roles(roles)
+                .createdTime(createdTime)
+                .modifiedTime(modifiedTime);
 
         if (wishGatheringIds != null) {
             builder.wishGatheringIds(wishGatheringIds);
+        }
+
+        if (image != null && getPersistenceUtil().isLoaded(image)) {
+            builder.image(image.toEntity());
         }
         return builder.build();
     }

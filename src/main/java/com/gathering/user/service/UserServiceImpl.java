@@ -1,31 +1,36 @@
 package com.gathering.user.service;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.image.infrastructure.entity.EntityType;
+import com.gathering.image.domain.ImageDomain;
 import com.gathering.image.service.AwsS3Service;
-import com.gathering.security.jwt.JwtTokenUtil;
+import com.gathering.image.service.ImageService;
+import com.gathering.image.service.port.ImageRepository;
+import com.gathering.security.jwt.JwtProviderHolder;
 import com.gathering.user.controller.port.UserService;
-import com.gathering.user.domain.UserDto;
-import com.gathering.user.domain.UserUpdate;
-import com.gathering.user.domain.SignInRequestDto;
-import com.gathering.user.domain.SignUpRequestDto;
-import com.gathering.user_attendance_book.controller.response.UserAttendanceBookResponse;
+import com.gathering.user.domain.*;
 import com.gathering.user.service.port.UserRepository;
+import com.gathering.user.util.EmailValidator;
+import com.gathering.user.util.PasswordEncoderHolder;
+import com.gathering.user_attendance.domain.UserAttendanceDomain;
+import com.gathering.user_attendance.service.port.UserAttendanceRepository;
+import com.gathering.user_attendance_book.controller.response.UserAttendanceBookResponse;
+import com.gathering.util.date.DateHolder;
 import com.gathering.util.image.SystemFileUtils;
 import com.gathering.util.string.UUIDUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
+import static com.gathering.common.base.response.BaseResponseStatus.*;
+import static com.gathering.image.infrastructure.entity.EntityType.USER;
+import static com.gathering.user.domain.SingUpType.EMAIL;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -33,77 +38,44 @@ import static com.gathering.security.jwt.JwtTokenUtil.generateToken;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoderHolder passwordEncoder;
     private final AwsS3Service awsS3Service;
-    private final RedisTemplate<String, String> redisTemplate;
     private final UUIDUtils uuidUtils;
+    private final DateHolder dateHolder;
+    private final UserAttendanceRepository userAttendanceRepository;
+    private final JwtProviderHolder jwtProviderHolder;
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Override
-    public UserDto sginIn(SignInRequestDto requestDto) {
-
-        UserDto userDto = userRepository.selectUserByEmail(requestDto.email());
-
-        if (userDto == null) {
-            return null;
-        } else if(passwordEncoder.matches(requestDto.password(), userDto.getPassword())) {
-            userRepository.insertAttendance(userDto.getUsersId());
-            userDto.setPassword(null);
-
-            String accessToken = generateToken(userDto.getUserName());
-            userDto.setToken(accessToken);
-
-            return userDto;
-        } else {
-            throw new BaseException(BaseResponseStatus.SIGN_IN_FAIL);
-        }
+    @Transactional
+    public UserResponse login(UserLogin userLogin) {
+        UserDomain user = userRepository.selectUserByEmail(userLogin.email()).login(userLogin, passwordEncoder);
+        insertAttendance(user.getId()); // 출석 체크
+        return UserResponse.fromEntity(user, generateTokenAll(user.getUserName()));
     }
 
     @Override
-    public void signUp(SignUpRequestDto signUpRequestDto) {
-        // 비밀번호 암호화
-        signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
-        userRepository.signUp(signUpRequestDto);
+    public void signUp(UserSignUp userSignUp) {
+        ImageDomain image = imageRepository.save(createDefaultImage()); // 기본 이미지 생성
+        userRepository.save(UserDomain.signUp(userSignUp, image, passwordEncoder));
     }
 
     @Override
-    public boolean checkType(String param, boolean typeBol) {
-        return userRepository.checkType(param, typeBol);
+    public UserResponse findByUsername(String username) {
+        return UserResponse.fromEntity(userRepository.findByUsername(username));
     }
 
     @Override
-    public UserDto selectUserInfo(String username) {
-        return userRepository.selectUser(username);
-    }
-
-    @Override
-    public UserDto editUser(UserUpdate userUpdate, MultipartFile file, String userName) {
-
-        String fileName = "";
-        String filepath = "";
-        UserDto userDto = userRepository.selectUser(userName);
-        if( file != null) {
-            String profile = userDto.getProfile();
-            try {
-                // 기존 프로필 파일 삭제
-                if(profile != null && !profile.isEmpty()) {
-                        awsS3Service.delete(profile);
-                    }
-                String filename = SystemFileUtils.getRandomFilename(uuidUtils);
-                filepath = awsS3Service.upload(file, filename, EntityType.USER);
-
-            } catch (Exception e) {
-                // 로깅 및 예외 처리
-                log.error("Failed to delete image from S3: " + profile, e);
-            }
-        }
-        // 비밀번호 암호화
-        if(userUpdate.getPassword() != null) {
-            userUpdate.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
-        }
-
-        UserDto result = userRepository.editUser(userUpdate, filepath, userDto.getUsersId());
-
-        return result;
+    public UserResponse update(UserUpdate userUpdate, MultipartFile file, String username) {
+        UserDomain user = userRepository.findByUsernameWithImage(username);
+        ImageDomain image = file.isEmpty() ? user.getImage(): uploadImage(file, user.getProfile());
+        user = user.update(userUpdate, image, passwordEncoder);
+        
+        UserDomain saveUser = userRepository.save(user);
+        String accessToken = generateTokenAll(username); // 유저 이름이 JWT 키값이기 때문에 토큰 정보도 초기화
+        
+        return UserResponse.fromEntity(saveUser, accessToken);
     }
 
     @Override
@@ -122,51 +94,83 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setRefreshTokenRedis(String redisKey, String token) {
+    public UserResponse reissueToken(String refreshToken) {
+        /**
+         * Refresh 토큰 검증
+         * 토큰 값이 존재하는데 검증 실패 시 재 로그인 필요
+         */
+        String username = jwtProviderHolder.extractUsername(refreshToken);
 
-        if(Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
-            redisTemplate.delete(redisKey);
+        /* 레디스에 저장되어있는 리프레시토큰을 조회한다. */
+        String oldRefreshToken = jwtProviderHolder.getRefreshToken(username).orElseThrow(() -> new BaseException(TOKEN_ISEMPTY));
+
+        /* 값이 비어있거나 요청받은 리프레시토큰과 일치하지 않을 경우 예외를 발생시킨다. */
+        if(oldRefreshToken.isBlank() || !refreshToken.equals(oldRefreshToken)) {
+            throw new BaseException(TOKEN_MISMATCHED);
         }
 
-        // redis에 7일동안 리프레시 토큰 저장
-        redisTemplate.opsForValue().set(redisKey, token,7, TimeUnit.DAYS);
+        /* 기존 리프레시 토큰은 제거한다. */
+        jwtProviderHolder.deleteRefreshToken(username);
 
+        UserDomain user = userRepository.findByUsername(username);
+        return UserResponse.fromEntity(user, generateTokenAll(username));
     }
 
     @Override
-    public void deleteRefreshTokenRedis(String redisKey) {
-        redisTemplate.delete(redisKey);
-    }
+    public void verifyUsernameOrEmail(String param, SingUpType type) {
+        // 이메일일 경우 이메일 유효성 검사
+        if (type.equals(EMAIL) && !EmailValidator.isValidEmail(param)) {
+            throw new BaseException(INVALID_REQUEST);
+        }
 
-    @Override
-    public UserDto reissueToken(String redisKey) {
-
-        String oldRefreshToken = redisTemplate.opsForValue().get(redisKey);
-
-        if(oldRefreshToken != null) {
-            try{
-                // 서버 재기동 이후 리프레시 토큰을 가져올 경우 인증 방식이 달라지기때문에 에러 발생
-                // 레디스의 리프레시 토큰 제거
-                String username = JwtTokenUtil.extractUsername(oldRefreshToken);
-
-                UserDto userDto = userRepository.selectUser(username);
-
-                userDto.setPassword(null);
-                String accessToken = generateToken(userDto.getUserName());
-                userDto.setToken(accessToken);
-
-                // 기존 refresh token 삭제 후 새로운 refresh토큰으로 재설정
-                redisTemplate.delete(redisKey);
-                setRefreshTokenRedis(redisKey, JwtTokenUtil.createRefreshToken(username));
-
-                return userDto;
-            } catch (Exception e) {
-                redisTemplate.delete(redisKey);
-                throw new BaseException(BaseResponseStatus.INVALID_TOKEN);
+        if (!userRepository.checkType(param, type)) {
+            switch (type) {
+                case EMAIL -> throw new BaseException(DUPLICATE_EMAIL);
+                case ID -> throw new BaseException(DUPLICATE_USERNAME);
             }
-        } else {
-            throw new BaseException(BaseResponseStatus.REFRESH_TOKEN_ISEMPTY);
         }
     }
 
+    @Override
+    public void verifyPassword(PasswordCheck passwordCheck, String username) {
+        UserDomain user = userRepository.findByUsername(username);
+
+        if (!passwordEncoder.verifyPassword(passwordCheck.getPassword(), user.getPassword())) {
+            throw new BaseException(PASSWORD_MISMATCHED);
+        }
+    }
+
+    private ImageDomain createDefaultImage() {
+        return imageService.uploadImage(new ArrayList<>(), USER, uuidUtils).get(0);
+    }
+
+    private ImageDomain uploadImage(MultipartFile file, String profile) {
+        try {
+            String filename = SystemFileUtils.getRandomFilename(uuidUtils);
+            String filePath = awsS3Service.upload(file, filename, USER);
+            return ImageDomain.create(filePath, filename);
+        } catch(Exception e) {
+            throw new BaseException(FILE_UPLOAD_FAILED);
+        } finally {
+            try {
+                if(!profile.isBlank()) awsS3Service.delete(profile);
+            } catch (Exception e) {
+                throw new BaseException(FILE_DELETE_FAILED);
+            }
+        }
+    }
+
+    private String generateTokenAll(String username) {
+        String accessToken = jwtProviderHolder.createAccessToken(username); // access 토큰 생성
+        jwtProviderHolder.saveRefreshToken(username);   // refresh 토큰 생성 후 Redis 저장
+        return accessToken;
+    }
+
+    private void insertAttendance(Long userId) {
+        LocalDate today = dateHolder.now();
+        UserAttendanceDomain userAttendance = userAttendanceRepository.findByUserIdAndCreateDate(userId, today);
+        if(userAttendance == null) {
+            userAttendanceRepository.insert(userId);
+        }
+    }
 }
