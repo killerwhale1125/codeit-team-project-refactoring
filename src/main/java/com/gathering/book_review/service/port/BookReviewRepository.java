@@ -6,4 +6,5 @@ public interface BookReviewRepository {
 
     BookReviewDomain save(BookReviewDomain bookReview);
 
+    BookReviewDomain findById(long reviewId);
 }

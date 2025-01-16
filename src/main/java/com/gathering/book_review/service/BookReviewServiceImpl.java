@@ -11,6 +11,7 @@ import com.gathering.user.domain.UserDomain;
 import com.gathering.user.service.port.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class BookReviewServiceImpl implements BookReviewService {
     private final BookReviewRepository bookReviewRepository;
 
     @Override
+    @Transactional
     public BookReviewResponse create(String username, BookReviewCreate bookReviewCreate) {
         UserDomain user = userRepository.findByUsername(username);
         BookDomain book = bookRepository.findById(bookReviewCreate.getBookId());

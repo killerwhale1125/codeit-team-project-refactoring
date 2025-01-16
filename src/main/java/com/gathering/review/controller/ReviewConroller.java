@@ -59,6 +59,7 @@ public class ReviewConroller {
         return new BaseResponse<>(commentDto);
 
     }
+
     @GetMapping("/user/{type}")
     @Operation(summary = "나의 리뷰", description = "상세 조건 Notion 참고")
     public BaseResponse<ReviewListDto> selectUserReviewList(
