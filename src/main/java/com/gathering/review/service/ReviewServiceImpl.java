@@ -1,8 +1,8 @@
 package com.gathering.review.service;
 
 import com.gathering.book.controller.response.BookResponse;
-import com.gathering.gathering.domain.SearchType;
 import com.gathering.book_review.domain.BookReviewTagType;
+import com.gathering.gathering.domain.SearchType;
 import com.gathering.review.domain.ReviewType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.port.ReviewRepository;
@@ -17,21 +17,6 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService{
 
     private final ReviewRepository reviewRepository;
-
-    @Override
-    public ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type) {
-        return reviewRepository.createReview(createReviewDto, username, type);
-    }
-
-    @Override
-    public ReviewCommentDto createReviewComment(CreateReviewCommentDto createReviewCommentDto, String username) {
-        return reviewRepository.createReviewComment(createReviewCommentDto, username);
-    }
-
-    @Override
-    public ReviewListDto selectUserReviewList(String username, ReviewType type, Pageable pageable) {
-        return reviewRepository.selectUserReviewList(username, type, pageable);
-    }
 
     @Override
     public ReviewListDto selectBookReviewList(String username) {

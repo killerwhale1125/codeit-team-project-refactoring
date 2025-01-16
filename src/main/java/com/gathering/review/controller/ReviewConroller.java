@@ -1,11 +1,11 @@
 package com.gathering.review.controller;
 
 import com.gathering.book.controller.response.BookResponse;
+import com.gathering.book_review.domain.BookReviewTagType;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponse;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.book_review.domain.BookReviewTagType;
 import com.gathering.review.domain.ReviewType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.ReviewService;

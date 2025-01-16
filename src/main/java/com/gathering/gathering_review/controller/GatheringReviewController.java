@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/gathering/{gatheringId}/reviews")
+@RequestMapping("/api/gathering-review")
 public class GatheringReviewController {
 
     private final GatheringReviewService gatheringReviewService;

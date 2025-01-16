@@ -1,34 +1,34 @@
 package com.gathering.review.repository;
 
 import com.gathering.book.controller.response.BookResponse;
-import com.gathering.book.infrastructure.entity.Book;
 import com.gathering.book.infrastructure.BookJpaRepository;
+import com.gathering.book.infrastructure.entity.Book;
 import com.gathering.book_review.controller.response.BookReviewDto;
+import com.gathering.book_review.domain.BookReviewTagType;
 import com.gathering.book_review.infrastructure.BookReviewJpaRepository;
+import com.gathering.book_review.infrastructure.entity.BookReview;
 import com.gathering.book_review.infrastructure.entity.QBookReview;
+import com.gathering.book_review_comment.infrastructure.BookReviewCommentJpaRepository;
+import com.gathering.book_review_comment.infrastructure.entity.BookReviewComment;
 import com.gathering.challenge.infrastructure.entity.ChallengeStatus;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.infrastructure.GatheringJpaRepository;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.book_review.infrastructure.entity.BookReview;
+import com.gathering.gathering.infrastructure.GatheringJpaRepository;
 import com.gathering.gathering_review.infrastructure.GatheringReviewJpaRepository;
 import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
-import com.gathering.book_review_comment.infrastructure.BookReviewCommentJpaRepository;
-import com.gathering.book_review_comment.infrastructure.entity.BookReviewComment;
-import com.gathering.review_like.infrastructure.ReviewLikesJpaRepository;
-import com.gathering.review_like.infrastructure.entity.ReviewLikes;
-import com.gathering.book_review.domain.BookReviewTagType;
 import com.gathering.review.domain.ReviewType;
 import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.*;
 import com.gathering.review.service.port.ReviewRepository;
 import com.gathering.review.util.ReviewQueryBuilder;
+import com.gathering.review_like.infrastructure.ReviewLikesJpaRepository;
+import com.gathering.review_like.infrastructure.entity.ReviewLikes;
+import com.gathering.user.infrastructure.UserJpaRepository;
 import com.gathering.user.infrastructure.entitiy.QUser;
 import com.gathering.user.infrastructure.entitiy.User;
-import com.gathering.user.infrastructure.UserJpaRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -50,15 +50,15 @@ import java.util.Optional;
 
 import static com.gathering.book.infrastructure.entity.QBook.book;
 import static com.gathering.book_review.infrastructure.entity.QBookReview.bookReview;
+import static com.gathering.book_review_comment.infrastructure.entity.QReviewComment.reviewComment;
 import static com.gathering.challenge.infrastructure.entity.QChallenge.challenge;
 import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
 import static com.gathering.gathering.infrastructure.entity.QGatheringBookReview.gatheringBookReview;
 import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
 import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
 import static com.gathering.review.model.dto.ReviewListDto.fromGatheringReviews;
-import static com.gathering.book_review_comment.infrastructure.entity.QReviewComment.reviewComment;
 import static com.gathering.review_like.infrastructure.entity.QReviewLikes.reviewLikes;
-import static com.gathering.user.infrastructure.entitiy.QUser.*;
+import static com.gathering.user.infrastructure.entitiy.QUser.user;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Repository
@@ -175,7 +175,7 @@ public class ReviewRepositoryImpl implements ReviewRepository {
                             .and(bookReview.status.eq(StatusType.Y)))
                     .fetchOne();
 
-            result = ReviewListDto.fromBookReviews(reviews,total);
+            result = ReviewListDto.fromBookReviews(reviews, total);
 
             return result;
         } else {
