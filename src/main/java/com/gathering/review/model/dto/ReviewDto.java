@@ -2,6 +2,7 @@ package com.gathering.review.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.book.controller.response.BookResponse;
+import com.gathering.book_review.controller.response.BookReviewDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

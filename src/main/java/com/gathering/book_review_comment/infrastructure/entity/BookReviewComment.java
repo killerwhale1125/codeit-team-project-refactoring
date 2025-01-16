@@ -1,20 +1,23 @@
-package com.gathering.review_comment.infrastructure.entity;
+package com.gathering.book_review_comment.infrastructure.entity;
 
 import com.gathering.book_review.infrastructure.entity.BookReview;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.CreateReviewCommentDto;
+import com.gathering.book_review_comment.domain.BookReviewCommentDomain;
 import com.gathering.user.infrastructure.entitiy.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class ReviewComment extends BaseTimeEntity {
+public class BookReviewComment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +29,6 @@ public class ReviewComment extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     @Comment("작성자")
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    @Comment("리뷰")
-    private BookReview review;
 
     @Comment("내용")
     private String content;
@@ -45,15 +43,34 @@ public class ReviewComment extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private StatusType status;
 
-    public static ReviewComment createEntity(BookReview review, User user
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_id")
+    @Comment("리뷰")
+    private BookReview review;
+
+    public static BookReviewComment createEntity(BookReview review, User user
             , CreateReviewCommentDto createReviewCommentDto, int orders) {
-        return ReviewComment.builder()
+        return BookReviewComment.builder()
                 .user(user)
-                .review(review)
                 .content(createReviewCommentDto.getContent())
                 .parent(createReviewCommentDto.getParent())
                 .orders(orders)
                 .status(StatusType.Y)
                 .build();
+    }
+
+    // 재귀
+    public BookReviewCommentDomain toEntity() {
+        BookReviewCommentDomain.BookReviewCommentDomainBuilder builder = BookReviewCommentDomain.builder()
+                .content(content)
+                .parent(parent)
+                .orders(orders)
+                .status(status);
+
+        if (user != null && getPersistenceUtil().isLoaded(user)) {
+            builder.user(user.toEntity());
+        }
+
+        return builder.build();
     }
 }

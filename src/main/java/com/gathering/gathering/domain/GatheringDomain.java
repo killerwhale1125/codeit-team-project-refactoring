@@ -5,6 +5,7 @@ import com.gathering.book.domain.BookDomain;
 import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.util.GatheringValidator;
+import com.gathering.gathering_review.domain.GatheringReviewDomain;
 import com.gathering.gatheringuser.domain.GatheringUserDomain;
 import com.gathering.image.domain.ImageDomain;
 import com.gathering.user.domain.UserDomain;
@@ -34,6 +35,7 @@ public class GatheringDomain {
     private long viewCount;
     private GatheringStatus gatheringStatus;
     private List<GatheringUserDomain> gatheringUsers;
+    private List<GatheringReviewDomain> gatheringReviews;
     private ChallengeDomain challenge;
     private BookDomain book;
     private GatheringWeek gatheringWeek;

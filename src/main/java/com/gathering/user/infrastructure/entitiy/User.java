@@ -56,20 +56,20 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     private List<UserAttendance> userAttendances;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     private List<ReviewLikes> reviewLikes;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<ChallengeUser> challengeUsers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<BookReview> reviews = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<BookReview> bookReviews = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "user_wishes", joinColumns = @JoinColumn(name = "user_id"))

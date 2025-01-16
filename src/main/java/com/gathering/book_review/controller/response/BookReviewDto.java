@@ -1,8 +1,9 @@
-package com.gathering.review.model.dto;
+package com.gathering.book_review.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.review.domain.StatusType;
 import com.gathering.book_review.infrastructure.entity.BookReview;
+import com.gathering.review.model.dto.ReviewDto;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -197,6 +198,7 @@ public class BookReviewDto extends ReviewDto {
         this.userLikeCk = userLikeCk;
         this.bookTitle = bookTitle;
     }
+
     public static BookReviewDto fromEntity(BookReview review) {
         return BookReviewDto.builder()
                 .id(review.getId())

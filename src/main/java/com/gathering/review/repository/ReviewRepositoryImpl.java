@@ -3,6 +3,7 @@ package com.gathering.review.repository;
 import com.gathering.book.controller.response.BookResponse;
 import com.gathering.book.infrastructure.entity.Book;
 import com.gathering.book.infrastructure.BookJpaRepository;
+import com.gathering.book_review.controller.response.BookReviewDto;
 import com.gathering.book_review.infrastructure.BookReviewJpaRepository;
 import com.gathering.book_review.infrastructure.entity.QBookReview;
 import com.gathering.challenge.infrastructure.entity.ChallengeStatus;
@@ -11,14 +12,12 @@ import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.infrastructure.GatheringJpaRepository;
-import com.gathering.gathering.infrastructure.entity.Gathering;
-import com.gathering.gathering.infrastructure.entity.GatheringBookReview;
 import com.gathering.gathering.domain.SearchType;
 import com.gathering.book_review.infrastructure.entity.BookReview;
 import com.gathering.gathering_review.infrastructure.GatheringReviewJpaRepository;
 import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
-import com.gathering.review_comment.infrastructure.ReviewCommentJpaRepository;
-import com.gathering.review_comment.infrastructure.entity.ReviewComment;
+import com.gathering.book_review_comment.infrastructure.BookReviewCommentJpaRepository;
+import com.gathering.book_review_comment.infrastructure.entity.BookReviewComment;
 import com.gathering.review_like.infrastructure.ReviewLikesJpaRepository;
 import com.gathering.review_like.infrastructure.entity.ReviewLikes;
 import com.gathering.book_review.domain.BookReviewTagType;
@@ -57,7 +56,7 @@ import static com.gathering.gathering.infrastructure.entity.QGatheringBookReview
 import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
 import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
 import static com.gathering.review.model.dto.ReviewListDto.fromGatheringReviews;
-import static com.gathering.review_comment.infrastructure.entity.QReviewComment.reviewComment;
+import static com.gathering.book_review_comment.infrastructure.entity.QReviewComment.reviewComment;
 import static com.gathering.review_like.infrastructure.entity.QReviewLikes.reviewLikes;
 import static com.gathering.user.infrastructure.entitiy.QUser.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -71,7 +70,7 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     private final BookJpaRepository bookJpaRepository;
     private final UserJpaRepository userJpaRepository;
     private final GatheringJpaRepository gatheringJpaRepository;
-    private final ReviewCommentJpaRepository reviewCommentJpaRepository;
+    private final BookReviewCommentJpaRepository bookReviewCommentJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final GatheringReviewJpaRepository gatheringReviewJpaRepository;
     private final ReviewQueryBuilder queryBuilder;
@@ -81,38 +80,38 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     @Override
     public ReviewDto createReview(CreateReviewDto createReviewDto, String username, ReviewType type) {
 
-        User user = userJpaRepository.findByUserNameOrThrow(username);
-        Gathering gathering = null;
-        if(createReviewDto.getGatheringId() != 0) {
-            gathering = gatheringJpaRepository.findById(createReviewDto.getGatheringId())
-                    .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_GATHERING));
-        }
-
-        // 모임 리뷰
-        if(type.equals(ReviewType.GATHERING)) {
-            GatheringReview review = GatheringReview.createEntity(gathering, user, createReviewDto);
-
-            review = gatheringReviewJpaRepository.save(review);
-
-            return GatheringReviewDto.formEntity(review);
-        } else {
-            // 독서 리뷰
-
-            Book book = bookJpaRepository.findById(createReviewDto.getBookId())
-                    .orElseThrow(() -> new BaseException(BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND));
-
-            BookReview review = BookReview.createEntity(book, user, createReviewDto);
-
-            review = bookReviewJpaRepository.save(review);
-
-            GatheringBookReview gatheringReview = GatheringBookReview.createGatheringReview(gathering, review);
-
-            if(gathering != null) {
-                gatheringReview.addGatheringReview(gathering);
-            }
-            return BookReviewDto.fromEntity(review);
-        }
-
+//        User user = userJpaRepository.findByUserNameOrThrow(username);
+//        Gathering gathering = null;
+//        if(createReviewDto.getGatheringId() != 0) {
+//            gathering = gatheringJpaRepository.findById(createReviewDto.getGatheringId())
+//                    .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_GATHERING));
+//        }
+//
+//        // 모임 리뷰
+//        if(type.equals(ReviewType.GATHERING)) {
+//            GatheringReview review = iGatheringReview.createEntty(gathering, user, createReviewDto);
+//
+//            review = gatheringReviewJpaRepository.save(review);
+//
+//            return GatheringReviewDto.formEntity(review);
+//        } else {
+//            // 독서 리뷰
+//
+//            Book book = bookJpaRepository.findById(createReviewDto.getBookId())
+//                    .orElseThrow(() -> new BaseException(BaseResponseStatus.BOOK_OR_CATEGORY_NOT_FOUND));
+//
+//            BookReview review = BookReview.createEntity(book, user, createReviewDto);
+//
+//            review = bookReviewJpaRepository.save(review);
+//
+//            GatheringBookReview gatheringReview = GatheringBookReview.createGatheringReview(gathering, review);
+//
+//            if(gathering != null) {
+//                gatheringReview.addGatheringReview(gathering);
+//            }
+//            return BookReviewDto.fromEntity(review);
+//        }
+        return null;
     }
 
     @Override
@@ -125,7 +124,7 @@ public class ReviewRepositoryImpl implements ReviewRepository {
         int orders = 0;
         long parent = createReviewCommentDto.getParent();
         if(parent != 0) {
-            long count = reviewCommentJpaRepository.countByParent(parent);
+            long count = bookReviewCommentJpaRepository.countByParent(parent);
             orders = (int) count + 1; // 대댓글 순서 계산
         } else {
             Long count = Optional.ofNullable(
@@ -138,11 +137,11 @@ public class ReviewRepositoryImpl implements ReviewRepository {
             orders = (int) (count + 1); // 댓글 순서 계산
         }
 
-        ReviewComment reviewComment = ReviewComment.createEntity(review, user, createReviewCommentDto, orders);
+        BookReviewComment bookReviewComment = BookReviewComment.createEntity(review, user, createReviewCommentDto, orders);
 
-        reviewComment = reviewCommentJpaRepository.save(reviewComment);
+        bookReviewComment = bookReviewCommentJpaRepository.save(bookReviewComment);
 
-        return ReviewCommentDto.formEntity(reviewComment);
+        return ReviewCommentDto.formEntity(bookReviewComment);
     }
 
     @Override
@@ -610,13 +609,13 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     public int DeleteComment(long commentId, String username) {
         User user = userJpaRepository.findByUserNameOrThrow(username);
 
-        ReviewComment reviewComment = reviewCommentJpaRepository.findByIdOrThrow(commentId);
+        BookReviewComment bookReviewComment = bookReviewCommentJpaRepository.findByIdOrThrow(commentId);
 
-        if(reviewComment.getUser().getId() != user.getId()) {
+        if(bookReviewComment.getUser().getId() != user.getId()) {
             throw new BaseException(BaseResponseStatus.COMMENT_OWNER_MISMATCH);
         }
 
-        return reviewCommentJpaRepository.deleteComment(reviewComment.getId(), StatusType.N);
+        return bookReviewCommentJpaRepository.deleteComment(bookReviewComment.getId(), StatusType.N);
 
     }
 
@@ -625,13 +624,13 @@ public class ReviewRepositoryImpl implements ReviewRepository {
 
         User user = userJpaRepository.findByUserNameOrThrow(username);
 
-        ReviewComment reviewComment = reviewCommentJpaRepository.findByIdOrThrow(commentId);
+        BookReviewComment bookReviewComment = bookReviewCommentJpaRepository.findByIdOrThrow(commentId);
 
-        if(reviewComment.getUser().getId() != user.getId()) {
+        if(bookReviewComment.getUser().getId() != user.getId()) {
             throw new BaseException(BaseResponseStatus.COMMENT_OWNER_MISMATCH);
         }
 
-        return reviewCommentJpaRepository.UpdateComment(reviewComment.getId(), updateReviewCommentDto.getContent(), LocalDateTime.now());
+        return bookReviewCommentJpaRepository.UpdateComment(bookReviewComment.getId(), updateReviewCommentDto.getContent(), LocalDateTime.now());
     }
 
     @Override

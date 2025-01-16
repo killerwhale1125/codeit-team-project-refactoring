@@ -1,7 +1,7 @@
 package com.gathering.book.service.port;
 
-import com.gathering.book.domain.BookDomain;
 import com.gathering.book.controller.response.BookSearchResponse;
+import com.gathering.book.domain.BookDomain;
 import com.gathering.book.infrastructure.entity.Book;
 
 import java.util.List;

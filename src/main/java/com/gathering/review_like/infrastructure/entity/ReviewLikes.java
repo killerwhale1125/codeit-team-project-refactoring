@@ -1,10 +1,13 @@
 package com.gathering.review_like.infrastructure.entity;
 
 import com.gathering.book_review.infrastructure.entity.BookReview;
+import com.gathering.review_like.domain.ReviewLikesDomain;
 import com.gathering.user.infrastructure.entitiy.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Entity
 @Table(name = "REVIEW_LIKES",
@@ -43,4 +46,15 @@ public class ReviewLikes {
                 .build();
     }
 
+    public ReviewLikesDomain toEntity() {
+        ReviewLikesDomain.ReviewLikesDomainBuilder builder = ReviewLikesDomain.builder()
+                .id(id);
+
+        if (user != null && getPersistenceUtil().isLoaded(user)) {
+            builder.user(user.toEntity());
+        }
+
+        return builder.build();
+
+    }
 }

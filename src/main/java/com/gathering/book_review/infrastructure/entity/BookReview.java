@@ -1,10 +1,11 @@
 package com.gathering.book_review.infrastructure.entity;
 
 import com.gathering.book.infrastructure.entity.Book;
+import com.gathering.book_review.domain.BookReviewDomain;
+import com.gathering.book_review_comment.infrastructure.entity.BookReviewComment;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.review.domain.StatusType;
 import com.gathering.review.model.dto.CreateReviewDto;
-import com.gathering.review_comment.infrastructure.entity.ReviewComment;
 import com.gathering.review_like.infrastructure.entity.ReviewLikes;
 import com.gathering.user.infrastructure.entitiy.User;
 import jakarta.persistence.*;
@@ -17,6 +18,10 @@ import org.hibernate.annotations.Comment;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.gathering.util.entity.EntityUtils.nullableEntity;
+import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Entity
 @Getter
@@ -28,7 +33,7 @@ public class BookReview extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     @Comment("리뷰 pk")
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -59,11 +64,35 @@ public class BookReview extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private StatusType status;
 
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReviewComment> reviewComments = new ArrayList<>();
+    @OneToMany(mappedBy = "review")
+    private List<BookReviewComment> bookReviewComments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "review", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "review")
     private List<ReviewLikes> reviewLikes;
+
+    public static BookReview fromEntity(BookReviewDomain bookReview) {
+        BookReview bookReviewEntity = new BookReview();
+        bookReviewEntity.id = bookReview.getId();
+        bookReviewEntity.title = bookReview.getTitle();
+        bookReviewEntity.apprCd = bookReview.getApprCd();
+        bookReviewEntity.tagCd = bookReview.getTagCd();
+        bookReviewEntity.content = bookReview.getContent();
+        bookReviewEntity.likes = bookReview.getLikes();
+        bookReviewEntity.status = bookReview.getStatus();
+
+        User user = nullableEntity(User::fromEntity, bookReview.getUser());
+        if(user != null) {
+            bookReviewEntity.user = user;
+            user.getBookReviews().add(bookReviewEntity);
+        }
+
+        Book book = nullableEntity(Book::fromEntity, bookReview.getBook());
+        if(book != null) {
+            bookReviewEntity.book = book;
+            book.getBookReviews().add(bookReviewEntity);
+        }
+        return bookReviewEntity;
+    }
 
 
     public void updateReview(CreateReviewDto dto, Book book) {
@@ -75,17 +104,32 @@ public class BookReview extends BaseTimeEntity {
         this.modifiedTime = LocalDateTime.now();
     }
 
-    public static BookReview createEntity(Book book, User user, CreateReviewDto createReviewDto) {
-        return null;
-//        return BookReview.builder()
-//                .user(user)
-//                .book(book)
-//                .title(createReviewDto.getTitle())
-//                .apprCd(createReviewDto.getApprCd())
-//                .tagCd(createReviewDto.getTag())
-//                .content(createReviewDto.getContent())
-//                .likes(0)
-//                .status(createReviewDto.getTmprStrgYN().equals("Y") ? StatusType.T : StatusType.Y) // T = 임시저장, Y= '저장' , N = 삭제'
-//                .build();
+    public BookReviewDomain toEntity() {
+        BookReviewDomain.BookReviewDomainBuilder builder = BookReviewDomain.builder()
+                .id(id)
+                .title(title)
+                .apprCd(apprCd)
+                .tagCd(tagCd)
+                .content(content)
+                .likes(likes)
+                .status(status);
+
+        if (user != null && getPersistenceUtil().isLoaded(user)) {
+            builder.user(user.toEntity());
+        }
+
+        if (book != null && getPersistenceUtil().isLoaded(book)) {
+            builder.book(book.toEntity());
+        }
+
+        if (bookReviewComments != null && getPersistenceUtil().isLoaded(bookReviewComments)) {
+            builder.reviewComments(bookReviewComments.stream().map(BookReviewComment::toEntity).collect(Collectors.toList()));
+        }
+
+        if (reviewLikes != null && getPersistenceUtil().isLoaded(reviewLikes)) {
+            builder.reviewLikes(reviewLikes.stream().map(ReviewLikes::toEntity).collect(Collectors.toList()));
+        }
+
+        return builder.build();
     }
 }

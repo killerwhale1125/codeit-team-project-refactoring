@@ -1,8 +1,8 @@
 package com.gathering.book.infrastructure.entity;
 
 import com.gathering.book.domain.BookDomain;
-import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.book_review.infrastructure.entity.BookReview;
+import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.user_attendance_book.infrastructure.entity.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -38,7 +38,7 @@ public class Book extends BaseTimeEntity {
     List<BookCategory> bookCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
-    List<BookReview> reviews = new ArrayList<>();
+    List<BookReview> bookReviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
     List<UserAttendanceBook> userAttendanceBooks = new ArrayList<>();

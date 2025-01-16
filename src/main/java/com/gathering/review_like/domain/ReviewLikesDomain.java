@@ -1,7 +1,7 @@
 package com.gathering.review_like.domain;
 
 import com.gathering.book_review.domain.BookReviewDomain;
-import com.gathering.user.infrastructure.entitiy.User;
+import com.gathering.user.domain.UserDomain;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,6 +9,6 @@ import lombok.Getter;
 @Builder
 public class ReviewLikesDomain {
     private long id;
-    private User user;
+    private UserDomain user;
     private BookReviewDomain review;
 }

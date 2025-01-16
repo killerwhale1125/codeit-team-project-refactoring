@@ -6,9 +6,9 @@ import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.GatheringWeek;
+import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
 import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
 import com.gathering.image.infrastructure.entity.Image;
-import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
 import com.gathering.user_attendance_book.infrastructure.entity.UserAttendanceBook;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -48,8 +48,8 @@ public class Gathering extends BaseTimeEntity {
     @OneToMany(mappedBy = "gathering")
     private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "gathering")
-    private List<GatheringBookReview> gatheringBookReviews = new ArrayList<>();
+//    @OneToMany(mappedBy = "gathering")
+//    private List<GatheringBookReview> gatheringBookReviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "gathering")
     private List<GatheringReview> gatheringReviews = new ArrayList<>();
@@ -130,6 +130,10 @@ public class Gathering extends BaseTimeEntity {
 
         if(gatheringUsers != null && getPersistenceUtil().isLoaded(gatheringUsers)) {
             builder.gatheringUsers(gatheringUsers.stream().map(GatheringUser::toEntity).collect(Collectors.toList()));
+        }
+
+        if(gatheringReviews != null && getPersistenceUtil().isLoaded(gatheringReviews)) {
+            builder.gatheringReviews(gatheringReviews.stream().map(GatheringReview::toEntity).collect(Collectors.toList()));
         }
 
         return builder.build();

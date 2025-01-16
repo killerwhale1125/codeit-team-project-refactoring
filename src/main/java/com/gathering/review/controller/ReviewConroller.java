@@ -167,7 +167,6 @@ public class ReviewConroller {
         reviewService.UpdateReviewLike(reviewLikeDto, userDetails.getUsername());
         return new BaseResponse<>();
     }
-
     
     @DeleteMapping("/{commentId}/comment")
     @Operation(summary = "댓글 삭제", description = "상세 조건 Notion 참고")
@@ -183,6 +182,7 @@ public class ReviewConroller {
 
         return new BaseResponse<>();
     }
+
     @PutMapping("/{commentId}/comment/edit")
     @Operation(summary = "댓글 수정", description = "상세 조건 Notion 참고")
     public BaseResponse<Void> UpdateComment(

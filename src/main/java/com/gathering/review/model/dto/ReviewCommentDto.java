@@ -2,7 +2,7 @@ package com.gathering.review.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.review.domain.StatusType;
-import com.gathering.review_comment.infrastructure.entity.ReviewComment;
+import com.gathering.book_review_comment.infrastructure.entity.BookReviewComment;
 import lombok.*;
 
 @Data
@@ -38,7 +38,7 @@ public class ReviewCommentDto{
         this.createTime = createTime;
     }
 
-    public static ReviewCommentDto formEntity(ReviewComment comment) {
+    public static ReviewCommentDto formEntity(BookReviewComment comment) {
         return ReviewCommentDto.builder()
                 .id(comment.getId())
                 .userId(comment.getUser().getId())

@@ -15,6 +15,7 @@ public interface BookReviewJpaRepository extends JpaRepository<BookReview, Long>
     };
 
     long countByUserId(long id);
+
     @Modifying
     @Query("UPDATE BookReview b SET b.status = :statusType WHERE b.id = :id")
     int deleteReview(long id, StatusType statusType);
