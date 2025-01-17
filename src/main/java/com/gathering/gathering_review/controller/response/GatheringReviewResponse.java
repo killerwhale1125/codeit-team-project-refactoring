@@ -1,7 +1,7 @@
 package com.gathering.gathering_review.controller.response;
 
 import com.gathering.gathering_review.domain.GatheringReviewDomain;
-import com.gathering.review.domain.StatusType;
+import com.gathering.book_review.domain.StatusType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Builder;

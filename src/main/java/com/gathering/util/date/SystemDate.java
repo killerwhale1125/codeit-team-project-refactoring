@@ -4,14 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
 public class SystemDate implements DateHolder {
 
-    public LocalDate now() {
+    public LocalDate localDateNow() {
         return LocalDate.now();
+    }
+
+    public LocalDateTime localDateTimeNow() {
+        return LocalDateTime.now();
     }
 
     @Override

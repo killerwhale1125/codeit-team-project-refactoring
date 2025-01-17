@@ -2,12 +2,12 @@ package com.gathering.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.book_review.infrastructure.entity.BookReview;
-import com.gathering.challengeuser.infrastructure.entity.ChallengeUser;
+import com.gathering.challenge_user.infrastructure.entity.ChallengeUser;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
-import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
+import com.gathering.gathering_user.infrastructure.entity.GatheringUser;
 import com.gathering.image.domain.ImageDomain;
-import com.gathering.review_like.infrastructure.entity.ReviewLikes;
+import com.gathering.book_review_like.infrastructure.entity.BookReviewLike;
 import com.gathering.user.util.PasswordEncoderHolder;
 import com.gathering.user_attendance.infrastructure.entity.UserAttendance;
 import lombok.Builder;
@@ -37,7 +37,7 @@ public class UserDomain {
 
     private List<UserAttendance> userAttendances;
 
-    private List<ReviewLikes> reviewLikes;
+    private List<BookReviewLike> bookReviewLikes;
 
     private List<GatheringUser> gatheringUsers;
 

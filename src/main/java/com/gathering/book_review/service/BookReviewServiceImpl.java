@@ -6,6 +6,8 @@ import com.gathering.book_review.controller.port.BookReviewService;
 import com.gathering.book_review.controller.response.BookReviewResponse;
 import com.gathering.book_review.domain.BookReviewCreate;
 import com.gathering.book_review.domain.BookReviewDomain;
+import com.gathering.book_review.domain.BookReviewUpdate;
+import com.gathering.book_review.infrastructure.BookReviewSearchRepository;
 import com.gathering.book_review.service.port.BookReviewRepository;
 import com.gathering.user.domain.UserDomain;
 import com.gathering.user.service.port.UserRepository;
@@ -20,6 +22,7 @@ public class BookReviewServiceImpl implements BookReviewService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final BookReviewRepository bookReviewRepository;
+    private final BookReviewSearchRepository bookReviewSearchRepository;
 
     @Override
     @Transactional
@@ -29,5 +32,21 @@ public class BookReviewServiceImpl implements BookReviewService {
         BookReviewDomain bookReview = bookReviewRepository.save(BookReviewDomain.create(bookReviewCreate, book, user));
 
         return BookReviewResponse.fromEntity(bookReview);
+    }
+
+    @Override
+    public void delete(long reviewId, String username) {
+        BookReviewDomain bookReview = bookReviewSearchRepository.findByIdWithUser(reviewId);
+        bookReview = bookReview.delete(username);
+        bookReviewRepository.delete(bookReview);
+    }
+
+    @Override
+    public BookReviewDomain update(BookReviewUpdate bookReviewUpdate, Long reviewId, String username) {
+        UserDomain user = userRepository.findByUsername(username);
+        BookReviewDomain bookReview = bookReviewSearchRepository.findByIdWithUser(reviewId);
+        BookDomain book = bookRepository.findById(bookReviewUpdate.getBookId());
+        bookReview = bookReview.update(bookReviewUpdate, user, book);
+        return bookReviewRepository.save(bookReview);
     }
 }

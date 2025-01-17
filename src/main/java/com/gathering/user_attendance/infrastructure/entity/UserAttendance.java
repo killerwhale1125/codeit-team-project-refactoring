@@ -4,7 +4,9 @@ import com.gathering.user.infrastructure.entitiy.User;
 import com.gathering.user_attendance.domain.UserAttendanceDomain;
 import com.gathering.user_attendance_book.infrastructure.entity.UserAttendanceBook;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import static jakarta.persistence.Persistence.getPersistenceUtil;
                         columnNames={"USER_ID", "CREATE_DATE"}
                 )
         })
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserAttendance {
 
     @Id

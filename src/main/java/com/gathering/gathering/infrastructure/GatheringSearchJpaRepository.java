@@ -1,5 +1,6 @@
 package com.gathering.gathering.infrastructure;
 
+import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.infrastructure.entity.Gathering;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, Long> {
@@ -60,4 +62,6 @@ public interface GatheringSearchJpaRepository extends JpaRepository<Gathering, L
                     "WHERE MATCH(b.title) AGAINST (:searchWord IN BOOLEAN MODE)")
     Page<Object[]> findGatheringsBySearchWordAndTypeBookName(@Param("searchWord") String searchWord, Pageable pageable);
 
+    @Query("SELECT g.book.id FROM Gathering g JOIN g.gatheringUsers gu WHERE gu.user.id = :userId AND g.gatheringStatus = :gatheringStatus")
+    List<Long> findCompletedGatheringBookIdsByUserId(@Param("userId") Long userId, @Param("gatheringStatus") GatheringStatus gatheringStatus);
 }

@@ -4,26 +4,25 @@ import com.gathering.book.domain.BookDomain;
 import com.gathering.book.service.port.BookRepository;
 import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.challenge.service.port.ChallengeRepository;
-import com.gathering.challengeuser.domain.ChallengeUserDomain;
-import com.gathering.challengeuser.service.port.ChallengeUserRepository;
+import com.gathering.challenge_user.domain.ChallengeUserDomain;
+import com.gathering.challenge_user.service.port.ChallengeUserRepository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.controller.port.GatheringService;
-import com.gathering.gathering.domain.GatheringDomain;
-import com.gathering.gathering.domain.GatheringCreate;
 import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
+import com.gathering.gathering.domain.GatheringCreate;
+import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.gathering.service.port.GatheringRepository;
-import com.gathering.gathering.util.GatheringActions;
 import com.gathering.gathering.util.GatheringValidator;
-import com.gathering.gatheringuser.domain.GatheringUserDomain;
-import com.gathering.gatheringuser.service.port.GatheringUserRepository;
-import com.gathering.gatheringuser.util.GatheringUserDtoMapper;
+import com.gathering.gathering_user.domain.GatheringUserDomain;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
+import com.gathering.gathering_user.service.port.GatheringUserRepository;
+import com.gathering.gathering_user.util.GatheringUserDtoMapper;
 import com.gathering.image.domain.ImageDomain;
 import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.image.service.ImageService;
-import com.gathering.user.domain.UserDomain;
 import com.gathering.user.controller.response.UserResponseDto;
+import com.gathering.user.domain.UserDomain;
 import com.gathering.user.service.port.UserRepository;
 import com.gathering.user_attendance.domain.UserAttendanceDomain;
 import com.gathering.user_attendance.service.port.UserAttendanceRepository;
@@ -40,7 +39,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static com.gathering.common.base.response.BaseResponseStatus.*;
+import static com.gathering.common.base.response.BaseResponseStatus.ALREADY_READING_BOOK;
 
 @Service
 @Builder
@@ -50,7 +49,6 @@ public class GatheringServiceImpl implements GatheringService {
     private final GatheringRepository gatheringRepository;
     private final GatheringUserRepository gatheringUserRepository;
     private final UserRepository userRepository;
-    private final GatheringActions gatheringActions;
     private final BookRepository bookRepository;
     private final ChallengeUserRepository challengeUserRepository;
     private final ChallengeRepository challengeRepository;

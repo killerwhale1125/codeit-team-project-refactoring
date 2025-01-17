@@ -1,7 +1,7 @@
 package com.gathering.book.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.gathering.book.infrastructure.entity.Book;
+import com.gathering.book.domain.BookDomain;
 import com.gathering.user_attendance_book.infrastructure.entity.UserAttendanceBook;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,7 +58,7 @@ public class BookResponse {
         this.gatheringExists = gatheringExists;
     }
 
-    public static BookResponse fromEntity(Book book) {
+    public static BookResponse fromEntity(BookDomain book) {
         return BookResponse.builder()
                 .id(book.getId())
                 .title(book.getTitle())

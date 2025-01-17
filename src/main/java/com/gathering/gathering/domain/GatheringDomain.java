@@ -6,7 +6,7 @@ import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.util.GatheringValidator;
 import com.gathering.gathering_review.domain.GatheringReviewDomain;
-import com.gathering.gatheringuser.domain.GatheringUserDomain;
+import com.gathering.gathering_user.domain.GatheringUserDomain;
 import com.gathering.image.domain.ImageDomain;
 import com.gathering.user.domain.UserDomain;
 import lombok.Builder;

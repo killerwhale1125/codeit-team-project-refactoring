@@ -7,11 +7,13 @@ import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.gathering_review.infrastructure.entity.GatheringReview;
-import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
+import com.gathering.gathering_user.infrastructure.entity.GatheringUser;
 import com.gathering.image.infrastructure.entity.Image;
 import com.gathering.user_attendance_book.infrastructure.entity.UserAttendanceBook;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Gathering extends BaseTimeEntity {
 
     @Id

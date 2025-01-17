@@ -3,7 +3,6 @@ package com.gathering.gathering.infrastructure;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 import com.gathering.gathering.domain.GatheringDomain;
-import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.infrastructure.entity.Gathering;
@@ -12,16 +11,8 @@ import com.gathering.gathering.service.dto.GatheringSliceResponse;
 import com.gathering.gathering.service.port.GatheringSearchRepository;
 import com.gathering.gathering.util.GatheringSearchConditionBuilder;
 import com.gathering.gathering.util.GatheringSortUtil;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
-import com.gathering.review.domain.StatusType;
-import com.gathering.review.model.dto.GatheringReviewDto;
-import com.gathering.review.model.dto.ReviewListDto;
-import com.gathering.user.infrastructure.entitiy.QUser;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +25,11 @@ import java.util.stream.Collectors;
 
 import static com.gathering.book.infrastructure.entity.QBook.book;
 import static com.gathering.challenge.infrastructure.entity.QChallenge.challenge;
+import static com.gathering.gathering.domain.GatheringStatus.COMPLETED;
 import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
-import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
-import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
+import static com.gathering.gathering_user.infrastructure.entity.QGatheringUser.gatheringUser;
 import static com.gathering.image.infrastructure.entity.QImage.image;
-import static com.gathering.user.infrastructure.entitiy.QUser.*;
+import static com.gathering.user.infrastructure.entitiy.QUser.user;
 
 
 @Repository
@@ -181,6 +172,11 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
     }
 
     @Override
+    public List<Long> findCompletedGatheringBookIdsByUserId(Long userId) {
+        return gatheringSearchJpaRepository.findCompletedGatheringBookIdsByUserId(userId, COMPLETED);
+    }
+
+    @Override
     public GatheringPageResponse findGatheringsForUserByUsername(String username, int page, int size, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
         Pageable pageable = PageRequest.of(page, size);
         BooleanBuilder builder = gatheringSearchConditionBuilder.buildGatheringAndUserStatus(gatheringStatus, gatheringUserStatus);
@@ -265,76 +261,6 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .gatherings(gatherings.getContent())
                 .totalCount(totalCount)
                 .build();
-    }
-
-    @Override
-    public ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        // 리뷰 목록
-        JPAQuery<GatheringReviewDto> query = queryFactory
-                .select(Projections.constructor(GatheringReviewDto.class,
-                        gatheringReview.id,
-                        user.id,
-                        user.userName,
-                        user.profile,
-                        gatheringReview.score,
-                        gatheringReview.content,
-                        Expressions.stringTemplate("DATE_FORMAT({0}, '%Y-%m-%d')", gatheringReview.createdTime)))
-                .from(gatheringReview)
-                .leftJoin(user).on(user.id.eq(gatheringReview.user.id))
-                .where(gatheringReview.gathering.id.eq(gatheringId).and(gatheringReview.status.eq(StatusType.Y)))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1);
-
-        // 정렬 처리
-        GatheringSortUtil.applyReviewSorting(query, sort);
-
-        List<GatheringReviewDto> reviews = query.fetch();
-
-        boolean hasNext = reviews.size() > pageable.getPageSize();
-
-        // Remove the extra record from the content (if it exists)
-        if (hasNext) {
-            reviews.remove(reviews.size() - 1);
-        }
-
-        Tuple result = queryFactory
-                .select(
-                        gatheringReview.id.count(), // COUNT
-                        gatheringReview.score.avg()// AVG
-                        ,JPAExpressions
-                                .select(gatheringReview.count())
-                                .from(gatheringReview)
-                                .where(
-                                        gatheringReview.gathering.id.eq(gatheringId)
-                                                .and(gatheringReview.score.between(4,5))
-                                                .and(gatheringReview.status.eq(StatusType.Y))
-                                )
-                        ,JPAExpressions
-                                .select(gatheringReview.count())
-                                .from(gatheringReview)
-                                .where(
-                                        gatheringReview.gathering.id.eq(gatheringId)
-                                                .and(gatheringReview.score.eq(3))
-                                                .and(gatheringReview.status.eq(StatusType.Y))
-                                )
-                        ,JPAExpressions
-                                .select(gatheringReview.count())
-                                .from(gatheringReview)
-                                .where(
-                                        gatheringReview.gathering.id.eq(gatheringId)
-                                                .and(gatheringReview.score.between(1,2))
-                                                .and(gatheringReview.status.eq(StatusType.Y))
-                                )
-                )
-                .from(gatheringReview)
-                .where(
-                        gatheringReview.gathering.id.eq(gatheringId)
-                                .and(gatheringReview.status.eq(StatusType.Y))
-                )
-                .fetchOne();
-
-        return ReviewListDto.fromGatheringReviews(reviews, result, hasNext);
     }
 
 }

@@ -1,10 +1,10 @@
 package com.gathering.crawel;
 
-import com.gathering.book.infrastructure.entity.Book;
+import com.gathering.book.domain.BookDomain;
+import com.gathering.book.infrastructure.BookJpaRepository;
 import com.gathering.book.infrastructure.entity.BookCategory;
-import com.gathering.book.service.port.BookRepository;
-import com.gathering.category.infrastructure.entity.Category;
 import com.gathering.category.infrastructure.CategoryJpaRepository;
+import com.gathering.category.infrastructure.entity.Category;
 import com.gathering.category.service.port.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CrawlerService {
-    private final BookRepository bookRepository;
+    private final BookJpaRepository bookJpaRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryJpaRepository categoryJpaRepository;
 
@@ -39,13 +39,13 @@ public class CrawlerService {
 //            YearMonth publisherDate = parsePublishDate(publishDateStr);
 
             // 책 이미 저장되어있으면 건너뛰기
-            if(bookRepository.existsByTitle(title)) continue;
+//            if(bookRepository.existsByTitle(title)) continue;
 
             // BookCategory 생성 및 저장
             BookCategory bookCategory = BookCategory.createBookCategory(category);
-            Book book = Book.createBook(title, image, author, publisher, bookCategory, publishDateStr, star, introduce, page);
+            BookDomain book = BookDomain.create(title, image, author, publisher, bookCategory, publishDateStr, star, introduce, page);
 
-            bookRepository.save(book);
+//            bookRepository.save(book);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.gathering.gathering.util;
 
-import com.gathering.gathering.domain.GatheringReviewSortType;
+import com.gathering.gathering_review.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSortType;
 import com.querydsl.jpa.impl.JPAQuery;
 

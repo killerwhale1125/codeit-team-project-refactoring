@@ -1,29 +1,30 @@
 package com.gathering.gathering.service;
 
+import com.gathering.book_review.infrastructure.BookReviewSearchRepository;
+import com.gathering.book_review.service.port.BookReviewRepository;
 import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.challenge.service.port.ChallengeRepository;
-import com.gathering.challengeuser.domain.ChallengeUserDomain;
+import com.gathering.challenge_user.domain.ChallengeUserDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
-import com.gathering.gathering.domain.*;
+import com.gathering.gathering.domain.GatheringDomain;
+import com.gathering.gathering.domain.GatheringSearch;
+import com.gathering.gathering.domain.GatheringStatus;
+import com.gathering.gathering.domain.SearchType;
 import com.gathering.gathering.service.dto.GatheringPageResponse;
 import com.gathering.gathering.service.dto.GatheringSliceResponse;
 import com.gathering.gathering.service.port.GatheringAsync;
 import com.gathering.gathering.service.port.GatheringSearchRepository;
 import com.gathering.gathering.util.GatheringDtoMapper;
-import com.gathering.gathering.util.GatheringSearchActions;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
-import com.gathering.review.model.dto.ReviewListDto;
-import com.gathering.review.service.port.ReviewRepository;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
 import com.gathering.user.domain.UserDomain;
 import com.gathering.user.service.port.UserRepository;
 import com.gathering.util.string.FullTextIndexParser;
 import com.gathering.util.string.StringUtil;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -42,40 +43,43 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     private final GatheringSearchRepository gatheringSearchRepository;
     private final GatheringAsync gatheringAsync;
-    private final GatheringSearchActions gatheringSearchActions;
     private final UserRepository userRepository;
-    private final ReviewRepository reviewRepository;
+    private final BookReviewRepository bookReviewRepository;
+    private final BookReviewSearchRepository bookReviewSearchRepository;
     private final ChallengeRepository challengeRepository;
 
     @Override
-    public GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, int page, int size, UserDetails userDetails) {
+    public GatheringSearchResponse findGatheringsByFilters(GatheringSearch gatheringSearch, int page, int size, String username) {
         GatheringSliceResponse gatheringSliceResponse = gatheringSearchRepository.findGatherings(gatheringSearch, page, size);
 
-        Set<Long> wishGatheringIds
-                = userDetails != null ? userRepository.findWishGatheringIdsByUserName(userDetails.getUsername()) : new HashSet<>();
+        Set<Long> wishGatheringIds = getWishGatheringIds(username);
 
         return GatheringDtoMapper.convertToGatheringSearchResponse(gatheringSliceResponse, wishGatheringIds);
     }
 
+    private Set<Long> getWishGatheringIds(String username) {
+        Set<Long> wishGatheringIds
+                = username != null ? userRepository.findWishGatheringIdsByUserName(username) : new HashSet<>();
+        return wishGatheringIds;
+    }
+
     @Override
-    public GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size, UserDetails userDetails) {
+    public GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size, String username) {
         GatheringSliceResponse gatheringSliceResponse = gatheringSearchRepository.findJoinableGatherings(gatheringSearch, page, size);
 
-        Set<Long> wishGatheringIds
-                = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
+        Set<Long> wishGatheringIds = getWishGatheringIds(username);
 
         return GatheringDtoMapper.convertToGatheringSearchJoinableResponse(gatheringSliceResponse, wishGatheringIds);
     }
 
     @Override
-    public GatheringResponse getById(Long gatheringId, String userKey, UserDetails userDetails) {
+    public GatheringResponse getById(Long gatheringId, String userKey, String username) {
         GatheringDomain gathering = gatheringSearchRepository.getByIdWithChallengeAndBook(gatheringId);
 
         // 조회수 비동기 처리
         gatheringAsync.incrementViewCount(gathering.getId(), userKey);
 
-        Set<Long> wishGatheringIds
-                = userDetails != null ? userRepository.findByUsername(userDetails.getUsername()).getWishGatheringIds() : new HashSet<>();
+        Set<Long> wishGatheringIds = getWishGatheringIds(username);
 
         return GatheringResponse.from(gathering, wishGatheringIds.contains(gathering.getId()));
     }
@@ -123,37 +127,6 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         return GatheringResponse.introduceFromEntity(gathering, user);
     }
 
-    @Override
-    public ReviewListDto review(Long gatheringId, GatheringReviewSortType sort, int page, int size) {
-        return gatheringSearchRepository.getGatheringReviewList(gatheringId, sort, page, size);
-    }
-
-    /**
-     * 검색 시 첫 검색은 integrated로 호출
-     */
-    @Override
-    public GatheringSearchResponse getIntegratedResultBySearchWordAndType(String searchWord, SearchType searchType, int page, int size, String username) {
-        // 2글자 미만일 경우 X
-        if (!StringUtil.isValidLength(searchWord, 2)) {
-            throw new BaseException(INVALID_SEARCH_WORD);
-        }
-        
-        // Full Text 인덱스에 맞는 검색 조건으로 변환
-        String formatSearchWord = FullTextIndexParser.formatForFullTextQuery(searchWord);
-
-        /**
-         * 모임 리스트 및 카운트 조회
-         */
-        GatheringPageResponse gatherings = findGatheringsBySearchWordAndType(formatSearchWord, searchType, page, size);
-
-        /**
-         * 리뷰 목록 및 카운트 조회
-         */
-        ReviewListDto reviews = reviewRepository.searchReviews(searchType, searchWord, page, size, username);
-
-        return GatheringDtoMapper.convertToIntegratedResultPages(gatherings, reviews);
-    }
-
     /**
      * integrated 이후 따로 검색
      */
@@ -169,16 +142,6 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
         GatheringPageResponse gatherings = findGatheringsBySearchWordAndType(formatSearchWord, searchType, page, size);
 
         return GatheringDtoMapper.convertToGatheringsResultPage(gatherings, gatherings.getTotalCount());
-    }
-
-    @Override
-    public GatheringSearchResponse getReviewsBySearchWordAndType(String searchWord, SearchType searchType, int page, int size, String username) {
-        /**
-         * 리뷰 목록 및 카운트 조회
-         */
-        ReviewListDto reviews = reviewRepository.searchReviews(searchType, searchWord, page, size, username);
-
-        return GatheringSearchResponse.reviewsResultPage(reviews.getBookReviews(), reviews.getTotal());
     }
 
     private Map<Long, Double> getReadingRateMap(String username, GatheringPageResponse gatheringPageResponse) {

@@ -1,7 +1,5 @@
 package com.gathering.gathering.domain;
 
-import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.domain.ReadingTimeGoal;
 import lombok.*;
 
 import java.time.LocalDate;

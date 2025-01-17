@@ -3,13 +3,16 @@ package com.gathering.image.infrastructure.entity;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.image.domain.ImageDomain;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Image extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

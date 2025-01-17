@@ -1,6 +1,5 @@
 package com.gathering.book_review.domain;
 
-import com.gathering.review.domain.StatusType;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 

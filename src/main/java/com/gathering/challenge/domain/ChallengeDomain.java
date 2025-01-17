@@ -2,7 +2,7 @@ package com.gathering.challenge.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.challenge.infrastructure.entity.ChallengeStatus;
-import com.gathering.challengeuser.domain.ChallengeUserDomain;
+import com.gathering.challenge_user.domain.ChallengeUserDomain;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringCreate;

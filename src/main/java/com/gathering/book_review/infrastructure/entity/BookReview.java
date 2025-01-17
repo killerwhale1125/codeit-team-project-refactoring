@@ -2,20 +2,17 @@ package com.gathering.book_review.infrastructure.entity;
 
 import com.gathering.book.infrastructure.entity.Book;
 import com.gathering.book_review.domain.BookReviewDomain;
+import com.gathering.book_review.domain.StatusType;
 import com.gathering.book_review_comment.infrastructure.entity.BookReviewComment;
+import com.gathering.book_review_like.infrastructure.entity.BookReviewLike;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.review.domain.StatusType;
-import com.gathering.review.model.dto.CreateReviewDto;
-import com.gathering.review_like.infrastructure.entity.ReviewLikes;
 import com.gathering.user.infrastructure.entitiy.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,49 +23,40 @@ import static jakarta.persistence.Persistence.getPersistenceUtil;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class BookReview extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_id")
-    @Comment("리뷰 pk")
+    @Column(name = "book_review_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @Comment("작성자")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
-    @Comment("책")
     private Book book;
 
-    @Comment("제목")
     private String title;
 
     @Comment("평가")
     private String apprCd;
 
-    @Comment("태그")
     private String tagCd;
 
-    @Comment("내용")
     private String content;
 
-    @Comment("좋아요")
     private int likes;
 
-    @Comment("상태")
     @Enumerated(EnumType.STRING)
     private StatusType status;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "bookReview")
     private List<BookReviewComment> bookReviewComments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "review")
-    private List<ReviewLikes> reviewLikes;
+    @OneToMany(mappedBy = "bookReview")
+    private List<BookReviewLike> bookReviewLikes = new ArrayList<>();
 
     public static BookReview fromEntity(BookReviewDomain bookReview) {
         BookReview bookReviewEntity = new BookReview();
@@ -94,16 +82,6 @@ public class BookReview extends BaseTimeEntity {
         return bookReviewEntity;
     }
 
-
-    public void updateReview(CreateReviewDto dto, Book book) {
-        this.book = book;
-        this.title = dto.getTitle();
-        this.apprCd = dto.getApprCd();
-        this.tagCd = dto.getTag();
-        this.content = dto.getContent();
-        this.modifiedTime = LocalDateTime.now();
-    }
-
     public BookReviewDomain toEntity() {
         BookReviewDomain.BookReviewDomainBuilder builder = BookReviewDomain.builder()
                 .id(id)
@@ -126,8 +104,8 @@ public class BookReview extends BaseTimeEntity {
             builder.reviewComments(bookReviewComments.stream().map(BookReviewComment::toEntity).collect(Collectors.toList()));
         }
 
-        if (reviewLikes != null && getPersistenceUtil().isLoaded(reviewLikes)) {
-            builder.reviewLikes(reviewLikes.stream().map(ReviewLikes::toEntity).collect(Collectors.toList()));
+        if (bookReviewLikes != null && getPersistenceUtil().isLoaded(bookReviewLikes)) {
+            builder.reviewLikes(bookReviewLikes.stream().map(BookReviewLike::toEntity).collect(Collectors.toList()));
         }
 
         return builder.build();

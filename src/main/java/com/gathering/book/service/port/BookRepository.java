@@ -7,19 +7,16 @@ import com.gathering.book.infrastructure.entity.Book;
 import java.util.List;
 
 public interface BookRepository {
-    Book findBookByBookIdAndCategoryId(Long bookId, Long categoryId);
 
     boolean existsByTitle(String title);
 
     BookDomain save(BookDomain book);
 
-    Book save(Book book);
-
     BookDomain findById(Long bookId);
 
     List<BookSearchResponse> findPopularBooks(int page, int size);
 
-    List<Book> searchBooksBySearchWord(String title);
+    List<BookDomain> searchBooksBySearchWord(String title);
 
     void updateSelectedCount(BookDomain book);
 }

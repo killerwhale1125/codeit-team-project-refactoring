@@ -6,13 +6,16 @@ import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.user_attendance.infrastructure.entity.UserAttendance;
 import com.gathering.user_attendance_book.domain.UserAttendanceBookDomain;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static com.gathering.util.entity.EntityUtils.nullableEntity;
 import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserAttendanceBook extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

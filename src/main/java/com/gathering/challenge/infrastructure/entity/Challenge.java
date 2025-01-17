@@ -1,11 +1,13 @@
 package com.gathering.challenge.infrastructure.entity;
 
 import com.gathering.challenge.domain.ChallengeDomain;
-import com.gathering.challengeuser.infrastructure.entity.ChallengeUser;
+import com.gathering.challenge_user.infrastructure.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
 import com.gathering.gathering.domain.ReadingTimeGoal;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import static jakarta.persistence.Persistence.getPersistenceUtil;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Challenge extends BaseTimeEntity {
 
     @Id
@@ -23,7 +26,7 @@ public class Challenge extends BaseTimeEntity {
     @Column(name = "challenge_id")
     private Long id;
 
-    @OneToMany(mappedBy = "challenge", orphanRemoval = true)
+    @OneToMany(mappedBy = "challenge")
     private List<ChallengeUser> challengeUsers = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

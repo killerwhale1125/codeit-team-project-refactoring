@@ -6,9 +6,11 @@ import com.gathering.gathering_review.controller.port.GatheringReviewService;
 import com.gathering.gathering_review.controller.response.GatheringReviewResponse;
 import com.gathering.gathering_review.domain.GatheringReviewCreate;
 import com.gathering.gathering_review.domain.GatheringReviewDomain;
+import com.gathering.gathering_review.domain.GatheringReviewUpdate;
 import com.gathering.gathering_review.service.port.GatheringReviewRepository;
 import com.gathering.user.domain.UserDomain;
 import com.gathering.user.service.port.UserRepository;
+import com.gathering.util.date.DateHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ public class GatheringReviewServiceImpl implements GatheringReviewService {
     private final UserRepository userRepository;
     private final GatheringRepository gatheringRepository;
     private final GatheringReviewRepository gatheringReviewRepository;
+    private final DateHolder dateHolder;
 
     @Override
     @Transactional
@@ -31,5 +34,19 @@ public class GatheringReviewServiceImpl implements GatheringReviewService {
 
         return GatheringReviewResponse.fromEntity(gatheringReview);
 
+    }
+
+    @Override
+    public void delete(long reviewId, String username) {
+        GatheringReviewDomain gatheringReview = gatheringReviewRepository.findByIdWithUser(reviewId);
+        gatheringReview = gatheringReview.delete(username);
+        gatheringReviewRepository.delete(gatheringReview);
+    }
+
+    @Override
+    public void update(GatheringReviewUpdate gatheringReviewUpdate, Long reviewId, String username) {
+        GatheringReviewDomain gatheringReview = gatheringReviewRepository.findByIdWithUser(reviewId);
+        gatheringReview = gatheringReview.update(gatheringReviewUpdate, username, dateHolder);
+        gatheringReviewRepository.update(gatheringReview);
     }
 }

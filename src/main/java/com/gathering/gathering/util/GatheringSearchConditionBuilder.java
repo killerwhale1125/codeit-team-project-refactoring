@@ -2,14 +2,14 @@ package com.gathering.gathering.util;
 
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 import static com.gathering.gathering.infrastructure.entity.QGathering.*;
-import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
+import static com.gathering.gathering_user.infrastructure.entity.QGatheringUser.gatheringUser;
 
 @Component
 public class GatheringSearchConditionBuilder {

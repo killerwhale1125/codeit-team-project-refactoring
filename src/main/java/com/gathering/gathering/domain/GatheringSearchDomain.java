@@ -2,7 +2,7 @@ package com.gathering.gathering.domain;
 
 import com.gathering.book.domain.BookDomain;
 import com.gathering.challenge.domain.ChallengeDomain;
-import com.gathering.gatheringuser.domain.GatheringUserDomain;
+import com.gathering.gathering_user.domain.GatheringUserDomain;
 import com.gathering.image.domain.ImageDomain;
 
 import java.time.LocalDate;

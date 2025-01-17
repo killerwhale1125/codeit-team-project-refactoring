@@ -7,4 +7,11 @@ public interface BookReviewRepository {
     BookReviewDomain save(BookReviewDomain bookReview);
 
     BookReviewDomain findById(long reviewId);
+
+    void delete(BookReviewDomain bookReview);
+
+    void decrementLike(Long reviewId);
+
+    void incrementLike(Long reviewId);
+
 }

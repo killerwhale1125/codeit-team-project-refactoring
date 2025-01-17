@@ -1,14 +1,13 @@
 package com.gathering.gathering.service.port;
 
 import com.gathering.gathering.domain.GatheringDomain;
-import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.service.dto.GatheringPageResponse;
 import com.gathering.gathering.service.dto.GatheringSliceResponse;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
-import com.gathering.review.model.dto.ReviewListDto;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
 
+import java.util.List;
 import java.util.Set;
 
 public interface GatheringSearchRepository {
@@ -20,8 +19,6 @@ public interface GatheringSearchRepository {
 
     GatheringPageResponse findMyWishes(Set<Long> wishGatheringIds, int page, int size);
 
-    ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, int page, int size);
-
     GatheringSliceResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size);
 
     GatheringDomain getByIdWithChallengeAndBook(Long gatheringId);
@@ -31,4 +28,6 @@ public interface GatheringSearchRepository {
     GatheringPageResponse findGatheringsBySearchWordAndTypeContent(String searchWord, int page, int size);
 
     GatheringPageResponse findGatheringsBySearchWordAndTypeBookName(String searchWord, int page, int size);
+
+    List<Long> findCompletedGatheringBookIdsByUserId(Long userId);
 }

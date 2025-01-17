@@ -5,7 +5,6 @@ import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering_review.controller.response.GatheringReviewResponse;
 import com.gathering.gathering_review.controller.response.GatheringReviewsResponse;
 import com.gathering.gathering_review.service.port.GatheringReviewSearchRepository;
-import com.gathering.review.model.dto.GatheringReviewDto;
 import com.gathering.user.domain.UserDomain;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -21,7 +20,7 @@ import java.util.List;
 import static com.gathering.challenge.infrastructure.entity.QChallenge.challenge;
 import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
 import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
-import static com.gathering.gatheringuser.infrastructure.entity.QGatheringUser.gatheringUser;
+import static com.gathering.gathering_user.infrastructure.entity.QGatheringUser.gatheringUser;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Repository

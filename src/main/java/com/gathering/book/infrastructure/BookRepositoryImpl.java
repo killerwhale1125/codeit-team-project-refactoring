@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.gathering.book.infrastructure.entity.QBook.book;
 import static com.gathering.common.base.response.BaseResponseStatus.*;
@@ -29,12 +30,6 @@ public class BookRepositoryImpl implements BookRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Book findBookByBookIdAndCategoryId(Long bookId, Long categoryId) {
-        return bookJpaRepository.findBookByBookIdAndCategoryId(bookId, categoryId)
-                .orElseThrow(() -> new BaseException(BOOK_OR_CATEGORY_NOT_FOUND));
-    }
-
-    @Override
     public boolean existsByTitle(String title) {
         return bookJpaRepository.existsByTitle(title);
     }
@@ -42,10 +37,6 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public BookDomain save(BookDomain book) {
         return bookJpaRepository.save(Book.fromEntity(book)).toEntity();
-    }
-
-    public Book save(Book book) {
-        return bookJpaRepository.save(book);
     }
 
     @Override
@@ -70,11 +61,13 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public List<Book> searchBooksBySearchWord(String searchWord) {
+    public List<BookDomain> searchBooksBySearchWord(String searchWord) {
         if (!StringUtil.isValidLength(searchWord, 3)) {
             throw new BaseException(INVALID_SEARCH_WORD);
         }
-        return bookJpaRepository.searchBooksBySearchWord(FullTextIndexParser.formatForFullTextQuery(searchWord));
+       return bookJpaRepository.searchBooksBySearchWord(FullTextIndexParser.formatForFullTextQuery(searchWord)).stream()
+               .map(Book::toEntity)
+               .collect(Collectors.toList());
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.gathering.gathering.controller.port;
 import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringCreate;
 import com.gathering.gathering.controller.response.MyPageGatheringsCountResponse;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.user.controller.response.UserResponseDto;
 import com.gathering.user_attendance_book.domain.UserAttendanceBookDomain;

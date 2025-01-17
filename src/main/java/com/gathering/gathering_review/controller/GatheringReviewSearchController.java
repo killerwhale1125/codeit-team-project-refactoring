@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/gathering-review")
+@RequestMapping("/api/gathering-review-search")
 public class GatheringReviewSearchController {
 
     private final GatheringReviewSearchService gatheringReviewSearchService;

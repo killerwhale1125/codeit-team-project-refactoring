@@ -1,7 +1,7 @@
 package com.gathering.book_review_comment.controller.response;
 
 import com.gathering.book_review_comment.domain.BookReviewCommentDomain;
-import com.gathering.review.domain.StatusType;
+import com.gathering.book_review.domain.StatusType;
 import lombok.Builder;
 import lombok.Getter;
 

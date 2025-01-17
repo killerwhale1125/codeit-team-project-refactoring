@@ -1,6 +1,7 @@
 package com.gathering.gathering_review.controller.response;
 
 import com.gathering.gathering.controller.response.GatheringResponse;
+import com.querydsl.core.Tuple;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,4 +27,5 @@ public class GatheringReviewsResponse {
                 .writedReviewCount(writedReviewCount)
                 .build();
     }
+
 }

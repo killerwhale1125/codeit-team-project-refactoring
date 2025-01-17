@@ -4,21 +4,17 @@ import com.gathering.common.base.response.BaseResponse;
 import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
-import com.gathering.gathering.domain.GatheringReviewSortType;
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.SearchType;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
-import com.gathering.review.model.dto.ReviewListDto;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
 import com.gathering.util.web.UserSessionKeyGenerator;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,30 +29,26 @@ public class GatheringSearchController {
 
     private final GatheringSearchService gatheringSearchService;
 
-    /**
-     * TODO - 필터가 아예 설정되지 않을 경우 Default값은?
-     *      - 쿼리 최적화 필요
-     */
+    /* 모임 필터링 검색 */
     @GetMapping("/filtering")
-    @Operation(summary = "모임 필터링 검색 ( 무한 스크롤 전용 )", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findGatheringsByFilters(@ModelAttribute GatheringSearch gatheringSearch,
                                                                 @RequestParam("page") int page,
                                                                 @RequestParam("size") int size,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        return new BaseResponse<>(gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, userDetails));
+        return new BaseResponse<>(gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, getUsernameOrElseGet(userDetails)));
     }
 
+    /* 참여 가능한 모임 조회 */
     @GetMapping("/joinable")
-    @Operation(summary = "참여 가능한 모임 조회", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findJoinableGatherings(@ModelAttribute GatheringSearch gatheringSearch,
                                                                         @RequestParam("page") int page,
                                                                         @RequestParam("size") int size,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        return new BaseResponse<>(gatheringSearchService.findJoinableGatherings(gatheringSearch, page, size, userDetails));
+        return new BaseResponse<>(gatheringSearchService.findJoinableGatherings(gatheringSearch, page, size, getUsernameOrElseGet(userDetails)));
     }
 
+    /* 내가 참여중인 모임 리스트 */
     @GetMapping("/participating")
-    @Operation(summary = "내가 참여중인 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> findMyGatherings(@AuthenticationPrincipal UserDetails userDetails,
                                                                   @RequestParam(required = false) GatheringUserStatus gatheringUserStatus,
                                                                   @RequestParam(required = false) GatheringStatus gatheringStatus,
@@ -65,74 +57,40 @@ public class GatheringSearchController {
         return new BaseResponse<>(gatheringSearchService.findMyGatherings(userDetails.getUsername(), page, size, gatheringStatus, gatheringUserStatus));
     }
 
-    /**
-     * TODO - Challenge 정보 추가 여부 보류
-     */
+    /* 모임 상세 조회 */
     @GetMapping("/{gatheringId}/detail")
-    @Operation(summary = "모임 상세 조회", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringResponse> getById(@PathVariable Long gatheringId,
                                                    HttpServletRequest request,
                                                    HttpServletResponse response,
                                                    @AuthenticationPrincipal UserDetails userDetails) {
         String userKey = UserSessionKeyGenerator.generateUserKey(request, response);
-        return new BaseResponse<>(gatheringSearchService.getById(gatheringId, userKey, userDetails));
+        return new BaseResponse<>(gatheringSearchService.getById(gatheringId, userKey, getUsernameOrElseGet(userDetails)));
     }
 
+    /* 내가 만든 모임 리스트 */
     @GetMapping("/my")
-    @Operation(summary = "내가 만든 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> my(@AuthenticationPrincipal UserDetails userDetails,
                                                     @RequestParam("page") int page,
                                                     @RequestParam("size") int size) {
         return new BaseResponse<>(gatheringSearchService.findMyCreated(userDetails.getUsername(), page, size));
     }
 
+    /* 내가 찜한 모임 리스트 */
     @GetMapping("/wishes")
-    @Operation(summary = "내가 찜한 모임 리스트", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> wishes(@AuthenticationPrincipal UserDetails userDetails,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         return new BaseResponse<>(gatheringSearchService.findMyWishes(userDetails.getUsername(), page, size));
     }
 
-    @Operation(summary = "모임 소개", description = "상세 조건 Notion 참고")
+    /* 모임 소개 */
     @GetMapping("/{gatheringId}/introduce")
     public BaseResponse<GatheringResponse> introduce(@PathVariable Long gatheringId) {
         return new BaseResponse<>(gatheringSearchService.introduce(gatheringId));
     }
 
-    @Operation(summary = "모임 리뷰", description = "상세 조건 Notion 참고")
-    @GetMapping("/{gatheringId}/review")
-    public BaseResponse<ReviewListDto> review(@PathVariable Long gatheringId,
-                                              @RequestParam @Valid GatheringReviewSortType sort,
-                                              @RequestParam("page") int page,
-                                              @RequestParam("size") int size) {
-        return new BaseResponse<>(gatheringSearchService.review(gatheringId, sort, page, size));
-    }
-
-    /**
-     * 처음 검색은 integrated 호출
-     */
-    @GetMapping("/search-integrated")
-    @Operation(summary = "검색 기능 (검색어로 처음 검색했을 때)", description = "상세 조건 Notion 참고")
-    public BaseResponse<GatheringSearchResponse> search(@RequestParam String searchWord,
-                                                        @RequestParam SearchType searchType,
-                                                        @AuthenticationPrincipal UserDetails userDetails,
-                                                        @RequestParam("page") int page,
-                                                        @RequestParam("size") int size) {
-
-        String username = null;
-        if(userDetails != null) {
-            username = userDetails.getUsername();
-        }
-
-        return new BaseResponse<>(gatheringSearchService.getIntegratedResultBySearchWordAndType(searchWord, searchType, page, size, username));
-    }
-
-    /**
-     * 검색된 이후 부터는 각각 호출
-     */
+    /* 검색어로 검색 후 모임탭에서 모임 리스트 결과 페이징 조회 */
     @GetMapping("/search-gatherings")
-    @Operation(summary = "검색어로 검색 후 모임탭에서 페이징 조회", description = "상세 조건 Notion 참고")
     public BaseResponse<GatheringSearchResponse> gatheringSearch(@RequestParam String searchWord,
                                                                  @RequestParam SearchType searchType,
                                                                  @RequestParam("page") int page,
@@ -140,21 +98,7 @@ public class GatheringSearchController {
         return new BaseResponse<>(gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, page, size));
     }
 
-    /**
-     * 검색된 이후 부터는 각각 호출
-     */
-    @GetMapping("/search-reviews")
-    @Operation(summary = "검색어로 검색 후 리뷰탭에서 페이징 조회", description = "상세 조건 Notion 참고")
-    public BaseResponse<GatheringSearchResponse> reviewSearch(@RequestParam String searchWord,
-                                                                 @RequestParam SearchType searchType,
-                                                                 @AuthenticationPrincipal UserDetails userDetails,
-                                                              @RequestParam("page") int page,
-                                                              @RequestParam("size") int size) {
-        String username = null;
-        if(userDetails != null) {
-            username = userDetails.getUsername();
-        }
-
-        return new BaseResponse<>(gatheringSearchService.getReviewsBySearchWordAndType(searchWord, searchType, page, size, username));
+    private static String getUsernameOrElseGet(UserDetails userDetails) {
+        return userDetails != null ? userDetails.getUsername() : null;
     }
 }

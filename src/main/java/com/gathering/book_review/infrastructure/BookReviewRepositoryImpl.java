@@ -25,4 +25,20 @@ public class BookReviewRepositoryImpl implements BookReviewRepository {
         return bookReviewJpaRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(NON_EXISTED_REVIEW)).toEntity();
     }
+
+    @Override
+    public void delete(BookReviewDomain bookReview) {
+        bookReviewJpaRepository.deleteReview(bookReview.getId(), bookReview.getStatus());
+    }
+
+    @Override
+    public void decrementLike(Long reviewId) {
+        bookReviewJpaRepository.decrementLikes(reviewId);
+    }
+
+    @Override
+    public void incrementLike(Long reviewId) {
+        bookReviewJpaRepository.incrementLikes(reviewId);
+    }
+
 }

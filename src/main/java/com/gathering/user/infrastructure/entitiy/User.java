@@ -1,11 +1,10 @@
 package com.gathering.user.infrastructure.entitiy;
 
 import com.gathering.book_review.infrastructure.entity.BookReview;
-import com.gathering.challengeuser.infrastructure.entity.ChallengeUser;
+import com.gathering.challenge_user.infrastructure.entity.ChallengeUser;
 import com.gathering.common.base.jpa.BaseTimeEntity;
-import com.gathering.gatheringuser.infrastructure.entity.GatheringUser;
+import com.gathering.gathering_user.infrastructure.entity.GatheringUser;
 import com.gathering.image.infrastructure.entity.Image;
-import com.gathering.review_like.infrastructure.entity.ReviewLikes;
 import com.gathering.user.domain.UserDomain;
 import com.gathering.user_attendance.infrastructure.entity.UserAttendance;
 import jakarta.persistence.*;
@@ -25,7 +24,6 @@ import static jakarta.persistence.Persistence.getPersistenceUtil;
 @Getter
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class User extends BaseTimeEntity {
 
     @Id
@@ -58,9 +56,6 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user")
     private List<UserAttendance> userAttendances;
-
-    @OneToMany(mappedBy = "user")
-    private List<ReviewLikes> reviewLikes;
 
     @OneToMany(mappedBy = "user")
     private List<GatheringUser> gatheringUsers = new ArrayList<>();

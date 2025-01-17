@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void insertAttendance(Long userId) {
-        LocalDate today = dateHolder.now();
+        LocalDate today = dateHolder.localDateNow();
         UserAttendanceDomain userAttendance = userAttendanceRepository.findByUserIdAndCreateDate(userId, today);
         if(userAttendance == null) {
             userAttendanceRepository.insert(userId);

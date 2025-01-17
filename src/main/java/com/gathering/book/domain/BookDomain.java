@@ -28,6 +28,19 @@ public class BookDomain {
     List<BookReviewDomain> reviews;
     List<UserAttendanceBookDomain> userAttendanceBooks;
 
+    public static BookDomain create(String title, String image, String author, String publisher, BookCategory bookCategory, String publishDateStr, double star, String introduce, int page) {
+        return BookDomain.builder()
+                .title(title)
+                .image(image)
+                .author(author)
+                .publisher(publisher)
+                .publishDate(publishDateStr)
+                .star(star)
+                .introduce(introduce)
+                .totalPage(page)
+                .build();
+    }
+
     // 모임에 책이 선택될 때마다 카운트를 증가 ( Best 독서 모임 조회용 )
     public void incrementSelectedCount() {
         this.selectedCount++;
