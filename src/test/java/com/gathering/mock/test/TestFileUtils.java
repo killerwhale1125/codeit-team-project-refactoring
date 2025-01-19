@@ -1,7 +1,7 @@
 package com.gathering.mock.test;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.util.image.FileType;
 import com.gathering.util.image.FileUtils;
 import com.gathering.util.string.UUIDUtils;

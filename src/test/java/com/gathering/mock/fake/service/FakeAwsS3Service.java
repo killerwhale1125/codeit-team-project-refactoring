@@ -1,7 +1,7 @@
 package com.gathering.mock.fake.service;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.model.entity.EntityType;
+import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.image.service.StorageService;
 import com.gathering.util.image.FileType;
 import org.springframework.util.StringUtils;

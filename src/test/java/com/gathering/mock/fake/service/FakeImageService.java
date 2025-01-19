@@ -1,9 +1,9 @@
 package com.gathering.mock.fake.service;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.image.model.domain.ImageDomain;
-import com.gathering.image.model.entity.EntityType;
-import com.gathering.image.repository.ImageRepository;
+import com.gathering.image.domain.ImageDomain;
+import com.gathering.image.infrastructure.entity.EntityType;
+import com.gathering.image.service.port.ImageRepository;
 import com.gathering.image.service.ImageService;
 import com.gathering.image.service.StorageService;
 import com.gathering.mock.test.TestFileUtils;

@@ -1,15 +1,15 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.gathering.domain.*;
-import com.gathering.gathering.infrastructure.entity.Gathering;
+import com.gathering.common.base.exception.BaseException;
+import com.gathering.common.base.response.BaseResponseStatus;
+import com.gathering.gathering.domain.GatheringDomain;
+import com.gathering.gathering.domain.GatheringSearch;
+import com.gathering.gathering.domain.GatheringSortType;
+import com.gathering.gathering.domain.GatheringStatus;
+import com.gathering.gathering.service.dto.GatheringPageResponse;
 import com.gathering.gathering.service.dto.GatheringSliceResponse;
 import com.gathering.gathering.service.port.GatheringSearchRepository;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
-import com.gathering.mock.test.TestSlice;
-import com.gathering.review.model.dto.ReviewListDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -66,34 +66,68 @@ public class FakeGatheringSearchRepository implements GatheringSearchRepository 
     }
 
     @Override
-    public Page<Gathering> findGatheringsForUserByUsername(String username, Pageable pageable, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
+    public GatheringPageResponse findGatheringsForUserByUsername(String username, int page, int size, GatheringStatus gatheringStatus, GatheringUserStatus gatheringUserStatus) {
+        List<GatheringDomain> filteredList = data.stream()
+                .filter(gathering -> gathering.getGatheringUsers().stream()
+                        .anyMatch(gatheringUser -> gatheringUser.getUser().getUserName().equals(username)
+                                && gatheringUser.getGatheringUserStatus().equals(gatheringUserStatus)))
+                .filter(gathering -> gathering.getGatheringStatus().equals(gatheringStatus))
+                .collect(Collectors.toList());
+
+        int start = page * size;
+        int end = Math.min((start + size), filteredList.size());
+
+        List<GatheringDomain> gatherings = (start < end) ? filteredList.subList(start, end) : Collections.emptyList();
+        long totalCount = filteredList.size();
+
+        return GatheringPageResponse.builder()
+                .gatherings(gatherings)
+                .totalCount(totalCount)
+                .build();
+    }
+
+    @Override
+    public GatheringPageResponse findMyCreated(String username, int page, int size) {
         return null;
     }
 
     @Override
-    public Page<Gathering> findMyCreated(String username, Pageable pageable) {
+    public GatheringPageResponse findMyWishes(Set<Long> wishGatheringIds, int page, int size) {
         return null;
     }
 
     @Override
-    public Page<Gathering> findMyWishes(Set<Long> wishGatheringIds, Pageable pageable) {
+    public GatheringSliceResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size) {
         return null;
     }
 
     @Override
-    public ReviewListDto getGatheringReviewList(Long gatheringId, GatheringReviewSortType sort, Pageable pageable) {
+    public GatheringDomain getByIdWithChallengeAndBook(Long gatheringId) {
+        return data.stream().filter(item -> Objects.equals(item.getId(), gatheringId))
+                .findFirst()
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NON_EXISTED_GATHERING));
+    }
+
+    @Override
+    public GatheringPageResponse findGatheringsBySearchWordAndTypeTitle(String searchWord, int page, int size) {
         return null;
     }
 
     @Override
-    public Slice<Gathering> findJoinableGatherings(GatheringSearch gatheringSearch, Pageable pageable) {
+    public GatheringPageResponse findGatheringsBySearchWordAndTypeContent(String searchWord, int page, int size) {
         return null;
     }
 
     @Override
-    public Optional<Gathering> getGatheringWithChallengeAndBook(Long gatheringId) {
-        return Optional.empty();
+    public GatheringPageResponse findGatheringsBySearchWordAndTypeBookName(String searchWord, int page, int size) {
+        return null;
     }
+
+    @Override
+    public List<Long> findCompletedGatheringBookIdsByUserId(Long id) {
+        return null;
+    }
+
 
     public GatheringDomain save(GatheringDomain gathering) {
         if(Objects.isNull(gathering.getId())) {

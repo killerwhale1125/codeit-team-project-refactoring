@@ -1,11 +1,10 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.user_attendance.model.domain.UserAttendanceDomain;
-import com.gathering.user_attendance.repository.UserAttendanceRepository;
+import com.gathering.user_attendance.domain.UserAttendanceDomain;
+import com.gathering.user_attendance.service.port.UserAttendanceRepository;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +20,16 @@ public class FakeUserAttendanceRepository implements UserAttendanceRepository {
                 && Objects.equals(item.getCreateDate(), Date.valueOf(today)))
                 .findAny()
                 .get();
+    }
+
+    @Override
+    public UserAttendanceDomain findByUserIdAndCreateDate(Long userId, LocalDate today) {
+        return null;
+    }
+
+    @Override
+    public void insert(Long userId) {
+
     }
 
     public UserAttendanceDomain save(UserAttendanceDomain userAttendance) {

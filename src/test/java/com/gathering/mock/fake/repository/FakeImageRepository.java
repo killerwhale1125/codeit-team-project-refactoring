@@ -1,8 +1,8 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.image.model.domain.ImageDomain;
-import com.gathering.image.model.entity.Image;
-import com.gathering.image.repository.ImageRepository;
+import com.gathering.image.domain.ImageDomain;
+import com.gathering.image.infrastructure.entity.Image;
+import com.gathering.image.service.port.ImageRepository;
 
 import java.util.ArrayList;
 import java.util.List;

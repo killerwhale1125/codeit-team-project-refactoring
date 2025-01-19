@@ -1,8 +1,8 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.user_attendance.model.domain.UserAttendanceDomain;
-import com.gathering.user_attendance_book.model.domain.UserAttendanceBookDomain;
-import com.gathering.user_attendance_book.repository.UserAttendanceBookRepository;
+import com.gathering.user_attendance.domain.UserAttendanceDomain;
+import com.gathering.user_attendance_book.domain.UserAttendanceBookDomain;
+import com.gathering.user_attendance_book.service.port.UserAttendanceBookRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

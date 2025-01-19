@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 import static com.gathering.gathering.domain.GatheringStatus.COMPLETED;
 import static com.gathering.gathering.domain.GatheringStatus.DELETED;
-import static com.gathering.gatheringuser.domain.GatheringUserStatus.NOT_PARTICIPATING;
-import static com.gathering.gatheringuser.domain.GatheringUserStatus.PARTICIPATING;
+import static com.gathering.gathering_user.domain.GatheringUserStatus.NOT_PARTICIPATING;
+import static com.gathering.gathering_user.domain.GatheringUserStatus.PARTICIPATING;
 
 public class FakeGatheringRepository implements GatheringRepository {
 

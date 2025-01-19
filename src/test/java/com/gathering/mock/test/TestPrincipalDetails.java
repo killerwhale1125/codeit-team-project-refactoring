@@ -1,6 +1,6 @@
 package com.gathering.mock.test;
 
-import com.gathering.user.model.domain.UserDomain;
+import com.gathering.user.domain.UserDomain;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

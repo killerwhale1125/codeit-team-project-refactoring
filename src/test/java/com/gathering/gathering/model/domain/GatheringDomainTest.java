@@ -1,27 +1,27 @@
 package com.gathering.gathering.model.domain;
 
-import com.gathering.book.model.domain.BookDomain;
-import com.gathering.challenge.model.domain.ChallengeDomain;
+import com.gathering.book.domain.BookDomain;
+import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.domain.GatheringCreate;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.gathering.domain.ReadingTimeGoal;
 import com.gathering.gathering.util.GatheringValidator;
-import com.gathering.gatheringuser.domain.GatheringUserDomain;
-import com.gathering.image.model.domain.ImageDomain;
+import com.gathering.gathering_user.domain.GatheringUserDomain;
+import com.gathering.image.domain.ImageDomain;
 import com.gathering.mock.test.TestGatheringValidator;
-import com.gathering.user.model.domain.UserDomain;
+import com.gathering.user.domain.UserDomain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.gathering.challenge.model.entity.ChallengeStatus.COMPLETED;
-import static com.gathering.challenge.model.entity.ChallengeStatus.INACTIVE;
+import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.COMPLETED;
+import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.INACTIVE;
 import static com.gathering.gathering.domain.GatheringStatus.RECRUITING;
-import static com.gathering.gatheringuser.domain.GatheringUserStatus.*;
+import static com.gathering.gathering_user.domain.GatheringUserStatus.*;
 import static com.gathering.gathering.domain.GatheringWeek.ONE_WEEK;
 import static com.gathering.gathering.domain.ReadingTimeGoal.ONE_HOUR;
 import static org.assertj.core.api.Assertions.assertThat;

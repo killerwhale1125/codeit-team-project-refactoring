@@ -1,13 +1,14 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.challenge.model.domain.ChallengeDomain;
-import com.gathering.challenge.model.entity.Challenge;
-import com.gathering.challenge.repository.ChallengeRepository;
+import com.gathering.challenge.domain.ChallengeDomain;
+import com.gathering.challenge.infrastructure.entity.Challenge;
+import com.gathering.challenge.service.port.ChallengeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class FakeChallengeRepository implements ChallengeRepository {
 
@@ -46,7 +47,9 @@ public class FakeChallengeRepository implements ChallengeRepository {
     }
 
     @Override
-    public List<Challenge> getByIdsIn(List<Long> challengeIds) {
-        return null;
+    public List<ChallengeDomain> getByIdsIn(List<Long> challengeIds) {
+        return data.stream()
+                .filter(challenge -> challengeIds.contains(challenge.getId()))
+                .collect(Collectors.toList());
     }
 }

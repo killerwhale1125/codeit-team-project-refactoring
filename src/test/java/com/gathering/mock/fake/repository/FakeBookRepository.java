@@ -1,12 +1,10 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.book.model.domain.BookDomain;
-import com.gathering.book.model.dto.BookSearchResponse;
-import com.gathering.book.model.entity.Book;
-import com.gathering.book.repository.BookRepository;
+import com.gathering.book.controller.response.BookSearchResponse;
+import com.gathering.book.domain.BookDomain;
+import com.gathering.book.service.port.BookRepository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
-import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +17,12 @@ public class FakeBookRepository implements BookRepository {
     private final List<BookDomain> data = new ArrayList<>();
 
     @Override
-    public Book findBookByBookIdAndCategoryId(Long bookId, Long categoryId) {
-        return null;
-    }
-
-    @Override
     public boolean existsByTitle(String title) {
         return false;
     }
 
     @Override
     public BookDomain save(BookDomain book) {
-        return null;
-    }
-
-    @Override
-    public Book save(Book book) {
         return null;
     }
 
@@ -46,12 +34,12 @@ public class FakeBookRepository implements BookRepository {
     }
 
     @Override
-    public List<BookSearchResponse> findPopularBooks(Pageable pageable) {
+    public List<BookSearchResponse> findPopularBooks(int page, int size) {
         return null;
     }
 
     @Override
-    public List<Book> searchBooksBySearchWord(String title) {
+    public List<BookDomain> searchBooksBySearchWord(String title) {
         return null;
     }
 

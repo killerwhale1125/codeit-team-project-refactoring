@@ -1,8 +1,8 @@
 package com.gathering.mock.fake.repository;
 
-import com.gathering.challenge.model.domain.ChallengeDomain;
-import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
-import com.gathering.challengeuser.repository.ChallengeUserRepository;
+import com.gathering.challenge.domain.ChallengeDomain;
+import com.gathering.challenge_user.domain.ChallengeUserDomain;
+import com.gathering.challenge_user.service.port.ChallengeUserRepository;
 import com.gathering.common.base.exception.BaseException;
 import com.gathering.common.base.response.BaseResponseStatus;
 

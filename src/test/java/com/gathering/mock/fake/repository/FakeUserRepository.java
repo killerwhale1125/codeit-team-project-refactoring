@@ -1,14 +1,12 @@
 package com.gathering.mock.fake.repository;
 
 import com.gathering.common.base.exception.BaseException;
-import com.gathering.user.model.domain.UserDomain;
-import com.gathering.user.model.dto.UserDto;
-import com.gathering.user.model.dto.request.EditUserRequestDto;
-import com.gathering.user.model.dto.request.SignUpRequestDto;
-import com.gathering.user_attendance.model.entity.UserAttendance;
-import com.gathering.user.repository.UserRepository;
+import com.gathering.user.domain.SingUpType;
+import com.gathering.user.domain.UserDomain;
+import com.gathering.user.domain.UserResponse;
+import com.gathering.user.domain.UserSignUp;
+import com.gathering.user.service.port.UserRepository;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,13 +21,8 @@ public class FakeUserRepository implements UserRepository {
     private final List<UserDomain> data = new ArrayList<>();
 
     @Override
-    public UserDto selectUser(String userName) {
+    public UserDomain selectUser(String userName) {
         return null;
-    }
-
-    @Override
-    public int insertAttendance(long usersId) {
-        return 0;
     }
 
     @Override
@@ -40,18 +33,8 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public void signUp(SignUpRequestDto signUpRequestDto) {
-
-    }
-
-    @Override
-    public boolean checkType(String param, boolean typeBol) {
+    public boolean checkType(String param, SingUpType type) {
         return false;
-    }
-
-    @Override
-    public UserDto editUser(EditUserRequestDto editUserRequestDto, String fileName, long userId) {
-        return null;
     }
 
     @Override
@@ -76,7 +59,7 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public UserDto selectUserByEmail(String email) {
+    public UserDomain selectUserByEmail(String email) {
         return null;
     }
 
@@ -87,6 +70,11 @@ public class FakeUserRepository implements UserRepository {
                 .findFirst()
                 .get()
                 .getWishGatheringIds();
+    }
+
+    @Override
+    public UserDomain findByUsernameWithImage(String username) {
+        return null;
     }
 
 }
