@@ -1,36 +1,34 @@
 package com.gathering.gathering.service;
 
-import com.gathering.book.model.domain.BookDomain;
-import com.gathering.challenge.model.domain.ChallengeDomain;
-import com.gathering.challengeuser.model.domain.ChallengeUserDomain;
+import com.gathering.book.domain.BookDomain;
+import com.gathering.challenge.domain.ChallengeDomain;
+import com.gathering.challenge_user.domain.ChallengeUserDomain;
 import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.gathering.controller.response.GatheringResponse;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
 import com.gathering.gathering.domain.*;
-import com.gathering.gatheringuser.domain.GatheringUserDomain;
-import com.gathering.gatheringuser.domain.GatheringUserStatus;
-import com.gathering.image.model.domain.ImageDomain;
+import com.gathering.gathering_user.domain.GatheringUserDomain;
+import com.gathering.gathering_user.domain.GatheringUserStatus;
+import com.gathering.image.domain.ImageDomain;
 import com.gathering.mock.fake.repository.*;
 import com.gathering.mock.fake.util.FakeGatheringAsync;
 import com.gathering.mock.test.TestGatheringValidator;
-import com.gathering.mock.test.TestPrincipalDetails;
-import com.gathering.user.model.domain.UserDomain;
+import com.gathering.user.domain.UserDomain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
-import static com.gathering.challenge.model.entity.ChallengeStatus.INACTIVE;
+import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.INACTIVE;
 import static com.gathering.gathering.domain.GatheringSortType.DEADLINE_ASC;
 import static com.gathering.gathering.domain.GatheringStatus.*;
 import static com.gathering.gathering.domain.GatheringWeek.*;
 import static com.gathering.gathering.domain.ReadingTimeGoal.*;
-import static com.gathering.gatheringuser.domain.GatheringUserStatus.NOT_PARTICIPATING;
-import static com.gathering.gatheringuser.domain.GatheringUserStatus.PARTICIPATING;
+import static com.gathering.gathering_user.domain.GatheringUserStatus.NOT_PARTICIPATING;
+import static com.gathering.gathering_user.domain.GatheringUserStatus.PARTICIPATING;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GatheringSearchServiceImplTest {
@@ -41,17 +39,14 @@ class GatheringSearchServiceImplTest {
         FakeGatheringSearchRepository fakeGatheringSearchRepository = new FakeGatheringSearchRepository();
         FakeGatheringAsync fakeGatheringAsync = new FakeGatheringAsync();
         FakeUserRepository fakeUserRepository = new FakeUserRepository();
-        FakeReviewRepository fakeReviewRepository = new FakeReviewRepository();
         FakeChallengeRepository fakeChallengeRepository = new FakeChallengeRepository();
         FakeBookRepository fakeBookRepository = new FakeBookRepository();
-        FakeGatheringRepository fakeGatheringRepository = new FakeGatheringRepository();
         FakeChallengeUserRepository fakeChallengeUserRepository = new FakeChallengeUserRepository();
         FakeGatheringUserRepository fakeGatheringUserRepository = new FakeGatheringUserRepository();
         this.gatheringSearchService = GatheringSearchServiceImpl.builder()
                 .gatheringSearchRepository(fakeGatheringSearchRepository)
                 .gatheringAsync(fakeGatheringAsync)
                 .userRepository(fakeUserRepository)
-                .reviewRepository(fakeReviewRepository)
                 .challengeRepository(fakeChallengeRepository)
                 .build();
         
@@ -155,10 +150,10 @@ class GatheringSearchServiceImplTest {
         GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", RECRUITING, List.of(ONE_HOUR), false);
         int page = 0;
         int size = 5;
-        UserDetails userDetails = new TestPrincipalDetails(getUser());
+        String username = "범고래1";
 
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, userDetails);
+        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         assertThat(result.isHasNext()).isFalse();
@@ -166,7 +161,7 @@ class GatheringSearchServiceImplTest {
         assertThat(result.isHasNext()).isFalse();
         assertThat(gatheringResponses).hasSize(1);
         assertThat(gatheringResponses.get(0).getId()).isEqualTo(1L);
-        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(userDetails.getUsername());
+        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(username);
         assertThat(gatheringResponses.get(0).getName()).isEqualTo("모임1");
         assertThat(gatheringResponses.get(0).getContent()).isEqualTo("모임장 소개1");
         assertThat(gatheringResponses.get(0).getGatheringWeek()).isEqualTo(ONE_WEEK.getWeek());
@@ -195,17 +190,17 @@ class GatheringSearchServiceImplTest {
         GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", ACTIVE, List.of(ONE_HOUR), false);
         int page = 0;
         int size = 5;
-        UserDetails userDetails = new TestPrincipalDetails(getUser());
+        String username = "범고래1";
 
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, userDetails);
+        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
         assertThat(result.isHasNext()).isFalse();
         assertThat(gatheringResponses).hasSize(1);
         assertThat(gatheringResponses.get(0).getId()).isEqualTo(2L);
-        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(userDetails.getUsername());
+        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(username);
         assertThat(gatheringResponses.get(0).getName()).isEqualTo("모임2");
         assertThat(gatheringResponses.get(0).getContent()).isEqualTo("모임장 소개2");
         assertThat(gatheringResponses.get(0).getGatheringWeek()).isEqualTo(TWO_WEEKS.getWeek());
@@ -234,17 +229,16 @@ class GatheringSearchServiceImplTest {
         GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", FULL, List.of(THIRTY_MINUTES), false);
         int page = 0;
         int size = 5;
-        UserDetails userDetails = new TestPrincipalDetails(getUser());
-
+        String username = "범고래1";
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, userDetails);
+        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
         assertThat(result.isHasNext()).isFalse();
         assertThat(gatheringResponses).hasSize(1);
         assertThat(gatheringResponses.get(0).getId()).isEqualTo(3L);
-        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(userDetails.getUsername());
+        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(username);
         assertThat(gatheringResponses.get(0).getName()).isEqualTo("모임3");
         assertThat(gatheringResponses.get(0).getContent()).isEqualTo("모임장 소개3");
         assertThat(gatheringResponses.get(0).getGatheringWeek()).isEqualTo(THREE_WEEKS.getWeek());
@@ -273,17 +267,17 @@ class GatheringSearchServiceImplTest {
         GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", COMPLETED, List.of(TEN_MINUTES), false);
         int page = 0;
         int size = 5;
-        UserDetails userDetails = new TestPrincipalDetails(getUser());
+        String username = "범고래1";
 
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, userDetails);
+        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
         assertThat(result.isHasNext()).isFalse();
         assertThat(gatheringResponses).hasSize(1);
         assertThat(gatheringResponses.get(0).getId()).isEqualTo(4L);
-        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(userDetails.getUsername());
+        assertThat(gatheringResponses.get(0).getOwner()).isEqualTo(username);
         assertThat(gatheringResponses.get(0).getName()).isEqualTo("모임4");
         assertThat(gatheringResponses.get(0).getContent()).isEqualTo("모임장 소개4");
         assertThat(gatheringResponses.get(0).getGatheringWeek()).isEqualTo(FOUR_WEEKS.getWeek());
@@ -301,6 +295,98 @@ class GatheringSearchServiceImplTest {
         assertThat(gatheringResponses.get(0).getStar()).isEqualTo(3.5);
         assertThat(gatheringResponses.get(0).getAuthor()).isEqualTo("책 저자");
         assertThat(gatheringResponses.get(0).isWish()).isFalse();
+    }
+    
+    @Test
+    @DisplayName("모임 상세 보기 조회")
+    void getById() {
+        /* given */
+        final Long gatheringId = 1L;
+        final String userKey = "key";
+        final String username = "범고래1";
+
+        final LocalDate startDate = LocalDate.now().plusDays(1);
+        final LocalDate endDate = startDate.plusDays(ONE_WEEK.getWeek());
+
+        /* when */
+        final GatheringResponse result = gatheringSearchService.getById(gatheringId, userKey, username);
+
+        /* then */
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getOwner()).isEqualTo(username);
+        assertThat(result.getName()).isEqualTo("모임1");
+        assertThat(result.getContent()).isEqualTo("모임장 소개1");
+        assertThat(result.getGatheringWeek()).isEqualTo(ONE_WEEK.getWeek());
+        assertThat(result.getReadingTimeGoal()).isEqualTo(ONE_HOUR.getMinutes());
+        assertThat(result.getStartDate()).isEqualTo(startDate);
+        assertThat(result.getEndDate()).isEqualTo(endDate);
+        assertThat(result.getMinCapacity()).isEqualTo(10);
+        assertThat(result.getMaxCapacity()).isEqualTo(20);
+        assertThat(result.getCurrentCapacity()).isEqualTo(1);
+        assertThat(result.getGatheringStatus()).isEqualTo(RECRUITING);
+        assertThat(result.getBookTitle()).isEqualTo("책 제목");
+        assertThat(result.getBookImage()).isEqualTo("http://localhost:8080/book-image");
+        assertThat(result.getPublisher()).isEqualTo("출판사");
+        assertThat(result.getPublishDate()).isEqualTo("2023-01-25");
+        assertThat(result.getStar()).isEqualTo(3.5);
+        assertThat(result.getAuthor()).isEqualTo("책 저자");
+        assertThat(result.isWish()).isFalse();
+    }
+
+    @Test
+    @DisplayName("모임 상태와 모임 유저 상태 값으로 모임이 진행중이며 내가 참여중인 모임 리스트를 조회한다.")
+    void findMyActiveGatherings() {
+        /* given */
+        final String username = "범고래1";
+        final int page = 0;
+        final int size = 5;
+        final GatheringStatus gatheringStatus = ACTIVE;
+        final GatheringUserStatus gatheringUserStatus = PARTICIPATING;
+        final LocalDate startDate = LocalDate.now().plusDays(1);
+        final LocalDate endDate = startDate.plusDays(TWO_WEEKS.getWeek());
+        /* when */
+        final GatheringSearchResponse result = gatheringSearchService.findMyGatherings(username, page, size, gatheringStatus, gatheringUserStatus);
+
+        /* then */
+        final List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
+
+        assertThat(gatheringResponses.get(0).getId()).isEqualTo(2L);
+        assertThat(gatheringResponses.get(0).getName()).isEqualTo("모임2");
+        assertThat(gatheringResponses.get(0).getReadingTimeGoal()).isEqualTo(ONE_HOUR.getMinutes());
+        assertThat(gatheringResponses.get(0).getReadingRate()).isGreaterThanOrEqualTo(0.0);
+        assertThat(gatheringResponses.get(0).getStartDate()).isEqualTo(startDate);
+        assertThat(gatheringResponses.get(0).getEndDate()).isEqualTo(endDate);
+        assertThat(gatheringResponses.get(0).getCurrentCapacity()).isEqualTo(1);
+        assertThat(gatheringResponses.get(0).getBookTitle()).isEqualTo("책 제목");
+        assertThat(gatheringResponses.get(0).getBookImage()).isEqualTo("http://localhost:8080/book-image");
+    }
+
+    @Test
+    @DisplayName("모임 상태와 모임 유저 상태 값으로 모임이 완료되었으며 내가 참여했던 모임 리스트를 조회한다.")
+    void findMyCompletedGatherings() {
+        /* given */
+        final String username = "범고래1";
+        final int page = 0;
+        final int size = 5;
+        final GatheringStatus gatheringStatus = COMPLETED;
+        final GatheringUserStatus gatheringUserStatus = NOT_PARTICIPATING;
+        final LocalDate startDate = LocalDate.now().plusDays(1);
+        final LocalDate endDate = startDate.plusDays(FOUR_WEEKS.getWeek());
+        /* when */
+        final GatheringSearchResponse result = gatheringSearchService.findMyGatherings(username, page, size, gatheringStatus, gatheringUserStatus);
+
+        /* then */
+        final List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
+
+        assertThat(gatheringResponses.get(0).getId()).isEqualTo(4L);
+        assertThat(gatheringResponses.get(0).getName()).isEqualTo("모임4");
+        assertThat(gatheringResponses.get(0).getReadingTimeGoal()).isEqualTo(TEN_MINUTES.getMinutes());
+        assertThat(gatheringResponses.get(0).getReadingRate()).isGreaterThanOrEqualTo(0.0);
+        assertThat(gatheringResponses.get(0).getStartDate()).isEqualTo(startDate);
+        assertThat(gatheringResponses.get(0).getEndDate()).isEqualTo(endDate);
+        assertThat(gatheringResponses.get(0).getCurrentCapacity()).isEqualTo(1);
+        assertThat(gatheringResponses.get(0).getBookTitle()).isEqualTo("책 제목");
+        assertThat(gatheringResponses.get(0).getBookImage()).isEqualTo("http://localhost:8080/book-image");
     }
 
 
