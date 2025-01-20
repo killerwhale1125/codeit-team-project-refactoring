@@ -11,6 +11,7 @@ import com.gathering.gathering.service.dto.GatheringSliceResponse;
 import com.gathering.gathering.service.port.GatheringSearchRepository;
 import com.gathering.gathering_user.domain.GatheringUserStatus;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -134,17 +135,86 @@ public class FakeGatheringSearchRepository implements GatheringSearchRepository 
 
     @Override
     public GatheringPageResponse findGatheringsBySearchWordAndTypeTitle(String searchWord, int page, int size) {
-        return null;
+        String searchWordOrigin = searchWord.replaceAll("[^a-zA-Z0-9가-힣\\s]", "");
+
+        /* 필요한 필드를 Object[]로 변환 */
+        List<Object[]> gatherings = data.stream()
+                .filter(item -> item.getName().contains(searchWordOrigin))
+                .map(item -> new Object[]{
+                        item.getId(),
+                        item.getName(),
+                        item.getCurrentCapacity(),
+                        item.getMaxCapacity(),
+                        item.getGatheringWeek().toString(),
+                        item.getGatheringStatus().toString(),
+                        Date.valueOf(item.getStartDate()),
+                        item.getChallenge().getReadingTimeGoal().toString(),
+                        item.getImage().getUrl(),
+                        item.getBook().getId(),
+                        item.getBook().getTitle(),
+                        item.getBook().getImage()})
+                .collect(Collectors.toList());
+
+        return GatheringPageResponse.builder()
+                .objects(gatherings)
+                .totalCount(gatherings.size())
+                .build();
     }
 
     @Override
     public GatheringPageResponse findGatheringsBySearchWordAndTypeContent(String searchWord, int page, int size) {
-        return null;
+        String searchWordOrigin = searchWord.replaceAll("[^a-zA-Z0-9가-힣\\s]", "");
+
+        /* 필요한 필드를 Object[]로 변환 */
+        List<Object[]> gatherings = data.stream()
+                .filter(item -> item.getContent().contains(searchWordOrigin))
+                .map(item -> new Object[]{
+                        item.getId(),
+                        item.getName(),
+                        item.getCurrentCapacity(),
+                        item.getMaxCapacity(),
+                        item.getGatheringWeek().toString(),
+                        item.getGatheringStatus().toString(),
+                        Date.valueOf(item.getStartDate()),
+                        item.getChallenge().getReadingTimeGoal().toString(),
+                        item.getImage().getUrl(),
+                        item.getBook().getId(),
+                        item.getBook().getTitle(),
+                        item.getBook().getImage()})
+                .collect(Collectors.toList());
+
+        return GatheringPageResponse.builder()
+                .objects(gatherings)
+                .totalCount(gatherings.size())
+                .build();
     }
 
     @Override
     public GatheringPageResponse findGatheringsBySearchWordAndTypeBookName(String searchWord, int page, int size) {
-        return null;
+        String searchWordOrigin = searchWord.replaceAll("[^a-zA-Z0-9가-힣\\s]", "");
+
+        /* 필요한 필드를 Object[]로 변환 */
+        List<Object[]> gatherings = data.stream()
+                .filter(item -> item.getBook().getTitle().contains(searchWordOrigin))
+                .map(item -> new Object[]{
+                        item.getId(),
+                        item.getName(),
+                        item.getCurrentCapacity(),
+                        item.getMaxCapacity(),
+                        item.getGatheringWeek().toString(),
+                        item.getGatheringStatus().toString(),
+                        Date.valueOf(item.getStartDate()),
+                        item.getChallenge().getReadingTimeGoal().toString(),
+                        item.getImage().getUrl(),
+                        item.getBook().getId(),
+                        item.getBook().getTitle(),
+                        item.getBook().getImage()})
+                .collect(Collectors.toList());
+
+        return GatheringPageResponse.builder()
+                .objects(gatherings)
+                .totalCount(gatherings.size())
+                .build();
     }
 
     @Override

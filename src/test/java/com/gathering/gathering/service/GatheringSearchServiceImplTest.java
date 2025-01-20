@@ -3,8 +3,10 @@ package com.gathering.gathering.service;
 import com.gathering.book.domain.BookDomain;
 import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.challenge_user.domain.ChallengeUserDomain;
+import com.gathering.common.base.exception.BaseException;
 import com.gathering.gathering.controller.port.GatheringSearchService;
 import com.gathering.gathering.controller.response.GatheringResponse;
+import com.gathering.gathering.controller.response.GatheringResultPageResponse;
 import com.gathering.gathering.controller.response.GatheringSearchResponse;
 import com.gathering.gathering.domain.*;
 import com.gathering.gathering_user.domain.GatheringUserDomain;
@@ -27,9 +29,11 @@ import static com.gathering.gathering.domain.GatheringSortType.DEADLINE_ASC;
 import static com.gathering.gathering.domain.GatheringStatus.*;
 import static com.gathering.gathering.domain.GatheringWeek.*;
 import static com.gathering.gathering.domain.ReadingTimeGoal.*;
+import static com.gathering.gathering.domain.SearchType.*;
 import static com.gathering.gathering_user.domain.GatheringUserStatus.NOT_PARTICIPATING;
 import static com.gathering.gathering_user.domain.GatheringUserStatus.PARTICIPATING;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GatheringSearchServiceImplTest {
     private GatheringSearchService gatheringSearchService;
@@ -182,7 +186,7 @@ class GatheringSearchServiceImplTest {
         assertThat(gatheringResponses.get(0).getPublishDate()).isEqualTo("2023-01-25");
         assertThat(gatheringResponses.get(0).getStar()).isEqualTo(3.5);
         assertThat(gatheringResponses.get(0).getAuthor()).isEqualTo("책 저자");
-        assertThat(gatheringResponses.get(0).isWish()).isFalse();
+        assertThat(gatheringResponses.get(0).isWish()).isTrue();
     }
 
     @Test
@@ -334,7 +338,7 @@ class GatheringSearchServiceImplTest {
         assertThat(result.getPublishDate()).isEqualTo("2023-01-25");
         assertThat(result.getStar()).isEqualTo(3.5);
         assertThat(result.getAuthor()).isEqualTo("책 저자");
-        assertThat(result.isWish()).isFalse();
+        assertThat(result.isWish()).isTrue();
     }
 
     @Test
@@ -449,10 +453,10 @@ class GatheringSearchServiceImplTest {
     @DisplayName("모임 소개 페이지의 정보를 조회한다.")
     void introduce() {
         /* given */
-        Long gatheringId = 1L;
+        final Long gatheringId = 1L;
 
         /* when */
-        GatheringResponse result = gatheringSearchService.introduce(gatheringId);
+        final GatheringResponse result = gatheringSearchService.introduce(gatheringId);
 
         /* then */
         assertThat(result.getId()).isEqualTo(1L);
@@ -464,6 +468,76 @@ class GatheringSearchServiceImplTest {
         assertThat(result.getPublisher()).isEqualTo("출판사");
         assertThat(result.getPublishDate()).isEqualTo("2023-01-25");
         assertThat(result.getBookImage()).isEqualTo("http://localhost:8080/book-image");
+    }
+
+    @Test
+    @DisplayName("검색어 타입(제목)과 검색어로 모임 목록을 조회할 수 있다.")
+    void getGatheringsBySearchWordAndNameType() {
+        /* given */
+        final String searchWord = "모임1";
+        final SearchType searchType = TITLE;
+        final int page = 0;
+        final int size = 5;
+
+        /* when */
+        GatheringSearchResponse result = gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, page, size);
+
+        /* then */
+        List<GatheringResultPageResponse> searchGatherings = result.getGatheringResultPageResponses();
+
+        assertThat(searchGatherings).hasSize(1);
+        assertThat(searchGatherings.get(0).getName()).isEqualTo("모임1");
+    }
+
+    @Test
+    @DisplayName("검색어 타입(내용)과 검색어로 모임 목록을 조회할 수 있다.")
+    void getGatheringsBySearchWordAndContentType() {
+        /* given */
+        final String searchWord = "모임장 소개1";
+        final SearchType searchType = CONTENT;
+        final int page = 0;
+        final int size = 5;
+
+        /* when */
+        GatheringSearchResponse result = gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, page, size);
+
+        /* then */
+        List<GatheringResultPageResponse> searchGatherings = result.getGatheringResultPageResponses();
+
+        assertThat(searchGatherings).hasSize(1);
+        assertThat(searchGatherings.get(0).getName()).isEqualTo("모임1");
+    }
+
+    @Test
+    @DisplayName("검색어 타입(책 제목)과 검색어로 모임 목록을 조회할 수 있다.")
+    void getGatheringsBySearchWordAndBookNameType() {
+        /* given */
+        final String searchWord = "책 제목";
+        final SearchType searchType = BOOK_NAME;
+        final int page = 0;
+        final int size = 5;
+
+        /* when */
+        GatheringSearchResponse result = gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, page, size);
+
+        /* then */
+        List<GatheringResultPageResponse> searchGatherings = result.getGatheringResultPageResponses();
+
+        assertThat(searchGatherings).hasSize(4);
+    }
+
+    @Test
+    @DisplayName("검색어 타입(책 제목)과 검색어로 모임 목록을 조회 시 검색어는 2글자 이상이여야 한다.")
+    void getGatheringsBySearchWordFail() {
+        /* given */
+        final String searchWord = "검";
+        final SearchType searchType = TITLE;
+        final int page = 0;
+        final int size = 5;
+
+        /* when then */
+        assertThatThrownBy(() -> gatheringSearchService.getGatheringsBySearchWordAndType(searchWord, searchType, page, size))
+                .isInstanceOf(BaseException.class);
     }
 
     private List<GatheringCreate> createTestGatherings() {
