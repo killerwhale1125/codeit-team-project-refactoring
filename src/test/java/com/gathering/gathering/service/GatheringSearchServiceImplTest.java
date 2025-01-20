@@ -445,6 +445,27 @@ class GatheringSearchServiceImplTest {
         assertThat(gatheringResponses).hasSize(0);
     }
 
+    @Test
+    @DisplayName("모임 소개 페이지의 정보를 조회한다.")
+    void introduce() {
+        /* given */
+        Long gatheringId = 1L;
+
+        /* when */
+        GatheringResponse result = gatheringSearchService.introduce(gatheringId);
+
+        /* then */
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getOwner()).isEqualTo("범고래1");
+        assertThat(result.getName()).isEqualTo("모임1");
+        assertThat(result.getContent()).isEqualTo("모임장 소개1");
+        assertThat(result.getReadingTimeGoal()).isEqualTo(ONE_HOUR.getMinutes());
+        assertThat(result.getBookTitle()).isEqualTo("책 제목");
+        assertThat(result.getPublisher()).isEqualTo("출판사");
+        assertThat(result.getPublishDate()).isEqualTo("2023-01-25");
+        assertThat(result.getBookImage()).isEqualTo("http://localhost:8080/book-image");
+    }
+
     private List<GatheringCreate> createTestGatherings() {
         final LocalDate startDate1 = LocalDate.now().plusDays(1);
         final LocalDate endDate1 = startDate1.plusDays(ONE_WEEK.getWeek());
