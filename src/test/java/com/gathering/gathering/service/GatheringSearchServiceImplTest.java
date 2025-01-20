@@ -145,15 +145,15 @@ class GatheringSearchServiceImplTest {
     @DisplayName("모집중(RECRUITING), 목표 기간 1주(ONE_WEEK), 목표 독서시간 1시간(ONE_HOUR), 시작일 <= 종료일 안에 포함된 모임 목록을 조회한다.")
     void findRecruitingGatheringsByFilters() {
         /* given */
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusDays(ONE_WEEK.getWeek() + 2);
-        GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", RECRUITING, List.of(ONE_HOUR), false);
-        int page = 0;
-        int size = 5;
-        String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(ONE_WEEK.getWeek() + 2);
+        final GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", RECRUITING, List.of(ONE_HOUR), false);
+        final int page = 0;
+        final int size = 5;
+        final String username = "범고래1";
 
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
+        final GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         assertThat(result.isHasNext()).isFalse();
@@ -185,15 +185,15 @@ class GatheringSearchServiceImplTest {
     @DisplayName("활동중(ACTIVE), 목표 기간 2주(TWO_WEEKS), 목표 독서시간 1시간(ONE_HOUR), 시작일 <= 종료일 안에 포함된 모임 목록을 조회한다.")
     void findActiveGatheringsByFilters() {
         /* given */
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusDays(TWO_WEEKS.getWeek() + 2);
-        GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", ACTIVE, List.of(ONE_HOUR), false);
-        int page = 0;
-        int size = 5;
-        String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(TWO_WEEKS.getWeek() + 2);
+        final GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", ACTIVE, List.of(ONE_HOUR), false);
+        final int page = 0;
+        final int size = 5;
+        final String username = "범고래1";
 
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
+        final GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
@@ -224,14 +224,14 @@ class GatheringSearchServiceImplTest {
     @DisplayName("활동중(FULL), 목표 기간 3주(THREE_WEEKS), 목표 독서시간 30분(THIRTY_MINUTES), 시작일 <= 종료일 안에 포함된 모임 목록을 조회한다.")
     void findFullGatheringsByFilters() {
         /* given */
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusDays(THREE_WEEKS.getWeek() + 2);
-        GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", FULL, List.of(THIRTY_MINUTES), false);
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(THREE_WEEKS.getWeek() + 2);
+        final GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", FULL, List.of(THIRTY_MINUTES), false);
         int page = 0;
         int size = 5;
-        String username = "범고래1";
+        final String username = "범고래1";
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
+        final GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
@@ -262,15 +262,15 @@ class GatheringSearchServiceImplTest {
     @DisplayName("완료됨(COMPLETED), 목표 기간 4주(FOUR_WEEKS), 목표 독서시간 10분(TEN_MINUTES), 시작일 <= 종료일 안에 포함된 모임 목록을 조회한다.")
     void findCompletedGatheringsByFilters() {
         /* given */
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusDays(FOUR_WEEKS.getWeek() + 2);
-        GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", COMPLETED, List.of(TEN_MINUTES), false);
-        int page = 0;
-        int size = 5;
-        String username = "범고래1";
+        final LocalDate startDate = LocalDate.now();
+        final LocalDate endDate = startDate.plusDays(FOUR_WEEKS.getWeek() + 2);
+        final GatheringSearch gatheringSearch = getGatheringSearch(startDate, endDate, DEADLINE_ASC, "책 제목", COMPLETED, List.of(TEN_MINUTES), false);
+        final int page = 0;
+        final int size = 5;
+        final String username = "범고래1";
 
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
+        final GatheringSearchResponse result = gatheringSearchService.findGatheringsByFilters(gatheringSearch, page, size, username);
 
         /* then */
         List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
@@ -398,13 +398,28 @@ class GatheringSearchServiceImplTest {
         final int size = 5;
 
         /* when */
-        GatheringSearchResponse result = gatheringSearchService.findMyCreated(username, page, size);
+        final GatheringSearchResponse result = gatheringSearchService.findMyCreated(username, page, size);
 
         /* then */
         final List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
 
         assertThat(gatheringResponses).hasSize(4);
     }
+
+    @Test
+    @DisplayName("내가 찜한 모임 리스트를 조회한다.")
+    void findMyWishes() {
+        /* given */
+        final String username = "범고래1";
+        final int page = 0;
+        final int size = 5;
+
+        /* when */
+        final GatheringSearchResponse result = gatheringSearchService.findMyWishes(username, page, size);
+
+        /* then */
+    }
+
 
     private List<GatheringCreate> createTestGatherings() {
         final LocalDate startDate1 = LocalDate.now().plusDays(1);
