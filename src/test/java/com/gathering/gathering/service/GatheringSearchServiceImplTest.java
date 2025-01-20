@@ -139,6 +139,10 @@ class GatheringSearchServiceImplTest {
 
             fakeGatheringUserRepository.save(gatheringUser);
         });
+
+        /* 회원 1에게 찜 목록 1개를 테스트 용도로 추가한다. */
+        UserDomain.wishGathering(user1, 1L);
+        fakeUserRepository.save(user1);
     }
 
     @Test
@@ -418,8 +422,28 @@ class GatheringSearchServiceImplTest {
         final GatheringSearchResponse result = gatheringSearchService.findMyWishes(username, page, size);
 
         /* then */
+        final List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
+
+        assertThat(gatheringResponses).hasSize(1);
+        assertThat(gatheringResponses.get(0).getId()).isEqualTo(1L);
     }
 
+    @Test
+    @DisplayName("내가 찜한 모임이 없다면 빈값이 반환된다.")
+    void findMyWishesEmpty() {
+        /* given */
+        final String username = "범고래2";
+        final int page = 0;
+        final int size = 5;
+
+        /* when */
+        final GatheringSearchResponse result = gatheringSearchService.findMyWishes(username, page, size);
+
+        /* then */
+        final List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
+
+        assertThat(gatheringResponses).hasSize(0);
+    }
 
     private List<GatheringCreate> createTestGatherings() {
         final LocalDate startDate1 = LocalDate.now().plusDays(1);

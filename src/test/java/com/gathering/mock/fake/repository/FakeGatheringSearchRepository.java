@@ -105,7 +105,19 @@ public class FakeGatheringSearchRepository implements GatheringSearchRepository 
 
     @Override
     public GatheringPageResponse findMyWishes(Set<Long> wishGatheringIds, int page, int size) {
-        return null;
+        List<GatheringDomain> wishes = data.stream()
+                .filter(item -> wishGatheringIds.contains(item.getId()))
+                .collect(Collectors.toList());
+
+        int start = page * size;
+        int end = Math.min((start + size), wishes.size());
+        List<GatheringDomain> gatherings = (start < end) ? wishes.subList(start, end) : Collections.emptyList();
+        long totalCount = wishes.size();
+
+        return GatheringPageResponse.builder()
+                .gatherings(gatherings)
+                .totalCount(totalCount)
+                .build();
     }
 
     @Override
