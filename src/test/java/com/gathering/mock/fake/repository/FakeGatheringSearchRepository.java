@@ -88,7 +88,19 @@ public class FakeGatheringSearchRepository implements GatheringSearchRepository 
 
     @Override
     public GatheringPageResponse findMyCreated(String username, int page, int size) {
-        return null;
+        List<GatheringDomain> filteredList = data.stream()
+                .filter(item -> Objects.equals(item.getOwner(), username))
+                .collect(Collectors.toList());
+
+        int start = page * size;
+        int end = Math.min((start + size), filteredList.size());
+        List<GatheringDomain> gatherings = (start < end) ? filteredList.subList(start, end) : Collections.emptyList();
+        long totalCount = filteredList.size();
+
+        return GatheringPageResponse.builder()
+                .gatherings(gatherings)
+                .totalCount(totalCount)
+                .build();
     }
 
     @Override

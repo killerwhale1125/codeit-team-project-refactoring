@@ -388,7 +388,23 @@ class GatheringSearchServiceImplTest {
         assertThat(gatheringResponses.get(0).getBookTitle()).isEqualTo("책 제목");
         assertThat(gatheringResponses.get(0).getBookImage()).isEqualTo("http://localhost:8080/book-image");
     }
+    
+    @Test
+    @DisplayName("내가 만든 모임 리스트를 조회한다.")
+    void findMyCreated() {
+        /* given */
+        final String username = "범고래1";
+        final int page = 0;
+        final int size = 5;
 
+        /* when */
+        GatheringSearchResponse result = gatheringSearchService.findMyCreated(username, page, size);
+
+        /* then */
+        final List<GatheringResponse> gatheringResponses = result.getGatheringResponses();
+
+        assertThat(gatheringResponses).hasSize(4);
+    }
 
     private List<GatheringCreate> createTestGatherings() {
         final LocalDate startDate1 = LocalDate.now().plusDays(1);
