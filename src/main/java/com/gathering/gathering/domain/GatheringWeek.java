@@ -22,13 +22,4 @@ public enum GatheringWeek {
         return week;
     }
 
-//    // 주기 계산 (옵션)
-//    public static Weeks fromWeeks(int weekCount) {
-//        for (Weeks weeks : Weeks.values()) {
-//            if (weeks.getWeekCount() == weekCount) {
-//                return weeks;
-//            }
-//        }
-//        throw new IllegalArgumentException("Invalid week count: " + weekCount);
-//    }
 }
