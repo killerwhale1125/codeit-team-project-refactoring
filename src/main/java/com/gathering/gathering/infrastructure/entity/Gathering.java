@@ -51,9 +51,6 @@ public class Gathering extends BaseTimeEntity {
     @OneToMany(mappedBy = "gathering")
     private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "gathering")
-//    private List<GatheringBookReview> gatheringBookReviews = new ArrayList<>();
-
     @OneToMany(mappedBy = "gathering")
     private List<GatheringReview> gatheringReviews = new ArrayList<>();
 

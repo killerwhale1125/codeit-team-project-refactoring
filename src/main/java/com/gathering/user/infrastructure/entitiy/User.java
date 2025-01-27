@@ -30,7 +30,7 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     @Comment("사용자 pk")
-    private long id;
+    private Long id;
 
     @Column(unique = true)
     @Comment("사용자 아이디")

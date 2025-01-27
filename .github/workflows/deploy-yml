@@ -47,25 +47,15 @@ jobs:
       - name: Push Docker image to ECR
         run: docker push ${{ steps.login-ecr.outputs.registry }}/dev-codeit-server:latest
 
-      # Nginx Docker 이미지 빌드
-      - name: Create Nginx Docker image
-        run: docker build -t dev-codeit-nginx ./nginx
-
-      - name: Add Nginx Docker image Tag
-        run: docker tag dev-codeit-nginx ${{ steps.login-ecr.outputs.registry }}/dev-codeit-nginx:latest
-
-      - name: Push Nginx Docker image to ECR
-        run: docker push ${{ steps.login-ecr.outputs.registry }}/dev-codeit-nginx:latest
-
       - name: Compression
         run: tar -czvf $GITHUB_SHA.tar.gz appspec.yml scripts
 
       - name: Upload Project to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.tar.gz s3://dev-codeit-4/$GITHUB_SHA.tar.gz
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.tar.gz s3://codeit-local-bucket/$GITHUB_SHA.tar.gz
 
       - name: Deploy project code to EC2 using CodeDeploy
         run: aws deploy create-deployment
-          --application-name dev-codeit-server
+          --application-name codeit-refactor-server
           --deployment-config-name CodeDeployDefault.AllAtOnce
           --deployment-group-name dev-codeit-group
           --s3-location bucket=dev-codeit-4,bundleType=tgz,key=$GITHUB_SHA.tar.gz

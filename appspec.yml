@@ -1,23 +1,23 @@
 version: 0.0
-os: linux
+os: ubuntu-latest
 
 files:
   # CodeDeploy가 S3로부터 가져온 파일 중 destination으로 이동시킬 대상을 지정한다.
   # / 이라고 지정하면 S3로부터 가져온 전체 파일을 뜻한다.
   - source: /
     # CodeDeploy가 S3로부터 가져온 파일을 EC2의 어떤 경로에 저장할 지 지정한다.
-    destination: /home/ec2-user/backend
+    destination: /home/ubuntu/backend
 
 permissions:
   - object: /
-    owner: ec2-user
-    group: ec2-user
+    owner: ubuntu
+    group: ubuntu
 
 hooks:
   ApplicationStart:
     - location: scripts/start-server.sh
       timeout: 60
-      runas: ec2-user
-    - location: scripts/start-nginx-server.sh
-      timeout: 60
-      runas: ec2-user
+      runas: ubuntu
+#    - location: scripts/start-nginx-server.sh
+#      timeout: 60
+#      runas: ec2-user

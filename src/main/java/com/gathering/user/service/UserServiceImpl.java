@@ -57,7 +57,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signUp(UserSignUp userSignUp) {
-        ImageDomain image = imageRepository.save(createDefaultImage()); // 기본 이미지 생성
+//        ImageDomain image = imageRepository.save(createDefaultImage()); // 기본 이미지 생성
+        ImageDomain image = imageRepository.save(ImageDomain.create("filePath_" + userSignUp.getEmail(), "fileName_" + userSignUp.getEmail()));
         userRepository.save(UserDomain.signUp(userSignUp, image, passwordEncoder));
     }
 
