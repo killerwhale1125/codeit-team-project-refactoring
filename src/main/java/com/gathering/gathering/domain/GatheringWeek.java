@@ -1,7 +1,5 @@
 package com.gathering.gathering.domain;
 
-import org.joda.time.Weeks;
-
 public enum GatheringWeek {
     ONE_WEEK(7),
     TWO_WEEKS(14),
