@@ -1,7 +1,7 @@
 package com.gathering;
 
-import com.gathering.book.model.domain.BookDomain;
-import com.gathering.book.repository.BookRepository;
+import com.gathering.book.domain.BookDomain;
+import com.gathering.book.service.port.BookRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
