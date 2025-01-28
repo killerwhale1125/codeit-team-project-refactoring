@@ -48,9 +48,9 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         BooleanBuilder builder = gatheringSearchConditionBuilder.buildConditionAll(gatheringSearch);
         // Query 생성
         JPAQuery<Gathering> query = queryFactory.selectFrom(gathering)
-                .leftJoin(gathering.challenge, challenge).fetchJoin()
-                .leftJoin(gathering.book, book).fetchJoin()
-                .leftJoin(gathering.image, image).fetchJoin()
+                .join(gathering.challenge, challenge).fetchJoin()
+                .join(gathering.book, book).fetchJoin()
+                .join(gathering.image, image).fetchJoin()
                 .where(builder);
 
         // 정렬 처리
@@ -77,7 +77,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         if (hasNext) {
             contents.remove(contents.size() - 1);
         }
-        
+
         // 꼭 필요할 때만 count 쿼리 실행
         SliceImpl<GatheringDomain> slice = new SliceImpl<>(contents, pageable, hasNext);
 
