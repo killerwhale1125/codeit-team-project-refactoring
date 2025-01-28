@@ -21,5 +21,4 @@ public enum GatheringWeek {
     public int getWeek() {
         return week;
     }
-
 }
