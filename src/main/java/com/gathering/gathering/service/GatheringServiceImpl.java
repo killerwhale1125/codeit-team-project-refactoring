@@ -19,6 +19,7 @@ import com.gathering.gathering_user.domain.GatheringUserStatus;
 import com.gathering.gathering_user.service.port.GatheringUserRepository;
 import com.gathering.gathering_user.util.GatheringUserDtoMapper;
 import com.gathering.image.domain.ImageDomain;
+import com.gathering.image.infrastructure.entity.EntityType;
 import com.gathering.image.service.ImageService;
 import com.gathering.image.service.port.ImageRepository;
 import com.gathering.user.controller.response.UserResponseDto;
@@ -67,9 +68,9 @@ public class GatheringServiceImpl implements GatheringService {
         BookDomain book = bookRepository.findById(gatheringCreate.getBookId());
         book.incrementSelectedCount();
         bookRepository.updateSelectedCount(book);
-//        List<ImageDomain> images = imageService.uploadImage(files, EntityType.GATHERING, uuidUtils);
-        ImageDomain image = imageRepository.save(ImageDomain.create("filePath_" + challenge.getId(), "fileName_" + challenge.getId()));
-        return createGatheringAndSave(gatheringCreate, user, challenge, book, List.of(image), gatheringValidator);
+        List<ImageDomain> images = imageService.uploadImage(files, EntityType.GATHERING, uuidUtils);
+//        ImageDomain image = imageRepository.save(ImageDomain.create("filePath_" + challenge.getId(), "fileName_" + challenge.getId()));
+        return createGatheringAndSave(gatheringCreate, user, challenge, book, images, gatheringValidator);
     }
 
     @Override
