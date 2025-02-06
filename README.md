@@ -21,11 +21,7 @@
 
 ### ✅ 개발 환경
 
-### Architecture
-
-### API
-
-[API 명세서 바로가기](https://docs.google.com/spreadsheets/d/1lcUy45KENA28HkA6w2CRJwkndWbBS591vnjQbwSXX9s/edit?usp=sharing)
+### ✅ 서버 구성도
 
 ### ✅ 기술 스택
 
