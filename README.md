@@ -55,7 +55,7 @@
 
 **2. RDS 병목 및 성능 최적화**
 
-![image](https://github.com/user-attachments/assets/7f1faba2-4a3f-45de-8b41-d6d4d54c938f){: width="500" height="50" .normal}
+![image](https://github.com/user-attachments/assets/7f1faba2-4a3f-45de-8b41-d6d4d54c938f) {: width="500" height="50" .normal}
 
 <br/>
 
