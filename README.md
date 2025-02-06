@@ -21,6 +21,8 @@
 
 ### ✅ 서버 구성도
 
+![image](https://github.com/user-attachments/assets/3bab8b70-61e8-4857-b510-3a89c49f2981)
+
 ### ✅ 기술 스택
 
 - Java, SpringBoot, MySQL, Redis, JPA, Querydsl, Nginx, GitHub Actions, AWS (EC2, RDS, ECR, CodeDeploy, S3), Docker
