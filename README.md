@@ -56,8 +56,6 @@
 
 ![image](https://github.com/user-attachments/assets/a63b2bef-9501-4661-a7b2-05d7ca7454a4)
 
-<br/>
-
 **문제점**<br/>
 - 70만 개 데이터 검색 시 성능 저하 발생
 - K6 부하 테스트 (VUser 50, 10분) 결과
@@ -76,7 +74,7 @@
 
 **성능 개선 결과**<br/>
 
-![image](https://github.com/user-attachments/assets/6b81abcb-8f6e-4b87-a47b-62571a66af4e){: width="500" height="50"}
+![image](https://github.com/user-attachments/assets/6b81abcb-8f6e-4b87-a47b-62571a66af4e)
 
 - TPS: 1.2/s → 47.8/s (39.83배 증가)
 - Latency: 46.3s → 50ms (926배 단축)
