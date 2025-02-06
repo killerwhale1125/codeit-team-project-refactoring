@@ -39,13 +39,15 @@ Java, SpringBoot, MySQL, Redis, JPA, Querydsl, Nginx, GitHub Actions, AWS (EC2, 
 
 ### ✅ 주요 기여
 
-**아키텍처 개선 (헥사고날 아키텍처 적용)**
+**1. 아키텍처 개선 (헥사고날 아키텍처 적용)**
 
-문제점<br/>
+**문제점**<br/>
 - Layered 아키텍처 한계 → 비즈니스 로직이 서비스 계층에 집중되어 DB 의존성 증가, 테스트 속도 저하
 - 테스트 신뢰성 문제 → Mock Framework 사용으로 코드 복잡성 증가, 낮은 커버리지 및 회귀 버그 발생
 
-개선 사항<br/>
+<br/>
+
+**개선 사항**<br/>
 
 ![image](https://github.com/user-attachments/assets/354eb62c-b228-49c1-8199-7dd173207f06)
 
@@ -55,9 +57,9 @@ Java, SpringBoot, MySQL, Redis, JPA, Querydsl, Nginx, GitHub Actions, AWS (EC2, 
 - 서비스 구현체가 추상화된 Input/Output 의존 → 유지보수 및 확장성 향상<br/>
 - 테스트에서 DB 의존 제거 → OOP 기반 테스트 적용으로 속도 최적화<br/>
 
+<br/>
 
-
-**RDS 병목 및 성능 최적화**
+**2. RDS 병목 및 성능 최적화**
 
 문제점<br/>
 - 70만 개 데이터 검색 시 성능 저하 발생
