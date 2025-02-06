@@ -29,19 +29,24 @@
 
 ### ✅ 기술 스택
 
-- Java 17
-- Spring Boot, Spring Security, Spring Data JPA, Querydsl, Redis
-- MySQL, GitHub Actions
-- [AWS] EC2, RDS, S3, CodeDeploy, ECR
+📌 사용 기술
 
-### ✅ 맡은 역할
+Java, SpringBoot, MySQL, Redis, JPA, Querydsl, Nginx, GitHub Actions, AWS (EC2, RDS, ECR, CodeDeploy, S3), Docker
 
-### 모임 관련
+### ✅ 주요 기여
 
-| 기능          | 내용                                                                     |
-|-------------|------------------------------------------------------------------------|
-| 모임 생성       | 모임을 생성한다. |
+**아키텍처 개선 (헥사고날 아키텍처 적용)**
 
+문제점
+✔ Layered 아키텍처 한계 → 비즈니스 로직이 서비스 계층에 집중되어 DB 의존성 증가, 테스트 속도 저하
+✔ 테스트 신뢰성 문제 → Mock Framework 사용으로 코드 복잡성 증가, 낮은 커버리지 및 회귀 버그 발생
 
+개선 사항
+✔ 비즈니스 로직과 JPA 엔티티 분리 → 도메인 중심 설계(DDD) 적용 가능
+✔ 서비스 구현체가 추상화된 Input/Output 의존 → 유지보수 및 확장성 향상
+✔ 테스트에서 DB 의존 제거 → OOP 기반 테스트 적용으로 속도 최적화
+
+성능 개선 결과
+✔ 테스트 실행 속도: 1.485초 → 0.114초 (92% 단축, 13배 개선)
 ### ✅ 시연 영상
 ### [시연영상 바로가기](https://youtu.be/MFbDF_wRzKw)
