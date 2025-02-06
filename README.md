@@ -46,12 +46,16 @@ Java, SpringBoot, MySQL, Redis, JPA, Querydsl, Nginx, GitHub Actions, AWS (EC2, 
 - 테스트 신뢰성 문제 → Mock Framework 사용으로 코드 복잡성 증가, 낮은 커버리지 및 회귀 버그 발생
 
 개선 사항<br/>
+
+![image](https://github.com/user-attachments/assets/354eb62c-b228-49c1-8199-7dd173207f06)
+
+![image](https://github.com/user-attachments/assets/a9c8a997-9bb2-4df2-a60a-75d5b6ebe8df)
+
 - 비즈니스 로직과 JPA 엔티티 분리 → 도메인 중심 설계(DDD) 적용 가능<br/>
 - 서비스 구현체가 추상화된 Input/Output 의존 → 유지보수 및 확장성 향상<br/>
 - 테스트에서 DB 의존 제거 → OOP 기반 테스트 적용으로 속도 최적화<br/>
 
-성능 개선 결과<br/>
-- 테스트 실행 속도: 1.485초 → 0.114초 (92% 단축, 13배 개선)<br/>
+
 
 **RDS 병목 및 성능 최적화**
 
