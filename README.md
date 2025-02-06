@@ -55,7 +55,7 @@
 
 **2. RDS 병목 및 성능 최적화**
 
-![image](https://github.com/user-attachments/assets/7f1faba2-4a3f-45de-8b41-d6d4d54c938f) {: width="500" height="50" .normal}
+![image](https://github.com/user-attachments/assets/7f1faba2-4a3f-45de-8b41-d6d4d54c938f)
 
 <br/>
 
@@ -76,6 +76,9 @@
 <br/>
 
 **성능 개선 결과**<br/>
+
+![image](https://github.com/user-attachments/assets/6b81abcb-8f6e-4b87-a47b-62571a66af4e)
+
 - TPS: 1.2/s → 47.8/s (39.83배 증가)
 - Latency: 46.3s → 50ms (926배 단축)
 - RDS CPU 사용률 90% 이상 감소
