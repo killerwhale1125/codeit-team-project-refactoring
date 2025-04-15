@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gathering.book.domain.BookDomain;
 import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.common.base.exception.BaseException;
+import com.gathering.gathering.util.GatheringJoinLockManager;
 import com.gathering.gathering.util.GatheringValidator;
 import com.gathering.gathering_review.domain.GatheringReviewDomain;
 import com.gathering.gathering_user.domain.GatheringUserDomain;
@@ -15,6 +16,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.gathering.common.base.response.BaseResponseStatus.*;
 import static com.gathering.gathering.domain.GatheringStatus.*;
@@ -58,7 +60,7 @@ public class GatheringDomain {
                 .minCapacity(checkUnlimitedMinCapacity(gatheringCreate.getMinCapacity(),
                         gatheringCreate.getMaxCapacity()))
                 .maxCapacity(gatheringCreate.getMaxCapacity())
-                .currentCapacity(1)
+                .currentCapacity(gatheringCreate.getCurrentCapacity())
                 .owner(user.getUserName())
                 .viewCount(0)
                 .gatheringStatus(gatheringCreate.getGatheringStatus())
@@ -70,21 +72,34 @@ public class GatheringDomain {
                 .build();
     }
 
-    public static void join(GatheringDomain gathering, UserDomain user, GatheringValidator gatheringValidator) {
-        // 이미 참여한 유저인지 검증
-        gatheringValidator.validateAlreadyJoinedUser(gathering.getGatheringUsers(), user);
-        // 모임(챌린지) 시작 전에만 참여할 수 있다.
-        gatheringValidator.validateJoinDate(gathering.getStartDate(), LocalDate.now());
-        // 모임에 참여 가능한지 검사
-        gatheringValidator.validateCapacityLimit(gathering.getCurrentCapacity(), gathering.getMaxCapacity());
-        // 모임 상태가 참여할 수 있는 상태인지 검증
-        gathering.getGatheringStatus().validate();
+    /**
+     * Critical Section으로 모임 Id 기반 ReentrantLock 적용
+     */
+    public void join(UserDomain user, GatheringValidator gatheringValidator) {
+        ReentrantLock lock = GatheringJoinLockManager.acquireLock(id);
 
-        /* 상태 변화 */
-        // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
-        gathering.increaseCurrentCapacity();
-        // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
-        gathering.checkIsFullAndUpdateStatus();
+        // 모임 Id 기반 Lock 획득
+        lock.lock();
+
+        try {
+            // 이미 참여한 유저인지 검증
+            gatheringValidator.validateAlreadyJoinedUser(getGatheringUsers(), user);
+            // 모임(챌린지) 시작 전에만 참여할 수 있다.
+            gatheringValidator.validateJoinDate(getStartDate(), LocalDate.now());
+            // 모임에 참여 가능한지 검사
+            gatheringValidator.validateCapacityLimit(getCurrentCapacity(), getMaxCapacity());
+            // 모임 상태가 참여할 수 있는 상태인지 검증
+            getGatheringStatus().validate();
+
+            /* 상태 변화 */
+            // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
+            increaseCurrentCapacity();
+            // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
+            checkIsFullAndUpdateStatus();
+        } finally {
+            lock.unlock();
+            GatheringJoinLockManager.releaseLock(id);
+        }
     }
 
     public static GatheringUserDomain leave(GatheringDomain gathering, UserDomain user) {

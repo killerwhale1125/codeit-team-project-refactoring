@@ -24,6 +24,7 @@ public class GatheringCreate {
     private int minCapacity;
     @Min(6)  // 최소 6명 이상
     private int maxCapacity;
+    private int currentCapacity;
     @NotNull
     private Long bookId;
     @NotNull

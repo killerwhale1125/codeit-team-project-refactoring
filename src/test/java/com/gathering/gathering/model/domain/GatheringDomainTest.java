@@ -122,7 +122,7 @@ class GatheringDomainTest {
                 .build();
 
         /* when */
-        GatheringDomain.join(gathering, user, gatheringValidator);
+        gathering.join(user, gatheringValidator);
 
         /* then */
         assertThat(gathering.getCurrentCapacity()).isEqualTo(2);
@@ -151,7 +151,7 @@ class GatheringDomainTest {
                 .gathering(gathering)
                 .gatheringUserStatus(PARTICIPATING)
                 .build();
-        GatheringDomain.join(gathering, user, gatheringValidator);
+        gathering.join(user, gatheringValidator);
         gathering.getGatheringUsers().add(gatheringUser);
 
         /* when */

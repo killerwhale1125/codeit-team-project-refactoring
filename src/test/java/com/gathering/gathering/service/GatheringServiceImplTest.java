@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.INACTIVE;
+import static com.gathering.gathering.domain.GatheringStatus.FULL;
 import static com.gathering.gathering.domain.GatheringStatus.RECRUITING;
 import static com.gathering.gathering_user.domain.GatheringUserStatus.PARTICIPATING;
 import static com.gathering.gathering.domain.GatheringWeek.ONE_WEEK;
@@ -97,8 +98,41 @@ class GatheringServiceImplTest {
                 .wishGatheringIds(new HashSet<>())
                 .build();
 
+        final UserDomain user3 = UserDomain.builder()
+                .id(3L)
+                .userName("범고래3")
+                .password("Password1!")
+                .email("killerwhale3@naver.com")
+                .profile("userProfile")
+                .roles("USER")
+                .wishGatheringIds(new HashSet<>())
+                .build();
+
+        final UserDomain user4 = UserDomain.builder()
+                .id(4L)
+                .userName("범고래4")
+                .password("Password1!")
+                .email("killerwhale4@naver.com")
+                .profile("userProfile")
+                .roles("USER")
+                .wishGatheringIds(new HashSet<>())
+                .build();
+
+        final UserDomain user5 = UserDomain.builder()
+                .id(5L)
+                .userName("범고래5")
+                .password("Password1!")
+                .email("killerwhale5@naver.com")
+                .profile("userProfile")
+                .roles("USER")
+                .wishGatheringIds(new HashSet<>())
+                .build();
+
         fakeUserRepository.save(user1);
         fakeUserRepository.save(user2);
+        fakeUserRepository.save(user3);
+        fakeUserRepository.save(user4);
+        fakeUserRepository.save(user5);
 
         // 테스트 책 생성
         final BookDomain bookDomain = BookDomain.builder()
@@ -135,7 +169,7 @@ class GatheringServiceImplTest {
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
         final TestMultipartFile file = getTestMultipartFile();
 
         /* when */
@@ -192,7 +226,7 @@ class GatheringServiceImplTest {
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, MAX_VALUE, MAX_VALUE, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, MAX_VALUE, MAX_VALUE, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
         final TestMultipartFile file = getTestMultipartFile();
 
         /* when */
@@ -214,7 +248,7 @@ class GatheringServiceImplTest {
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.minusDays(10);
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1,  1L, RECRUITING, ONE_HOUR, ONE_WEEK);
         final TestMultipartFile file = getTestMultipartFile();
 
         /* when then */
@@ -231,7 +265,7 @@ class GatheringServiceImplTest {
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate;
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1,  1L, RECRUITING, ONE_HOUR, ONE_WEEK);
         final TestMultipartFile file = getTestMultipartFile();
 
         /* when then */
@@ -248,7 +282,7 @@ class GatheringServiceImplTest {
         final LocalDate startDate = LocalDate.now().minusDays(10);
         final LocalDate endDate = LocalDate.now().plusDays(10);
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
         final TestMultipartFile file = getTestMultipartFile();
 
         /* when then */
@@ -264,7 +298,7 @@ class GatheringServiceImplTest {
         String owner = "범고래1";
         final LocalDate startDate = LocalDate.now().plusDays(1);
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
 
         final Long gatheringId = gathering.getId();
         final String joinUsername = "범고래2";
@@ -279,13 +313,68 @@ class GatheringServiceImplTest {
     }
 
     @Test
+    @DisplayName("모임 참여 시 참여 가능 인원이 1명일 경우 여러 Client 중 1명만이 참여 가능하며 모임 상태는 FULL 로 변경된다.")
+    void joinLock() throws InterruptedException {
+
+        /* given */
+
+        /**
+         * 참여하려는 유저 Thread
+         */
+        class Client implements Runnable {
+            private final GatheringService gatheringServiceTest;
+            private final Long gatheringId;
+            private final String username;
+
+            public Client(GatheringService gatheringServiceTest, Long gatheringId, String username) {
+                this.gatheringServiceTest = gatheringServiceTest;
+                this.gatheringId = gatheringId;
+                this.username = username;
+            }
+
+            @Override
+            public void run() {
+                gatheringServiceTest.join(gatheringId, username);
+            }
+        }
+
+        /**
+         * 참여 가능한 인원이 1명 뿐인 모임 생성
+         */
+        final String owner = "범고래1";
+        final LocalDate startDate = LocalDate.now().plusDays(1);
+        final LocalDate endDate = startDate.plusDays(10);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 10, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
+
+        Long gatheringId = gathering.getId();
+
+        /* when */
+        List<Thread> threads = new ArrayList<>();
+        for (int i = 2; i <= 5; i++) {
+            String username = "범고래" + i;
+            Thread thread = new Thread(new Client(gatheringService, gatheringId, username), username);
+            threads.add(thread);
+            thread.start();
+        }
+
+        for (Thread thread : threads) {
+            thread.join(); // 모든 유저 join 시도 완료 대기
+        }
+
+        /* then */
+        assertThat(gathering.getCurrentCapacity()).isEqualTo(gathering.getMaxCapacity());
+        assertThat(gathering.getGatheringStatus()).isEqualTo(FULL);
+
+    }
+
+    @Test
     @DisplayName("챌린지가 이미 시작했을 경우 모임에 참여할 수 없다.")
     void cannotJoinAlreadyStartedChallenge() {
         /* given */
         final String owner = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
 
         final Long gatheringId = gathering.getId();
         final String joinUsername = "범고래2";
@@ -301,7 +390,7 @@ class GatheringServiceImplTest {
         String owner = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
 
         final Long gatheringId = gathering.getId();
         final String joinUsername = "범고래1";
@@ -317,7 +406,7 @@ class GatheringServiceImplTest {
         String owner = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
 
         final Long gatheringId = gathering.getId();
         final String joinUsername = "범고래1";
@@ -334,7 +423,7 @@ class GatheringServiceImplTest {
         String owner = "범고래1";
         final LocalDate startDate = LocalDate.now().plusDays(1);
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
 
         // 모임 참여
         final Long gatheringId = gathering.getId();
@@ -358,7 +447,7 @@ class GatheringServiceImplTest {
         String owner = "범고래1";
         final LocalDate startDate = LocalDate.now().plusDays(1);
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
 
         /* when then */
         assertThatThrownBy(() -> gatheringService.leave(gathering.getId(), owner))
@@ -372,7 +461,7 @@ class GatheringServiceImplTest {
         final String username = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
 
         /* when */
         gatheringService.delete(gathering.getId(), username);
@@ -388,7 +477,7 @@ class GatheringServiceImplTest {
         final String username = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
         final String notOwnerUser = "범고래2";
         /* when then */
         assertThatThrownBy(() -> gatheringService.delete(gathering.getId(), notOwnerUser))
@@ -402,7 +491,7 @@ class GatheringServiceImplTest {
         final String username = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
 
         final GatheringUserStatus gatheringUserStatus = PARTICIPATING;
 
@@ -425,7 +514,7 @@ class GatheringServiceImplTest {
         final String username = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
 
         /* when */
         gatheringService.wish(gathering.getId(), username);
@@ -441,7 +530,7 @@ class GatheringServiceImplTest {
         final String username = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
+        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
         gatheringService.wish(gathering.getId(), username);
 
         /* when */
@@ -479,18 +568,18 @@ class GatheringServiceImplTest {
         final LocalDate endDate2 = startDate2.plusDays(ONE_WEEK.getWeek());
 
         // 내가 만든 모임
-        createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username1);
+        createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username1);
 
         // 참여중인 모임
-        final GatheringDomain participatingGathering = createGathering(startDate2, endDate2, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username2);
+        final GatheringDomain participatingGathering = createGathering(startDate2, endDate2, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username2);
         gatheringService.join(participatingGathering.getId(), username1);
 
         // 완료된 모임
-        final GatheringDomain completedGathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username1);
+        final GatheringDomain completedGathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username1);
         gatheringService.end(completedGathering.getId());
 
         // 내가 찜한 모임
-        final GatheringDomain wishedGathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username2);
+        final GatheringDomain wishedGathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username2);
         gatheringService.wish(wishedGathering.getId(), username1);
 
         /* when */
@@ -510,7 +599,7 @@ class GatheringServiceImplTest {
         final String username = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(ONE_WEEK.getWeek());
-        GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
+        GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
 
         /* when */
         UserAttendanceBookDomain userAttendanceBook = gatheringService.readBookCompleted(username, gathering.getId());
@@ -528,7 +617,7 @@ class GatheringServiceImplTest {
         final String username = "범고래1";
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(ONE_WEEK.getWeek());
-        GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
+        GatheringDomain gathering = createGathering(startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, username);
         UserAttendanceBookDomain userAttendanceBook = gatheringService.readBookCompleted(username, gathering.getId());
 
         /* when then */
@@ -540,13 +629,14 @@ class GatheringServiceImplTest {
                                            LocalDate endDate,
                                            int minCapacity,
                                            int maxCapacity,
+                                           int currentCapacity,
                                            Long bookId,
                                            GatheringStatus gatheringStatus,
                                            ReadingTimeGoal readingTimeGoal,
                                            GatheringWeek gatheringWeek,
                                            String username) {
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, minCapacity, maxCapacity, bookId, gatheringStatus, readingTimeGoal, gatheringWeek);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, minCapacity, maxCapacity, currentCapacity, bookId, gatheringStatus, readingTimeGoal, gatheringWeek);
         final TestMultipartFile file = getTestMultipartFile();
         return gatheringService.create(gatheringCreate, List.of(file), username);
     }
@@ -567,6 +657,7 @@ class GatheringServiceImplTest {
                                                       LocalDate endDate,
                                                       int minCapacity,
                                                       int maxCapacity,
+                                                      int currentCapacity,
                                                       long bookId,
                                                       GatheringStatus gatheringStatus,
                                                       ReadingTimeGoal readingTimeGoal,
@@ -578,6 +669,7 @@ class GatheringServiceImplTest {
                 .endDate(endDate)
                 .minCapacity(minCapacity)
                 .maxCapacity(maxCapacity)
+                .currentCapacity(currentCapacity)
                 .bookId(bookId)
                 .gatheringStatus(gatheringStatus)
                 .readingTimeGoal(readingTimeGoal)
