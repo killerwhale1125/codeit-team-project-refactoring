@@ -60,4 +60,15 @@ public interface GatheringJpaRepository extends JpaRepository<Gathering, Long> {
     void updateCurrentCapacityAndStatus(@Param("gatheringId") Long gatheringId,
                                         @Param("currentCapacity") int currentCapacity,
                                         @Param("gatheringStatus") GatheringStatus gatheringStatus);
+
+    @Query(value = "SELECT * FROM GATHERING WHERE GATHERING_ID = :gatheringId", nativeQuery = true)
+    Optional<Gathering> findFreshGathering(@Param("gatheringId") Long gatheringId);
+
+
+    @Query("SELECT g.currentCapacity FROM Gathering g WHERE g.id = :gatheringId")
+    int findCurrentCapacityById(@Param("gatheringId") Long gatheringId);
+
+    @Query("SELECT g.gatheringStatus FROM Gathering g WHERE g.id = :gatheringId")
+    GatheringStatus findGatheringStatusById(@Param("gatheringId") Long gatheringId);
+
 }

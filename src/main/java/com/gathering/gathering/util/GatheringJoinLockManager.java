@@ -16,7 +16,7 @@ public class GatheringJoinLockManager {
      * 각 모임 Id 별 Lock 분산으로 인해 Lock 경합 감소
      * ConcurrentHashMap으로 동일한 모임 ID에 대해 여러개의 new Map이 생성되는 동시성 문제를 방지
      */
-    public static ReentrantLock acquireLock(Long gatheringId) {
+    public static ReentrantLock acquireLock(Long gatheringId, int currentCapacity) {
         LockWithCounter wrapper = joinLockMap.computeIfAbsent(gatheringId, id -> new LockWithCounter());
         wrapper.count.incrementAndGet(); // ref count 증가
         return wrapper.lock;

@@ -5,6 +5,7 @@ import com.gathering.gathering.domain.GatheringDomain;
 import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.gathering.service.port.GatheringRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import static com.gathering.common.base.response.BaseResponseStatus.NON_EXISTED_GATHERING;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class GatheringRepositoryImpl implements GatheringRepository {

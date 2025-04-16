@@ -12,6 +12,7 @@ import com.gathering.image.domain.ImageDomain;
 import com.gathering.user.domain.UserDomain;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import static com.gathering.gathering.domain.GatheringStatus.*;
 
 @Getter
 @Builder
+@Slf4j
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GatheringDomain {
     private Long id;
@@ -75,8 +77,8 @@ public class GatheringDomain {
     /**
      * Critical Section으로 모임 Id 기반 ReentrantLock 적용
      */
-    public void join(UserDomain user, GatheringValidator gatheringValidator) {
-        ReentrantLock lock = GatheringJoinLockManager.acquireLock(id);
+    public void reentrantLockJoin(UserDomain user, GatheringValidator gatheringValidator) {
+        ReentrantLock lock = GatheringJoinLockManager.acquireLock(id, currentCapacity);
 
         // 모임 Id 기반 Lock 획득
         lock.lock();
@@ -86,8 +88,10 @@ public class GatheringDomain {
             gatheringValidator.validateAlreadyJoinedUser(getGatheringUsers(), user);
             // 모임(챌린지) 시작 전에만 참여할 수 있다.
             gatheringValidator.validateJoinDate(getStartDate(), LocalDate.now());
+
             // 모임에 참여 가능한지 검사
-            gatheringValidator.validateCapacityLimit(getCurrentCapacity(), getMaxCapacity());
+            gatheringValidator.validateCapacityLimit(currentCapacity, maxCapacity);
+
             // 모임 상태가 참여할 수 있는 상태인지 검증
             getGatheringStatus().validate();
 
@@ -100,6 +104,22 @@ public class GatheringDomain {
             lock.unlock();
             GatheringJoinLockManager.releaseLock(id);
         }
+    }
+
+    public void join(UserDomain user, GatheringValidator gatheringValidator) {
+        gatheringValidator.validateAlreadyJoinedUser(getGatheringUsers(), user);
+        // 모임(챌린지) 시작 전에만 참여할 수 있다.
+        gatheringValidator.validateJoinDate(getStartDate(), LocalDate.now());
+        // 모임에 참여 가능한지 검사
+        gatheringValidator.validateCapacityLimit(getCurrentCapacity(), getMaxCapacity());
+        // 모임 상태가 참여할 수 있는 상태인지 검증
+        getGatheringStatus().validate();
+
+        /* 상태 변화 */
+        // 한명이 추가로 참여했기 때문에 모임의 현재 인원을 증가
+        increaseCurrentCapacity();
+        // 현재 참여 인원 FULL일 경우 모집 완료 상태로 변경한다.
+        checkIsFullAndUpdateStatus();
     }
 
     public static GatheringUserDomain leave(GatheringDomain gathering, UserDomain user) {
@@ -171,4 +191,5 @@ public class GatheringDomain {
         gathering.gatheringStatus = COMPLETED;
         return gathering;
     }
+
 }
