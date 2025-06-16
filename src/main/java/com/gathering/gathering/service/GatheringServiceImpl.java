@@ -143,8 +143,11 @@ public class GatheringServiceImpl implements GatheringService {
     @Transactional
     public void end(Long gatheringId) {
         GatheringDomain gathering = gatheringRepository.findByIdWithGatheringUsersAndChallenge(gatheringId);
-        challengeRepository.save(ChallengeDomain.end(gathering.getChallenge()));
-        gatheringRepository.save(GatheringDomain.end(gathering));
+        gathering.end();
+        ChallengeDomain challenge = gathering.getChallenge();
+        challenge.end();
+        challengeRepository.save(challenge);
+        gatheringRepository.save(gathering);
         gatheringUserRepository.saveAll(GatheringUserDomain.end(gathering.getGatheringUsers()));
     }
 
