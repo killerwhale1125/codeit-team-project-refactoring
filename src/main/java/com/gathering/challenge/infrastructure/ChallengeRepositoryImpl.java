@@ -7,6 +7,7 @@ import com.gathering.common.base.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,16 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     @Override
     public List<ChallengeDomain> getByIdsIn(List<Long> challengeIds) {
         return challengeJpaRepository.getByIdsIn(challengeIds).stream().map(Challenge::toEntity).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> findByStartDate(LocalDate today) {
+        return challengeJpaRepository.findByStartDate(today);
+    }
+
+    @Override
+    public ChallengeDomain findGatheringAndChallengeById(Long challengeId) {
+        return challengeJpaRepository.findGatheringAndChallengeById(challengeId).toEntity();
     }
 
 }

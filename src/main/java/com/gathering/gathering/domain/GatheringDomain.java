@@ -187,9 +187,11 @@ public class GatheringDomain {
         this.currentCapacity--;
     }
 
-    public static GatheringDomain end(GatheringDomain gathering) {
-        gathering.gatheringStatus = COMPLETED;
-        return gathering;
+    public void end() {
+        this.gatheringStatus = COMPLETED;
     }
 
+    public void start() {
+        this.gatheringStatus = ACTIVE;
+    }
 }

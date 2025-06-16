@@ -171,7 +171,7 @@ class GatheringDomainTest {
         GatheringDomain gathering = createGathering(now, endDate);
 
         /* when */
-        GatheringDomain.end(gathering);
+        gathering.end();
 
         /* then */
         assertThat(gathering.getGatheringStatus().name()).isEqualTo(COMPLETED.name());

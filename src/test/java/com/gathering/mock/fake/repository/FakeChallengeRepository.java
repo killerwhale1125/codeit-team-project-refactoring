@@ -4,6 +4,7 @@ import com.gathering.challenge.domain.ChallengeDomain;
 import com.gathering.challenge.infrastructure.entity.Challenge;
 import com.gathering.challenge.service.port.ChallengeRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,5 +52,22 @@ public class FakeChallengeRepository implements ChallengeRepository {
         return data.stream()
                 .filter(challenge -> challengeIds.contains(challenge.getId()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> findByStartDate(LocalDate today) {
+        return data.stream()
+                .filter(challenge -> challenge.getStartDate().equals(today))
+                .mapToLong(ChallengeDomain::getId)
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ChallengeDomain findGatheringAndChallengeById(Long challengeId) {
+        return data.stream()
+                .filter(item -> item.getId() == challengeId)
+                .findFirst()
+                .get();
     }
 }

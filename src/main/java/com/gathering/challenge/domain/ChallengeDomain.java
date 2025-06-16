@@ -15,8 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.COMPLETED;
-import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.INACTIVE;
+import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.*;
 import static com.gathering.common.base.response.BaseResponseStatus.USER_NOT_IN_CHALLENGE;
 
 @Getter
@@ -53,8 +52,11 @@ public class ChallengeDomain {
         return challengeUser;
     }
 
-    public static ChallengeDomain end(ChallengeDomain challenge) {
-        challenge.challengeStatus = COMPLETED;
-        return challenge;
+    public void end() {
+        this.challengeStatus = COMPLETED;
+    }
+
+    public void start() {
+        this.challengeStatus = ACTIVE;
     }
 }
