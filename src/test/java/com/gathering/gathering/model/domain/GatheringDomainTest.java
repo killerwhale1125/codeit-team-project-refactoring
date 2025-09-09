@@ -2,11 +2,7 @@ package com.gathering.gathering.model.domain;
 
 import com.gathering.book.domain.BookDomain;
 import com.gathering.challenge.domain.ChallengeDomain;
-import com.gathering.gathering.domain.GatheringDomain;
-import com.gathering.gathering.domain.GatheringCreate;
-import com.gathering.gathering.domain.GatheringStatus;
-import com.gathering.gathering.domain.GatheringWeek;
-import com.gathering.gathering.domain.ReadingTimeGoal;
+import com.gathering.gathering.domain.*;
 import com.gathering.gathering.util.GatheringValidator;
 import com.gathering.gathering_user.domain.GatheringUserDomain;
 import com.gathering.image.domain.ImageDomain;
@@ -21,11 +17,10 @@ import java.util.List;
 import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.COMPLETED;
 import static com.gathering.challenge.infrastructure.entity.ChallengeStatus.INACTIVE;
 import static com.gathering.gathering.domain.GatheringStatus.RECRUITING;
-import static com.gathering.gathering_user.domain.GatheringUserStatus.*;
 import static com.gathering.gathering.domain.GatheringWeek.ONE_WEEK;
 import static com.gathering.gathering.domain.ReadingTimeGoal.ONE_HOUR;
+import static com.gathering.gathering_user.domain.GatheringUserStatus.PARTICIPATING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GatheringDomainTest {
 
@@ -37,7 +32,7 @@ class GatheringDomainTest {
         final LocalDate startDate = LocalDate.now();
         final LocalDate endDate = startDate.plusDays(10);
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
 
         final UserDomain user = UserDomain.builder()
                 .userName("범고래1")
@@ -179,7 +174,7 @@ class GatheringDomainTest {
 
     private GatheringDomain createGathering(LocalDate startDate, LocalDate endDate) {
         final GatheringCreate gatheringCreate =
-                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임 제목", "모임장 소개", startDate, endDate, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
 
         final UserDomain user = UserDomain.builder()
                 .id(1L)
@@ -235,6 +230,7 @@ class GatheringDomainTest {
                                                       LocalDate endDate,
                                                       int minCapacity,
                                                       int maxCapacity,
+                                                      int capacity,
                                                       long bookId,
                                                       GatheringStatus gatheringStatus,
                                                       ReadingTimeGoal readingTimeGoal,
@@ -246,6 +242,7 @@ class GatheringDomainTest {
                 .endDate(endDate)
                 .minCapacity(minCapacity)
                 .maxCapacity(maxCapacity)
+                .currentCapacity(capacity)
                 .bookId(bookId)
                 .gatheringStatus(gatheringStatus)
                 .readingTimeGoal(readingTimeGoal)

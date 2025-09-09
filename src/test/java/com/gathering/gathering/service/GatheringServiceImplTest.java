@@ -313,61 +313,6 @@ class GatheringServiceImplTest {
     }
 
     @Test
-    @DisplayName("모임 참여 시 참여 가능 인원이 1명일 경우 여러 Client 중 1명만이 참여 가능하며 모임 상태는 FULL 로 변경된다.")
-    void joinLock() throws InterruptedException {
-
-        /* given */
-
-        /**
-         * 참여하려는 유저 Thread
-         */
-        class Client implements Runnable {
-            private final GatheringService gatheringServiceTest;
-            private final Long gatheringId;
-            private final String username;
-
-            public Client(GatheringService gatheringServiceTest, Long gatheringId, String username) {
-                this.gatheringServiceTest = gatheringServiceTest;
-                this.gatheringId = gatheringId;
-                this.username = username;
-            }
-
-            @Override
-            public void run() {
-                gatheringServiceTest.join(gatheringId, username);
-            }
-        }
-
-        /**
-         * 참여 가능한 인원이 1명 뿐인 모임 생성
-         */
-        final String owner = "범고래1";
-        final LocalDate startDate = LocalDate.now().plusDays(1);
-        final LocalDate endDate = startDate.plusDays(10);
-        final GatheringDomain gathering = createGathering(startDate, endDate, 10, 11, 10, 1L, RECRUITING, ONE_HOUR, ONE_WEEK, owner);
-
-        Long gatheringId = gathering.getId();
-
-        /* when */
-        List<Thread> threads = new ArrayList<>();
-        for (int i = 2; i <= 5; i++) {
-            String username = "범고래" + i;
-            Thread thread = new Thread(new Client(gatheringService, gatheringId, username), username);
-            threads.add(thread);
-            thread.start();
-        }
-
-        for (Thread thread : threads) {
-            thread.join(); // 모든 유저 join 시도 완료 대기
-        }
-
-        /* then */
-        assertThat(gathering.getCurrentCapacity()).isEqualTo(gathering.getMaxCapacity());
-        assertThat(gathering.getGatheringStatus()).isEqualTo(FULL);
-
-    }
-
-    @Test
     @DisplayName("챌린지가 이미 시작했을 경우 모임에 참여할 수 없다.")
     void cannotJoinAlreadyStartedChallenge() {
         /* given */

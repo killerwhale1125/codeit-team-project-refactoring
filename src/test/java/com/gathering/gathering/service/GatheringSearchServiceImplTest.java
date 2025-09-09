@@ -544,22 +544,22 @@ class GatheringSearchServiceImplTest {
         final LocalDate startDate1 = LocalDate.now().plusDays(1);
         final LocalDate endDate1 = startDate1.plusDays(ONE_WEEK.getWeek());
         final GatheringCreate gatheringCreate1 =
-                getGatheringCreate("모임1", "모임장 소개1", startDate1, endDate1, 10, 20, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
+                getGatheringCreate("모임1", "모임장 소개1", startDate1, endDate1, 10, 20, 1, 1L, RECRUITING, ONE_HOUR, ONE_WEEK);
 
         final LocalDate startDate2 = LocalDate.now().plusDays(1);
         final LocalDate endDate2 = startDate1.plusDays(TWO_WEEKS.getWeek());
         final GatheringCreate gatheringCreate2 =
-                getGatheringCreate("모임2", "모임장 소개2", startDate2, endDate2, 10, 20, 2L, ACTIVE, ONE_HOUR, TWO_WEEKS);
+                getGatheringCreate("모임2", "모임장 소개2", startDate2, endDate2, 10, 20, 1, 2L, ACTIVE, ONE_HOUR, TWO_WEEKS);
 
         final LocalDate startDate3 = LocalDate.now().plusDays(1);
         final LocalDate endDate3 = startDate1.plusDays(THREE_WEEKS.getWeek());
         final GatheringCreate gatheringCreate3 =
-                getGatheringCreate("모임3", "모임장 소개3", startDate3, endDate3, 10, 20, 2L, FULL, THIRTY_MINUTES, THREE_WEEKS);
+                getGatheringCreate("모임3", "모임장 소개3", startDate3, endDate3, 10, 20, 1, 2L, FULL, THIRTY_MINUTES, THREE_WEEKS);
 
         final LocalDate startDate4 = LocalDate.now().plusDays(1);
         final LocalDate endDate4 = startDate1.plusDays(FOUR_WEEKS.getWeek());
         final GatheringCreate gatheringCreate4 =
-                getGatheringCreate("모임4", "모임장 소개4", startDate4, endDate4, 10, 20, 2L, COMPLETED, TEN_MINUTES, FOUR_WEEKS);
+                getGatheringCreate("모임4", "모임장 소개4", startDate4, endDate4, 10, 20, 1, 2L, COMPLETED, TEN_MINUTES, FOUR_WEEKS);
 
         return List.of(gatheringCreate1, gatheringCreate2, gatheringCreate3, gatheringCreate4);
     }
@@ -601,6 +601,7 @@ class GatheringSearchServiceImplTest {
                                                       LocalDate endDate,
                                                       int minCapacity,
                                                       int maxCapacity,
+                                                      int capcaity,
                                                       long bookId,
                                                       GatheringStatus gatheringStatus,
                                                       ReadingTimeGoal readingTimeGoal,
@@ -612,6 +613,7 @@ class GatheringSearchServiceImplTest {
                 .endDate(endDate)
                 .minCapacity(minCapacity)
                 .maxCapacity(maxCapacity)
+                .currentCapacity(capcaity)
                 .bookId(bookId)
                 .gatheringStatus(gatheringStatus)
                 .readingTimeGoal(readingTimeGoal)
