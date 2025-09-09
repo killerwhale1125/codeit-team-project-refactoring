@@ -19,8 +19,6 @@ public interface GatheringSearchRepository {
 
     GatheringPageResponse findMyWishes(Set<Long> wishGatheringIds, int page, int size);
 
-    GatheringSliceResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size);
-
     GatheringDomain getByIdWithChallengeAndBook(Long gatheringId);
 
     GatheringPageResponse findGatheringsBySearchWordAndTypeTitle(String searchWord, int page, int size);

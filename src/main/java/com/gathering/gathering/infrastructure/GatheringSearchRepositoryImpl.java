@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,34 +45,53 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
     @Override
     public GatheringSliceResponse findGatherings(GatheringSearch gatheringSearch, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        // 조건 생성
-        BooleanBuilder builder = gatheringSearchConditionBuilder.buildConditionAll(gatheringSearch);
-        // Query 생성
-        JPAQuery<Gathering> query = queryFactory.selectFrom(gathering)
+        // 챌린지 필터링 조건 생성
+        BooleanBuilder challengeCondition = gatheringSearchConditionBuilder.challengeSearchCondition(
+                gatheringSearch.getStartDate(),
+                gatheringSearch.getEndDate(),
+                gatheringSearch.getReadingTimeGoals()
+        );
+
+        /**
+         * 모임 및 챌린지 필터링 조건만 빠르게 인덱스 조회하여 ids 조회 및 정렬
+         * LIMIT + 1을 통해 다음 데이터가 있는지 없는지 여부 판단 ( 무한 페이지 페이징 처리 )
+         */
+        JPAQuery<Long> gatheringFilteredQuery = queryFactory
+                .select(gathering.id)
+                .from(gathering)
+                .join(gathering.challenge, challenge)
+                .where(challengeCondition)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1);
+        
+        // 정렬 처리
+        GatheringSortUtil.applySorting(gatheringFilteredQuery, gatheringSearch.getGatheringSortType());
+
+        List<Long> filteredGatheringIds = gatheringFilteredQuery.fetch();
+        if (filteredGatheringIds.isEmpty()) {
+            return GatheringSliceResponse.builder()
+                    .gatherings(Collections.emptyList())
+                    .hasNext(false)
+                    .build();
+        }
+
+        /**
+         * hasNext true -> 요청한 size 외에 데이터가 더 존재함
+         * hasNext false -> 더이상 다음에 조회할 데이터가 존재하지 않음
+         */
+        boolean hasNext = filteredGatheringIds.size() > pageable.getPageSize();
+
+        // Query 생성 - 필터링 후 페이징 처리 까지 완료한 상황이여서 랜덤 I/O라도 속도 차이 미비
+        List<GatheringDomain> contents = queryFactory.selectFrom(gathering)
                 .join(gathering.challenge, challenge).fetchJoin()
                 .join(gathering.book, book).fetchJoin()
                 .join(gathering.image, image).fetchJoin()
-                .where(builder);
-
-        // 정렬 처리
-        GatheringSortUtil.applySorting(query, gatheringSearch.getGatheringSortType());
-
-        /**
-         * 페이징 처리
-         * LIMIT + 1을 통해 다음 데이터가 있는지 없는지 여부 판단
-         */
-        query.offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1);
-
-        List<GatheringDomain> contents = query.fetch().stream()
+                .where(gathering.id.in(filteredGatheringIds))
+                .distinct()
+                .fetch()
+                .stream()
                 .map(Gathering::toEntity)
                 .collect(Collectors.toList());
-
-        /**
-         * hasNext true -> 요청한 size 외에 데이터가 더 존재함
-         * hasNext false -> 더이상 다음에 조회할 데이터가 존재하지 않음
-         */
-        boolean hasNext = contents.size() > pageable.getPageSize();
 
         // pageable.getPageSize() + 1개 중 마지막 하나를 제거
         if (hasNext) {
@@ -79,57 +99,8 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         }
 
         // 꼭 필요할 때만 count 쿼리 실행
-        SliceImpl<GatheringDomain> slice = new SliceImpl<>(contents, pageable, hasNext);
-
         return GatheringSliceResponse.builder()
-                .gatherings(slice.getContent())
-                .hasNext(hasNext)
-                .build();
-    }
-
-    @Override
-    public GatheringSliceResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size) {
-        // 조건 생성
-        BooleanBuilder builder = gatheringSearchConditionBuilder.buildConditionAll(gatheringSearch);
-        Pageable pageable = PageRequest.of(page, size);
-        // Query 생성
-        JPAQuery<Gathering> query = queryFactory.selectFrom(gathering)
-                .leftJoin(gathering.challenge, challenge).fetchJoin()
-                .leftJoin(gathering.book, book).fetchJoin()
-                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
-                .leftJoin(gatheringUser.user, user).fetchJoin()
-                .where(builder);
-
-        // 정렬 처리
-        GatheringSortUtil.applySorting(query, gatheringSearch.getGatheringSortType());
-
-        /**
-         * 페이징 처리
-         * LIMIT + 1을 통해 다음 데이터가 있는지 없는지 여부 판단
-         */
-        query.offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1);
-
-        List<GatheringDomain> contents = query.fetch().stream()
-                .map(Gathering::toEntity)
-                .collect(Collectors.toList());
-
-        /**
-         * hasNext true -> 요청한 size 외에 데이터가 더 존재함
-         * hasNext false -> 더이상 다음에 조회할 데이터가 존재하지 않음
-         */
-        boolean hasNext = contents.size() > pageable.getPageSize();
-
-        // pageable.getPageSize() + 1개 중 마지막 하나를 제거
-        if (hasNext) {
-            contents.remove(contents.size() - 1);
-        }
-
-        // 꼭 필요할 때만 count 쿼리 실행
-        SliceImpl<GatheringDomain> slice = new SliceImpl<>(contents, pageable, hasNext);
-
-        return GatheringSliceResponse.builder()
-                .gatherings(slice.getContent())
+                .gatherings(new SliceImpl<>(contents, pageable, hasNext).getContent())
                 .hasNext(hasNext)
                 .build();
     }
@@ -183,10 +154,10 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
         JPAQuery<Gathering> query = queryFactory.select(gathering)
                 .from(gathering)
-                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
-                .leftJoin(gatheringUser.user, user).fetchJoin()
-                .leftJoin(gathering.challenge, challenge).fetchJoin()
-                .leftJoin(gathering.book, book).fetchJoin()
+                .join(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .join(gatheringUser.user, user).fetchJoin()
+                .join(gathering.challenge, challenge).fetchJoin()
+                .join(gathering.book, book).fetchJoin()
                 .where(gatheringUser.user.userName.eq(username).and(builder));
 
         List<GatheringDomain> result = query.offset(pageable.getOffset())  // 페이지 시작 위치
@@ -195,7 +166,7 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
 
         long totalCount = queryFactory.select(gathering.id)
                 .from(gathering)
-                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .join(gathering.gatheringUsers, gatheringUser).fetchJoin()
                 .where(gatheringUser.user.userName.eq(username).and(builder))
                 .fetchCount();
 
@@ -205,7 +176,6 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
                 .gatherings(gatherings.getContent())
                 .totalCount(totalCount)
                 .build();
-
     }
 
     // 내가 만든 모임
@@ -214,10 +184,10 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         Pageable pageable = PageRequest.of(page, size);
         List<GatheringDomain> result = queryFactory.select(gathering)
                 .from(gathering)
-                .leftJoin(gathering.challenge, challenge).fetchJoin()
-                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
-                .leftJoin(gatheringUser.user, user).fetchJoin()
-                .leftJoin(gathering.book, book).fetchJoin()
+                .join(gathering.challenge, challenge).fetchJoin()
+                .join(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .join(gatheringUser.user, user).fetchJoin()
+                .join(gathering.book, book).fetchJoin()
                 .where(gathering.owner.eq(username))
                 .offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기
@@ -241,10 +211,10 @@ public class GatheringSearchRepositoryImpl implements GatheringSearchRepository 
         Pageable pageable = PageRequest.of(page, size);
         List<GatheringDomain> result = queryFactory.select(gathering)
                 .from(gathering)
-                .leftJoin(gathering.challenge, challenge).fetchJoin()
-                .leftJoin(gathering.book, book).fetchJoin()
-                .leftJoin(gathering.gatheringUsers, gatheringUser).fetchJoin()
-                .leftJoin(gatheringUser.user, user).fetchJoin()
+                .join(gathering.challenge, challenge).fetchJoin()
+                .join(gathering.book, book).fetchJoin()
+                .join(gathering.gatheringUsers, gatheringUser).fetchJoin()
+                .join(gatheringUser.user, user).fetchJoin()
                 .where(gathering.id.in(wishGatheringIds))
                 .offset(pageable.getOffset())  // 페이지 시작 위치
                 .limit(pageable.getPageSize()) // 페이지 크기

@@ -9,7 +9,6 @@ import java.util.List;
 @Getter
 @Builder
 public class GatheringSliceResponse {
-
     private List<GatheringDomain> gatherings;
     private boolean hasNext;
 }

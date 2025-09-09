@@ -2,17 +2,42 @@ package com.gathering.gathering.util;
 
 import com.gathering.gathering.domain.GatheringSearch;
 import com.gathering.gathering.domain.GatheringStatus;
+import com.gathering.gathering.domain.ReadingTimeGoal;
 import com.gathering.gathering_user.domain.GatheringUserStatus;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import static com.gathering.gathering.infrastructure.entity.QGathering.*;
+import static com.gathering.challenge.infrastructure.entity.QChallenge.challenge;
+import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
 import static com.gathering.gathering_user.infrastructure.entity.QGatheringUser.gatheringUser;
 
 @Component
 public class GatheringSearchConditionBuilder {
+
+    public BooleanBuilder challengeSearchCondition(
+            LocalDate startDate,
+            LocalDate endDate,
+            List<ReadingTimeGoal> readingTimeGoals
+    ) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if (startDate != null && endDate != null) {
+            builder.and(challenge.startDate.between(startDate, endDate));
+        }
+        else if (startDate != null) {
+            builder.and(challenge.startDate.goe(startDate));
+        }
+        else if (endDate != null) {
+            builder.and(challenge.startDate.loe(endDate));
+        }
+
+        if (readingTimeGoals != null) {
+            builder.and(challenge.readingTimeGoal.in(readingTimeGoals));
+        }
+        return builder;
+    }
 
     public BooleanBuilder buildConditionAll(GatheringSearch gatheringSearch) {
         BooleanBuilder builder = new BooleanBuilder();

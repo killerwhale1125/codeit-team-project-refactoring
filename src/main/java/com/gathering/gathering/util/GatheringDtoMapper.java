@@ -6,6 +6,7 @@ import com.gathering.gathering.controller.response.GatheringSearchResponse;
 import com.gathering.gathering.domain.GatheringStatus;
 import com.gathering.gathering.domain.GatheringWeek;
 import com.gathering.gathering.domain.ReadingTimeGoal;
+import com.gathering.gathering.infrastructure.entity.Gathering;
 import com.gathering.gathering.service.dto.GatheringPageResponse;
 import com.gathering.gathering.service.dto.GatheringSliceResponse;
 

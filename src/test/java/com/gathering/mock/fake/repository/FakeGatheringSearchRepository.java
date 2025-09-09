@@ -122,11 +122,6 @@ public class FakeGatheringSearchRepository implements GatheringSearchRepository 
     }
 
     @Override
-    public GatheringSliceResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size) {
-        return null;
-    }
-
-    @Override
     public GatheringDomain getByIdWithChallengeAndBook(Long gatheringId) {
         return data.stream().filter(item -> Objects.equals(item.getId(), gatheringId))
                 .findFirst()

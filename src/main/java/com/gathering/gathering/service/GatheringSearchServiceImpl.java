@@ -65,7 +65,7 @@ public class GatheringSearchServiceImpl implements GatheringSearchService {
 
     @Override
     public GatheringSearchResponse findJoinableGatherings(GatheringSearch gatheringSearch, int page, int size, String username) {
-        GatheringSliceResponse gatheringSliceResponse = gatheringSearchRepository.findJoinableGatherings(gatheringSearch, page, size);
+        GatheringSliceResponse gatheringSliceResponse = gatheringSearchRepository.findGatherings(gatheringSearch, page, size);
 
         Set<Long> wishGatheringIds = getWishGatheringIds(username);
 

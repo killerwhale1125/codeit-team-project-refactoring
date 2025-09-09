@@ -4,7 +4,7 @@ import com.gathering.gathering.domain.GatheringSortType;
 import com.gathering.gathering_review.domain.GatheringReviewSortType;
 import com.querydsl.jpa.impl.JPAQuery;
 
-import static com.gathering.challenge.infrastructure.entity.QChallenge.challenge;
+import static com.gathering.gathering.infrastructure.entity.QGathering.gathering;
 import static com.gathering.gathering_review.infrastructure.entity.QGatheringReview.gatheringReview;
 
 public class GatheringSortUtil {
@@ -12,8 +12,8 @@ public class GatheringSortUtil {
         if (gatheringSortType == null) return;
 
         switch (gatheringSortType) {
-            case DEADLINE_ASC -> query.orderBy(challenge.endDate.asc());
-            case NEWEST_FIRST -> query.orderBy(challenge.createdTime.desc());
+            case DEADLINE_ASC -> query.orderBy(gathering.endDate.asc());
+            case NEWEST_FIRST -> query.orderBy(gathering.createdTime.desc());
         }
     }
 
